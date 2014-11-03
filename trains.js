@@ -1,3 +1,6 @@
+// run initialize once the html has loaded
+document.addEventListener("DOMContentLoaded", initialize, false);
+
 // Enable the visual refresh
 google.maps.visualRefresh = true;
 
@@ -6,9 +9,68 @@ var train_stations = [];
 var all_train = []; // all trains
 var all_train_iw = []; // all train IW
 var updateTime = 200; // used to move along track and update infowindows
+
+function testButton(){
+	logAlarms();
+	/*var table = document.getElementById("alarmTable");
+    //table.deleteRow(0);
+	
+    var row = table.insertRow(0);
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+	var cell3 = row.insertCell(2);
+    cell1.innerHTML = "NEW CELL1";
+    cell2.innerHTML = "NEW CELL2";
+	cell3.innerHTML = '<button type="buttonTest" onclick="testButton()">Test Button</button>';*/
+}
+
+function logAlarms(){
+	var majorPos = 1;
+	var minorPos = 1;
+	var alarmTableMinor = document.getElementById("alarmTableMinor");
+	var alarmTableMajor = document.getElementById("alarmTableMajor");
+	alarmTableMinor.innerHTML = "";
+	alarmTableMajor.innerHTML = "";
+	for (i = 0; i < all_train.length; i++){
+		var alarmLevel = all_train[i].getAlarmLevel();
+		if (alarmLevel == 1){
+			var row = alarmTableMinor.insertRow(0);
+			var cell1 = row.insertCell(0);
+			var cell2 = row.insertCell(1);
+			var cell3 = row.insertCell(2);
+			cell1.innerHTML = "Train "+all_train[i].id;
+			cell2.innerHTML = "Minor Alarm";
+			cell3.innerHTML = '<button type="buttonTest" onclick="all_train['+i+'].outAlarm()">Reset Alarm</button>';
+		} else if (alarmLevel == 2){
+			var row = alarmTableMajor.insertRow(0);
+			var cell1 = row.insertCell(0);
+			var cell2 = row.insertCell(1);
+			var cell3 = row.insertCell(2);
+			cell1.innerHTML = "Train "+all_train[i].id;
+			cell2.innerHTML = "Major Alarm";
+			cell3.innerHTML = '<button type="buttonTest" onclick="all_train['+i+'].outAlarm()">Reset Alarm</button>';
+		}
+	}
+}
+
+function addToAlarmLog(trainId, alarmLevel){
+	
+	
+}
+function removeFromAlarmLog(){
+	var table = document.getElementById("alarmTable");
+    //table.deleteRow(0);
+	
+    var row = table.insertRow(0);
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    cell1.innerHTML = "NEW CELL1";
+    cell2.innerHTML = "NEW CELL2";
+}
+
+
 function resetAlarms() {
     var trainCount = all_train.length;
-    console.log(trainCount);
     for (var i = 0; i < trainCount; i++) {
         all_train[i].outAlarm();
     }
@@ -126,7 +188,7 @@ function five() {
 }
 
 function Train(map, trainId) {
-    var iconAlarmY = 'http://i.imgur.com/dYqjQFv.png'
+    var iconAlarmG = 'http://i.imgur.com/dYqjQFv.png'
     var iconAlarmR = 'http://i.imgur.com/PCUxwpH.png'
     var iconStandard = 'http://i.imgur.com/g7eaBWv.png'
     var alarmLevel = 0;
@@ -140,17 +202,22 @@ function Train(map, trainId) {
     });
 
     all_train.push(this);
+	
+	this.id = trainId;
     this.inAlarmY = function () {
-        marker.setIcon(iconAlarmY);
+        marker.setIcon(iconAlarmG);
         alarmLevel = 1;
+		logAlarms();
     };
     this.inAlarmR = function () {
         marker.setIcon(iconAlarmR);
         alarmLevel = 2;
+		logAlarms();
     };
     this.outAlarm = function () {
         marker.setIcon(iconStandard);
-        alarmLevel = 0;
+		alarmLevel = 0;
+        logAlarms();
     };
     this.getAlarmLevel = function () {
         return alarmLevel;
@@ -252,10 +319,15 @@ function iwString(train, trainId, location) {
         'Latitude: ' + lat + '<br />' +
         'Longitude: ' + lng + '<br />' +
         'Alarms: ' + alarmString + '<br />' +
+		'<button type="button" onclick="resetAlarm()">Reset Alarm</button><br />' +
         'Southeastern Trains</p>' +
         '</div>' +
         '</div>';
-
+		
+	resetAlarm = function () {
+        train.outAlarm();
+    }
+		
     return contentString;
 }
 
@@ -315,59 +387,6 @@ function moveAlongTrack(marker, train_stationsN, d, speed, tId, map) {
         }
     }, updateTime);
 }
-
-/*
-function getNewCoords(startStation, endStation, percent) {
-    var y1 = startStation.lat();
-    var y2 = endStation.lat();
-    var x1 = startStation.lng();
-    var x2 = endStation.lng();
-    console.log(y1 + " " + y2 + " " + x1 + " " + x2 + " ");
-    var newY = x2 - (x2-x1)*percent;
-    var newX = y2 - (y2-y1)*percent;
-    //var newY = (x2 + x1) / 2.0;
-    //var newX = (y2 + y1) / 2.0;
-    console.log(newX + " " + newY + " ");
-    var newLatLng = new google.maps.LatLng(newY, newX);
-
-    return newLatLng;
-}
-*/
-// draws each train
-/*function moveTrain(map, train_track) {
-
-    for (var i = 0; i < train_track.getPath().getLength(); i++) {
-        var marker = new google.maps.Marker({
-            icon: {
-                // use whatever icon you want for the "dots"
-                url: "http://wcdn3.dataknet.com/static/resources/icons/set34/c498eeea.png",
-                size: new google.maps.Size(7, 7),
-                anchor: new google.maps.Point(4, 4)
-            },
-            title: train_track.getPath().getAt(i),
-            position: train_track.getPath().getAt(i),
-            map: map
-        });
-
-
-        var contentString = '<div id="content">' +
-            '<div id="siteNotice">' +
-            '</div>' +
-            '<h1 id="firstHeading" class="firstHeading">' + train_track.getPath().getAt(i) + '</h1></div>';
-
-        var infowindow = new google.maps.InfoWindow({
-            content: contentString
-        });
-
-
-        google.maps.event.addListener(marker, 'click', function () {
-            infowindow.open(map, marker);
-        });
-
-    }
-
-    train_track.setMap(map);
-}*/
 
 // return segment length
 function calcSegmentLength(latlng1, latLng2) {
@@ -451,5 +470,4 @@ function getTrainStations() {
 
 }
 
-
-google.maps.event.addDomListener(window, 'load', initialize);
+//google.maps.event.addDomListener(window, 'load', initialize);

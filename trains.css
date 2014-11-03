@@ -6,6 +6,65 @@ body {
      margin: 0;
      padding: 0;
 }
+
+h1{
+	margin: 0;
+    padding: 0;
+	text-align: center;
+}
+#side {
+	float:left;
+	width:25%;
+	height:100%;
+	background:#1F1750;
+}
+#side_top{
+	top: 0px;
+	left: 0px;
+	background:white;
+	height:100px;
+}
 #map-canvas {
-     height: 100%;
+	float:right;
+	width:75%;
+    height: 100%;
+}
+#alarmTables {
+	float:left;
+    clear:left;
+	overflow: auto;
+	background:white;
+	height:40%;
+}
+#alarmTable {
+	text-align: left;
+	table-layout: fixed;
+	width: 3*;
+}
+#alarmTableMinor {
+	text-align: left;
+	table-layout: fixed;
+	width: 3*;
+	color: grey;
+
+}
+#alarmTableMajor {
+	text-align: left;
+	table-layout: fixed;
+	width: 3*;
+	color: red;
+}
+#selogo {
+	margin: 5px;
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+
+}
+#fstlogo {
+	padding-right:100%;
+	margin: 5px;
+	bottom: 1%;
+	float:left;
+    clear:left;
 }
