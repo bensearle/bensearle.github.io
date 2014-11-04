@@ -9,37 +9,59 @@ var train_stations = [];
 var all_train = []; // all trains
 var all_train_iw = []; // all train IW
 var updateTime = 200; // used to move along track and update infowindows
+var majorAlarmProb;
+var minorAlarmProb;
 
+function setAlarmProbability(level){
+	// alarm probability is set at %chance per second
+	var alarmProbability = document.getElementById("alarmProbability");
+	if (level == 1){
+		minorAlarmProb = 1 - (document.getElementById("minorSlider").value / 100) * updateTime/1000;
+		alarmProbability.rows[0].cells[1].innerHTML = Math.round(((1-minorAlarmProb) * 1000/updateTime)*100)+"%";
+		console.log(minorAlarmProb);
+	}
+	if (level == 2){
+		majorAlarmProb = (document.getElementById("majorSlider").value / 100) * updateTime/1000;
+		alarmProbability.rows[1].cells[1].innerHTML = Math.round((majorAlarmProb * 1000/updateTime)*100)+"%";
+		console.log(majorAlarmProb);
+	}
+}
 function testButton(){
 	
-	document.getElementById("speed"+trainInTable.id).innerHTML = "2000";
+	document.getElementById("speed"+trainSelected.id).innerHTML = "2000";
 }
 
-var trainInTable;
+var trainSelected;
 
 function trainDetails(trainId){
-	if (trainInTable){
-		var id = trainInTable.id;
+	var trainTable = document.getElementById("trainTable");
+	if (trainSelected){
+		var id = trainSelected.id;
 		var speed = document.getElementById('speed' + id).innerHTML;
 		var speedSlider = document.getElementById("speedSlider").value;
 		if (id != trainId){
 			// the train in the table has changed
 			document.getElementById("speedSlider").value = speed; // update the slider to show speed of train
 		}
-		var position = trainInTable.getPosition();
+		var position = trainSelected.getPosition();
 		var lat = position.lat();
 		var lng = position.lng();
-		var alarm = trainInTable.getAlarmDescription();
-		var trainTable = document.getElementById("trainTable");
-		trainTable.rows[0].cells[1].innerHTML = "Train "+trainInTable.id;
-		trainTable.rows[1].cells[1].innerHTML = speed+" km/h";
-		trainTable.rows[2].cells[1].innerHTML = lat;
-		trainTable.rows[3].cells[1].innerHTML = lng;
-		trainTable.rows[4].cells[1].innerHTML = alarm;
+		var alarm = trainSelected.getAlarmDescription();
+		document.getElementById("trainTitle").innerHTML = "Train "+trainSelected.id;
+		trainTable.rows[0].cells[1].innerHTML = speed+" km/h";
+		trainTable.rows[1].cells[1].innerHTML = lat;
+		trainTable.rows[2].cells[1].innerHTML = lng;
+		trainTable.rows[3].cells[1].innerHTML = alarm;
 		if (speed != speedSlider){
 			// speed has been changed
-			document.getElementById('speed' + trainInTable.id).innerHTML = speedSlider;
+			document.getElementById('speed' + trainSelected.id).innerHTML = speedSlider;
 		}
+	} else {
+		document.getElementById("trainTitle").innerHTML = "Train";
+		trainTable.rows[0].cells[1].innerHTML = "";
+		trainTable.rows[1].cells[1].innerHTML = "";
+		trainTable.rows[2].cells[1].innerHTML = "";
+		trainTable.rows[3].cells[1].innerHTML = "";
 	}
 	window.setTimeout(function () {
             trainDetails(id);
@@ -134,8 +156,8 @@ function initialize() {
     var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
     google.maps.event.addListener(map, 'click', function () {
-
         closeIW();
+		trainSelected = null;
     });
 
     var train_track = new google.maps.Polyline({
@@ -227,7 +249,7 @@ function Train(map, trainId) {
     all_train.push(this);
 	
 	this.id = trainId;
-    this.inAlarmY = function () {
+    this.inAlarmG = function () {
         marker.setIcon(iconAlarmG);
         alarmLevel = 1;
 		logAlarms();
@@ -273,15 +295,18 @@ function Train(map, trainId) {
     var infoWindow = new TrainIW(map, this, trainId);
     
     google.maps.event.addListener(marker, 'click', function () {
-		trainInTable = train; // change the train that is to be updated in the table
-        if (isInfoWindowOpen(infoWindow.getWindow())) {
+		trainSelected = train; // change the train that is to be updated in the table
+		closeIW(); // close all info infowindows
+		infoWindow.openWindow(); // open this infowindow
+        infoWindow.updateLatLng(marker.getPosition()); // set position of this infowindow
+        /*if (isInfoWindowOpen(infoWindow.getWindow())) {
             // do something if it is open
             infoWindow.closeWindow();
         } else {
             // do something if it is closed
             infoWindow.openWindow();
             infoWindow.updateLatLng(marker.getPosition());
-        }
+        }*/
     
     });
 }
@@ -395,20 +420,17 @@ function moveAlongTrack(marker, train_stationsN, d, tId, map) {
 
     marker.setPosition(trainLocation);
 
-    if (panToTrain() == tId) {
-        map.panTo(trainLocation);
-    }
-
+	if (trainSelected){
+		if (trainSelected.id == tId) {
+			map.panTo(trainLocation);
+		}
+	}
     // random alarm 5%
     var random = Math.random(); // random number between 0 and 1
-    if (random < 0.005) {
-        if (random < 0.001) {
-            marker.inAlarmR();
-        } else {
-            marker.inAlarmY();
-        }
-    } else if (random > 0.995) {
-        //marker.outAlarm()
+    if (random <= majorAlarmProb) {
+        marker.inAlarmR();
+    } else if (random >= minorAlarmProb) {
+        marker.inAlarmG();
     }
 
     window.setTimeout(function () {

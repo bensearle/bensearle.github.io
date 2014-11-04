@@ -7,17 +7,6 @@
 		<div id="side">
 			<div id="side_top">	
 				<img id="fstlogo" src="http://www.firstco.uk.com/images/assets/logo_firstco.gif" alt="http://www.firstco.uk.com/">
-				<input type="radio" name="panToTrain" value="0">0
-				<input type="radio" name="panToTrain" value="1">1
-				<input type="radio" name="panToTrain" value="2">2
-				<input type="radio" name="panToTrain" value="3">3
-				<input type="radio" name="panToTrain" value="4">4
-				<input type="radio" name="panToTrain" value="5">5
-				<input type="radio" name="panToTrain" value="6">6
-				<input type="radio" name="panToTrain" value="7">7
-				<input type="radio" name="panToTrain" value="8">8
-				<input type="radio" name="panToTrain" value="9">9
-				<input type="radio" name="panToTrain" value="10">10
 				<div id="speed1" style="display: none" name="sp1">100</div>
 				<div id="speed2" style="display: none" name="sp2">300</div>
 				<div id="speed3" style="display: none" name="sp3">200</div>
@@ -28,6 +17,10 @@
 				<div id="speed8" style="display: none" name="sp8">500</div>
 				<div id="speed9" style="display: none" name="sp9">700</div>
 				<div id="speed10" style="display: none" name="sp10">800</div>
+				<table id="alarmProbability">
+					<tr><th>Minor Alarm</th><th style="width: 40px">5%</th><td><input id="minorSlider" type="range" min="0" max="10" value="5" onchange="setAlarmProbability(1)"></td></tr>
+					<tr><th>Major Alarm</th><th style="width: 40px">2%</th><td><input id="majorSlider" type="range" min="0" max="10" value="2" onchange="setAlarmProbability(2)"></td></tr>
+				</table>
 				<div id="alarmTables">
 					<h1>Alarms</h1>
 					<table id="alarmTable" style="width:100%"><tr><th>Train</th><th>Alarm Type</th><th><button type="button" onclick="resetAlarms()">Reset Alarms</button></th></tr></table>
@@ -37,8 +30,8 @@
 			</div>
 			<div id="side_bottom">	
 				<button type="buttonTest" onclick="testButton()">Test Button</button>
-				<table id="trainTable" style="width:100%">
-					<tr><th>Train</th><td/></tr>
+				<table id="trainTable">
+					<h1 id="trainTitle">Train</h1>
 					<tr><th>Speed</th><td/></tr>
 					<tr><th>Latitude</th><td/></tr>
 					<tr><th>Longitude</th><td/></tr>

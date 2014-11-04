@@ -22,14 +22,21 @@ h1{
 	top: 0px;
 	left: 0px;
 	background:white;
-	height:50%;
+	height:55%;
+}
+#alarmProbability {
+	width:100%;
+	float:left;
+    clear:left;
+	height: 65px;
+	text-align: center;
 }
 #alarmTables {
 	float:left;
     clear:left;
 	overflow: auto;
 	background:white;
-	height: calc(100% - 100px);;
+	height: calc(100% - 53px - 65px);;
 }
 #alarmTable {
 	text-align: left;
@@ -55,9 +62,10 @@ h1{
 	background:#1F1750;
 	bottom: 0px;
 	left: 0px;
-	height:50%;
+	height:45%;
 }
 #trainTable {
+	width:100%;
 	text-align: left;
 	table-layout: fixed;
 	width: 3*;
