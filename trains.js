@@ -12,27 +12,37 @@ var updateTime = 200; // used to move along track and update infowindows
 
 function testButton(){
 	
-	document.getElementById("speed"+trainInTable.id).innerHTML = "100000";
+	document.getElementById("speed"+trainInTable.id).innerHTML = "2000";
 }
 
 var trainInTable;
 
-function trainDetails(){
+function trainDetails(trainId){
 	if (trainInTable){
-		var speed = document.getElementById('speed' + trainInTable.id).innerHTML;
+		var id = trainInTable.id;
+		var speed = document.getElementById('speed' + id).innerHTML;
+		var speedSlider = document.getElementById("speedSlider").value;
+		if (id != trainId){
+			// the train in the table has changed
+			document.getElementById("speedSlider").value = speed; // update the slider to show speed of train
+		}
 		var position = trainInTable.getPosition();
 		var lat = position.lat();
 		var lng = position.lng();
 		var alarm = trainInTable.getAlarmDescription();
 		var trainTable = document.getElementById("trainTable");
 		trainTable.rows[0].cells[1].innerHTML = "Train "+trainInTable.id;
-		trainTable.rows[1].cells[1].innerHTML = speed;
+		trainTable.rows[1].cells[1].innerHTML = speed+" km/h";
 		trainTable.rows[2].cells[1].innerHTML = lat;
 		trainTable.rows[3].cells[1].innerHTML = lng;
 		trainTable.rows[4].cells[1].innerHTML = alarm;
+		if (speed != speedSlider){
+			// speed has been changed
+			document.getElementById('speed' + trainInTable.id).innerHTML = speedSlider;
+		}
 	}
 	window.setTimeout(function () {
-            trainDetails();
+            trainDetails(id);
         }, 100);
 }
 
@@ -105,7 +115,7 @@ function panToTrain() {
 }
 
 function initialize() {
-	trainDetails()
+	trainDetails(0)
     getTrainStations();
     five();
     // use this for the moment - will be passed in eventually.
@@ -175,16 +185,16 @@ function initialize() {
     var train9 = new Train(map, 9);
     var train10 = new Train(map, 10);
     var k = 15000;
-    moveAlongTrack(train1, train_stations1, routeLength / 5 * 1, speed1, 1, map);
-    moveAlongTrack(train2, train_stations2, routeLength / 5 * 2, speed2, 2, map);
-    moveAlongTrack(train3, train_stations3, routeLength / 5 * 3, speed3, 3, map);
-    moveAlongTrack(train4, train_stations4, routeLength / 5 * 4, speed4, 4, map);
-    moveAlongTrack(train5, train_stations5, routeLength / 5 * 5, speed5, 5, map);
-    moveAlongTrack(train6, train_stations6, routeLength / 5 * 1 - k, speed6, 6, map);
-    moveAlongTrack(train7, train_stations7, routeLength / 5 * 2 - k, speed7, 7, map);
-    moveAlongTrack(train8, train_stations8, routeLength / 5 * 3 - k, speed8, 8, map);
-    moveAlongTrack(train9, train_stations9, routeLength / 5 * 4 - k, speed9, 9, map);
-    moveAlongTrack(train10, train_stations10, routeLength / 5 * 5 - k, speed10, 10, map);
+    moveAlongTrack(train1, train_stations1, routeLength / 5 * 1, 1, map);
+    moveAlongTrack(train2, train_stations2, routeLength / 5 * 2, 2, map);
+    moveAlongTrack(train3, train_stations3, routeLength / 5 * 3, 3, map);
+    moveAlongTrack(train4, train_stations4, routeLength / 5 * 4, 4, map);
+    moveAlongTrack(train5, train_stations5, routeLength / 5 * 5,  5, map);
+    moveAlongTrack(train6, train_stations6, routeLength / 5 * 1 - k, 6, map);
+    moveAlongTrack(train7, train_stations7, routeLength / 5 * 2 - k, 7, map);
+    moveAlongTrack(train8, train_stations8, routeLength / 5 * 3 - k, 8, map);
+    moveAlongTrack(train9, train_stations9, routeLength / 5 * 4 - k, 9, map);
+    moveAlongTrack(train10, train_stations10, routeLength / 5 * 5 - k, 10, map);
 }
 
 var five_seconds = 0;
@@ -363,11 +373,11 @@ function moveToStation(marker, train_stations, c) {
     }
 }
 
-function moveAlongTrack(marker, train_stationsN, d, speed, tId, map) {
+function moveAlongTrack(marker, train_stationsN, d, tId, map) {
     // the train will be between 2 stations, the startStation and the endStation
     var distanceToEndStation = 0;
     var startStation = 0;
-    
+    speed = document.getElementById("speed"+tId).innerHTML;
     var incrementDistance = speed * updateTime * (1000 / 3600000); //distance=speed*time 1000 metres/3600000 miliseconds
     //console.log(incrementDistance)
     while (distanceToEndStation < d) {
@@ -403,9 +413,9 @@ function moveAlongTrack(marker, train_stationsN, d, speed, tId, map) {
 
     window.setTimeout(function () {
         if (endStation == train_stationsN.length - 1 && distanceToEndStaion < incrementDistance) {
-            moveAlongTrack(marker, train_stationsN.reverse(), incrementDistance, speed, tId, map);
+            moveAlongTrack(marker, train_stationsN.reverse(), incrementDistance, tId, map);
         } else {
-            moveAlongTrack(marker, train_stationsN, d + incrementDistance, speed, tId, map);
+            moveAlongTrack(marker, train_stationsN, d + incrementDistance, tId, map);
         }
     }, updateTime);
 }
