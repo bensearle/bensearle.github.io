@@ -18,7 +18,6 @@
 				<input type="radio" name="panToTrain" value="8">8
 				<input type="radio" name="panToTrain" value="9">9
 				<input type="radio" name="panToTrain" value="10">10
-				<button type="button" onclick="resetAlarms()">Reset Alarms</button>
 				<div id="speed1" style="display: none" name="sp1">100</div>
 				<div id="speed2" style="display: none" name="sp2">300</div>
 				<div id="speed3" style="display: none" name="sp3">200</div>
@@ -29,16 +28,24 @@
 				<div id="speed8" style="display: none" name="sp8">600</div>
 				<div id="speed9" style="display: none" name="sp9">100</div>
 				<div id="speed10" style="display: none" name="sp10">1000</div>
+				<div id="alarmTables">
+					<h1>Alarms</h1>
+					<table id="alarmTable" style="width:100%"><tr><th>Train</th><th>Alarm Type</th><th><button type="button" onclick="resetAlarms()">Reset Alarms</button></th></tr></table>
+					<table id="alarmTableMajor" style="width:100%"></table>
+					<table id="alarmTableMinor" style="width:100%"></table>
+				</div>
 			</div>
-			<div id="alarmTables">
-				<h1>Alarms</h1>
-				<table id="alarmTable" style="width:100%"><tr><th>Train</th><th>Alarm Type</th><th/></tr></table>
-				<table id="alarmTableMajor" style="width:100%"></table>
-				<table id="alarmTableMinor" style="width:100%"></table>
-			</div>
-			<br/>
-			<button type="buttonTest" onclick="testButton()">Test Button</button>
-			<img id="selogo" src="http://www.southeasternrailway.co.uk/graphics/southeastern.png" alt="http://www.southeasternrailway.co.uk/">
+			<div id="side_bottom">	
+				<button type="buttonTest" onclick="testButton()">Test Button</button>
+				<table id="trainTable" style="width:100%">
+					<tr><th>Train</th><td/></tr>
+					<tr><th>Speed</th><td/></tr>
+					<tr><th>Latitude</th><td/></tr>
+					<tr><th>Longitude</th><td/></tr>
+					<tr><th>Alarms</th><td/></tr>
+				</table>
+				<img id="selogo" src="http://www.southeasternrailway.co.uk/graphics/southeastern.png" alt="http://www.southeasternrailway.co.uk/">
+			</div>	
 		</div>
 		<div id="map-canvas" name="map_name"/>
 	</body>

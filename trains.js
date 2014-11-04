@@ -11,17 +11,29 @@ var all_train_iw = []; // all train IW
 var updateTime = 200; // used to move along track and update infowindows
 
 function testButton(){
-	logAlarms();
-	/*var table = document.getElementById("alarmTable");
-    //table.deleteRow(0);
 	
-    var row = table.insertRow(0);
-    var cell1 = row.insertCell(0);
-    var cell2 = row.insertCell(1);
-	var cell3 = row.insertCell(2);
-    cell1.innerHTML = "NEW CELL1";
-    cell2.innerHTML = "NEW CELL2";
-	cell3.innerHTML = '<button type="buttonTest" onclick="testButton()">Test Button</button>';*/
+	document.getElementById("speed"+trainInTable.id).innerHTML = "100000";
+}
+
+var trainInTable;
+
+function trainDetails(){
+	if (trainInTable){
+		var speed = document.getElementById('speed' + trainInTable.id).innerHTML;
+		var position = trainInTable.getPosition();
+		var lat = position.lat();
+		var lng = position.lng();
+		var alarm = trainInTable.getAlarmDescription();
+		var trainTable = document.getElementById("trainTable");
+		trainTable.rows[0].cells[1].innerHTML = "Train "+trainInTable.id;
+		trainTable.rows[1].cells[1].innerHTML = speed;
+		trainTable.rows[2].cells[1].innerHTML = lat;
+		trainTable.rows[3].cells[1].innerHTML = lng;
+		trainTable.rows[4].cells[1].innerHTML = alarm;
+	}
+	window.setTimeout(function () {
+            trainDetails();
+        }, 100);
 }
 
 function logAlarms(){
@@ -31,7 +43,7 @@ function logAlarms(){
 	var alarmTableMajor = document.getElementById("alarmTableMajor");
 	alarmTableMinor.innerHTML = "";
 	alarmTableMajor.innerHTML = "";
-	for (i = 0; i < all_train.length; i++){
+	for (i = all_train.length-1; i >= 0 ; i--){
 		var alarmLevel = all_train[i].getAlarmLevel();
 		if (alarmLevel == 1){
 			var row = alarmTableMinor.insertRow(0);
@@ -93,6 +105,7 @@ function panToTrain() {
 }
 
 function initialize() {
+	trainDetails()
     getTrainStations();
     five();
     // use this for the moment - will be passed in eventually.
@@ -200,7 +213,7 @@ function Train(map, trainId) {
         map: map,
         title: 'Train'
     });
-
+	var train = this;
     all_train.push(this);
 	
 	this.id = trainId;
@@ -222,6 +235,19 @@ function Train(map, trainId) {
     this.getAlarmLevel = function () {
         return alarmLevel;
     };
+	this.getAlarmDescription = function () {
+        var alarmDescription = "No Alarms";
+		switch (alarmLevel){
+			case 1:
+				alarmDescription = "Minor Alarm";
+				break;
+			case 2:
+				alarmDescription = "Major Alarm";
+				break;
+			default:
+		}
+		return alarmDescription;
+    };
     this.getMarker = function () {
         return marker;
     };
@@ -230,18 +256,14 @@ function Train(map, trainId) {
         if (five_seconds == 1) {
             infoWindow.updateLatLng(trainLocation);
         }
-    }    
+    }
+	this.getPosition = function () {
+        return marker.getPosition();
+    }       
     var infoWindow = new TrainIW(map, this, trainId);
     
     google.maps.event.addListener(marker, 'click', function () {
-        /*if (iwBool) {
-                infoWindow.closeWindow();
-                iwBool = !iwBool;
-            } else {
-                infoWindow.openWindow();
-                iwBool = !iwBool;
-            }*/
-    
+		trainInTable = train; // change the train that is to be updated in the table
         if (isInfoWindowOpen(infoWindow.getWindow())) {
             // do something if it is open
             infoWindow.closeWindow();

@@ -13,28 +13,23 @@ h1{
 	text-align: center;
 }
 #side {
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
 	float:left;
 	width:25%;
 	height:100%;
-	background:#1F1750;
 }
 #side_top{
 	top: 0px;
 	left: 0px;
 	background:white;
-	height:100px;
-}
-#map-canvas {
-	float:right;
-	width:75%;
-    height: 100%;
+	height:50%;
 }
 #alarmTables {
 	float:left;
     clear:left;
 	overflow: auto;
 	background:white;
-	height:40%;
+	height: calc(100% - 100px);;
 }
 #alarmTable {
 	text-align: left;
@@ -54,6 +49,26 @@ h1{
 	width: 3*;
 	color: red;
 }
+
+#side_bottom{
+	color: white;
+	background:#1F1750;
+	bottom: 0px;
+	left: 0px;
+	height:50%;
+}
+#trainTable {
+	text-align: left;
+	table-layout: fixed;
+	width: 3*;
+}
+
+#map-canvas {
+	float:right;
+	width:75%;
+    height: 100%;
+}
+
 #selogo {
 	margin: 5px;
 	position: absolute;
