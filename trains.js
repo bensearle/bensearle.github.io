@@ -9,8 +9,8 @@ var train_stations = [];
 var all_train = []; // all trains
 var all_train_iw = []; // all train IW
 var updateTime = 200; // used to move along track and update infowindows
-var majorAlarmProb;
-var minorAlarmProb;
+var minorAlarmProb = 1 - (document.getElementById("minorSlider").value / 100) * updateTime/1000;
+var majorAlarmProb = (document.getElementById("majorSlider").value / 100) * updateTime/1000;
 
 function setAlarmProbability(level){
 	// alarm probability is set at %chance per second
@@ -25,10 +25,6 @@ function setAlarmProbability(level){
 		alarmProbability.rows[1].cells[1].innerHTML = Math.round((majorAlarmProb * 1000/updateTime)*100)+"%";
 		console.log(majorAlarmProb);
 	}
-}
-function testButton(){
-	
-	document.getElementById("speed"+trainSelected.id).innerHTML = "2000";
 }
 
 var trainSelected;
