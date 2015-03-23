@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="trains.css">
+	</head>
+	<body>
+		<div id="side">
+			<div id="side_top">	
+				<img id="fstlogo" src="http://www.firstco.uk.com/images/assets/logo_firstco.gif" alt="http://www.firstco.uk.com/">
+				<div id="speed1" style="display: none" name="sp1">100</div>
+				<div id="speed2" style="display: none" name="sp2">300</div>
+				<div id="speed3" style="display: none" name="sp3">200</div>
+				<div id="speed4" style="display: none" name="sp4">200</div>
+				<div id="speed5" style="display: none" name="sp5">100</div>
+				<div id="speed6" style="display: none" name="sp6">500</div>
+				<div id="speed7" style="display: none" name="sp7">100</div>
+				<div id="speed8" style="display: none" name="sp8">500</div>
+				<div id="speed9" style="display: none" name="sp9">700</div>
+				<div id="speed10" style="display: none" name="sp10">800</div>
+				<table id="alarmProbability">
+					<tr><th>Minor Alarm</th><th style="width: 40px">5%</th><td><input id="minorSlider" type="range" min="0" max="10" value="5" onchange="setAlarmProbability(1)"></td></tr>
+					<tr><th>Major Alarm</th><th style="width: 40px">2%</th><td><input id="majorSlider" type="range" min="0" max="10" value="2" onchange="setAlarmProbability(2)"></td></tr>
+				</table>
+				<div id="alarmTables">
+					<h1>Alarms</h1>
+					<table id="alarmTable" style="width:100%"><tr><th>Train</th><th>Alarm Type</th><th><button type="button" onclick="resetAlarms()">Reset Alarms</button></th></tr></table>
+					<table id="alarmTableMajor" style="width:100%"></table>
+					<table id="alarmTableMinor" style="width:100%"></table>
+				</div>
+			</div>
+			<div id="side_bottom">	
+				<table id="trainTable">
+					<h1 id="trainTitle">Train</h1>
+					<tr><th>Speed</th><td/></tr>
+					<tr><th>Latitude</th><td/></tr>
+					<tr><th>Longitude</th><td/></tr>
+					<tr><th>Alarms</th><td/></tr>
+					<tr><th>Adjust Speed</th><td><input id="speedSlider" type="range" min="0" max="1000"></td></tr>
+				</table>
+				<img id="selogo" src="http://www.southeasternrailway.co.uk/graphics/southeastern.png" alt="http://www.southeasternrailway.co.uk/">
+			</div>	
+		</div>
+		<div id="map-canvas" name="map_name"/>
+	</body>
+	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry"></script>
+	<script type="text/javascript" src="trains.js"></script>
+</html>
