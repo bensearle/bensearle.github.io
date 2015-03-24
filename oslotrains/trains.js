@@ -151,39 +151,6 @@ function initialize() {
     moveAlongTrack(train_L5, route_L5, route_south_len / 5 * 2, 6, map);
 }
 
-function addStations(map){
-	
-	
-		
-	var station_icon = 'images/station.png';
-	
-	var drammen = new google.maps.Marker({
-        position: new google.maps.LatLng(59.740334, 10.203579),
-        icon: station_icon,
-        map: map
-    });
-	google.maps.event.addListener(drammen, 'click', function () {
-		document.getElementById('train_page').src = document.getElementById('url_drammen').innerHTML;
-		map.panTo(drammen.position);
-		console.log(document.getElementById('train_page').src);
-		document.getElementsByTagName('iframe')[0].src=document.getElementsByTagName('iframe')[0].src;
-	});
-	
-	var alnabru = new google.maps.Marker({
-        position: new google.maps.LatLng(59.932979, 10.835244),
-        icon: station_icon,
-        map: map
-    });
-	google.maps.event.addListener(alnabru, 'click', function () {
-		document.getElementById('train_page').src = document.getElementById('url_alnabru').innerHTML;
-		map.panTo(alnabru.position);
-		console.log(document.getElementById('train_page').src);
-		document.getElementsByTagName('iframe')[0].src=document.getElementsByTagName('iframe')[0].src
-	});
-	
-
-}
-
 var five_seconds = 0; // counter
 function five() {
     if (five_seconds == 5000/updateTime) { // 5 seconds have passed
@@ -221,7 +188,7 @@ function Station(map, name, pos, url, trainId) {
     var infoWindow = new StationIW(map, this, trainId, url);
     
     google.maps.event.addListener(marker, 'click', function () {
-		trainSelected = train; // change the train that is to be updated in the table
+		trainSelected = null; // change the train that is to be updated in the table
 		if (isInfoWindowOpen(infoWindow.getWindow())) {
 			// infowindow is open
             closeIW(); // close all info infowindows
@@ -393,7 +360,7 @@ function moveAlongTrack(marker, train_stationsN, d, tId, map) {
 
 	if (trainSelected){
 		if (trainSelected.id == tId) {
-			map.panTo(trainLocation);
+			map.panTo(trainSelected.getPosition());
 		}
 	}
 
