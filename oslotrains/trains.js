@@ -116,9 +116,10 @@ function addStations(map){
         map: map
     });
 	google.maps.event.addListener(drammen, 'click', function () {
-		document.getElementById('train_page').src =  "http://rtd.jbv.no/auto/realtime-display/index.html#/?id=f442e70f85ad3120416b04914b0a3ec53f8e5466";
+		document.getElementById('train_page').src = document.getElementById('url_drammen').innerHTML;
 		map.panTo(drammen.position);
-		console.log(iframe.src);
+		console.log(document.getElementById('train_page').src);
+		document.getElementsByTagName('iframe')[0].src=document.getElementsByTagName('iframe')[0].src;
 	});
 	
 	var alnabru = new google.maps.Marker({
@@ -127,9 +128,10 @@ function addStations(map){
         map: map
     });
 	google.maps.event.addListener(alnabru, 'click', function () {
-		document.getElementById('train_page').src = "http://rtd.jbv.no/auto/realtime-display/index.html#/?id=1d36f07687a7aa7517d4ed4aaf729b17b58724ba";
+		document.getElementById('train_page').src = document.getElementById('url_alnabru').innerHTML;
 		map.panTo(alnabru.position);
-		console.log(iframe.src);
+		console.log(document.getElementById('train_page').src);
+		document.getElementsByTagName('iframe')[0].src=document.getElementsByTagName('iframe')[0].src
 	});
 	
 
