@@ -22,22 +22,17 @@ function trainDetails(trainId){
 	if (trainSelected){ // trainSelected exists and is not null
 		var id = trainSelected.id; // id of the selected train
 		var speed = document.getElementById('speed' + id).innerHTML;
-		var speedSlider = document.getElementById("speedSlider").value;
-		if (id != trainId){ // if the selected train has changed
-			document.getElementById("speedSlider").value = speed; // update the slider to show speed of train
-		}
 		var position = trainSelected.getPosition(); // get the position of the selected train
 		var lat = position.lat(); // latitude
 		var lng = position.lng(); // longitude
-		document.getElementById("trainTitle").innerHTML = "Train "+trainSelected.id; // set heading to train name
+		var hrs = 1+currentdate.getHours();
+		var min = getMin(trainId);
+		document.getElementById("trainTitle").innerHTML = "Train "+trainSelected.name; // set heading to train name
 		// populate the table with values of the selected train
-		trainTable.rows[0].cells[1].innerHTML = speed+" km/h";
-		trainTable.rows[1].cells[1].innerHTML = lat;
-		trainTable.rows[2].cells[1].innerHTML = lng;
-		if (speed != speedSlider){
-			// speed has been changed by the slider
-			document.getElementById('speed' + trainSelected.id).innerHTML = speedSlider; // set the speed to the slider value
-		}
+		trainTable.rows[0].cells[1].innerHTML = hrs+':'+min;
+		trainTable.rows[1].cells[1].innerHTML = speed+" km/h";
+		trainTable.rows[2].cells[1].innerHTML = lat;
+		trainTable.rows[3].cells[1].innerHTML = lng;
 	} else { // no train is selected
 		document.getElementById("trainTitle").innerHTML = "Train";
 		trainTable.rows[0].cells[1].innerHTML = "";
@@ -57,8 +52,18 @@ function closeIW() {
         all_train_iw[i].closeWindow(); // close window
     }
 }
-
+var currentdate = new Date(); 
 function initialize() {
+
+
+	var datetime = "Last Sync: " + currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+	console.log(datetime);
+	
 	trainDetails(0); // call method to update the train table
     getTrainStations(); // call method to populate train station array
     five(); // start the five second timer
@@ -109,15 +114,9 @@ function initialize() {
 		'http://rtd.jbv.no/auto/realtime-display/index.html#/?id=1d36f07687a7aa7517d4ed4aaf729b17b58724ba', 6);
 	// set initial view of the map to show the entire track
     var bounds = new google.maps.LatLngBounds();
-    for (var i = 0; i < route_south.length; i++) {
-        bounds.extend(route_south[i]);
-    }
-	for (var i = 0; i < route_north.length; i++) {
-        bounds.extend(route_north[i]);
-    }
-	for (var i = 0; i < route_southE.length; i++) {
-        bounds.extend(route_southE[i]);
-    }
+    bounds.extend(route_south[200]);
+    bounds.extend(route_north[50]);
+    bounds.extend(route_southE[20]);
     map.fitBounds(bounds);
 
     var route_south_len = google.maps.geometry.spherical.computeLength(route_south); // get length of track in km
@@ -134,12 +133,12 @@ function initialize() {
     var route_L5 = route_southE.slice(0).reverse();
 	
 	// create 10 trains
-    var train_R1 = new Train(map, 1, 'R1_red.png');
-    var train_R3 = new Train(map, 2, 'R3_red.png');
-    var train_F4 = new Train(map, 1, 'F4_green.png');
-    var train_F7 = new Train(map, 2, 'F7_green.png');
-    var train_L2 = new Train(map, 1, 'L2_blue.png');
-    var train_L5 = new Train(map, 2, 'L5_blue.png');
+    var train_R1 = new Train(map, 1, 'R1_red.png', 'R1');
+    var train_R3 = new Train(map, 2, 'R3_red.png', 'R3');
+    var train_F4 = new Train(map, 1, 'F4_green.png', 'F4');
+    var train_F7 = new Train(map, 2, 'F7_green.png', 'F7');
+    var train_L2 = new Train(map, 1, 'L2_blue.png', 'L2');
+    var train_L5 = new Train(map, 2, 'L5_blue.png', 'L5');
 	
     var k = 15000; // used to space the trains on track
 	// start each train moving along the track
@@ -207,18 +206,24 @@ function StationIW(map, train, trainId, url) {
     this.id = trainId;
     var infoWindow = new google.maps.InfoWindow({
         //content: contentString
-		maxWidth: 600,
-		minWidth: 600,
-		maxHeight: 400,
-		minHeight: 400
+		width: 600,
+		height: 600
     });
     all_train_iw.push(this); // push infowindow to infowindow array
 
     var zero = new google.maps.LatLng(0, 0);
     infoWindow.setContent(
-		'<iframe name="iframe" id="train_page" width="1000px" height="400px"' +
+		
+		'<div id="content">'+
+		'<iframe name="iframe" id="train_page" width="100px" height="100%" frameBorder="0" scrolling="yes"' +
 		'src="' + url + 
 		'"></iframe>'
+		+
+		'</div>'+
+		'<div id="bodyContent">'+
+		'<p><b>Freight Train Arrivals:</b> data from <a style="color:yellow" href="http://rtd.jbv.no/">Jernbaneverket - monitor configuration beta</a>' +
+		'</div>'
+		
 	);
     //console.log(train);
     this.openWindow = function (marker) {
@@ -235,7 +240,7 @@ function StationIW(map, train, trainId, url) {
 }
 
 
-function Train(map, trainId, image) {
+function Train(map, trainId, image, name) {
 	// image for each alarm state
     var icon = 'images/' + image;
 
@@ -251,7 +256,7 @@ function Train(map, trainId, image) {
 	var train = this;
     all_train.push(this); // push the train to the train array
 	this.id = trainId;
-    
+    this.name = name;
     this.getMarker = function () {
         return marker;
     };
@@ -314,23 +319,72 @@ function TrainIW(map, train, trainId) {
     }
 }
 
+function getMin(id){
+	
+	min='00';
+	switch(id) {
+    case 1:
+        min = 15;
+        break;
+    case 2:
+        min = 20;
+        break;
+	case 3:
+        min = 55;
+        break;
+    case 4:
+        min = 30;
+        break;
+	case 5:
+        min = 10;
+        break;
+    case 6:
+        min = 45;
+        break;
+    default:
+        break;
+	}
+	return min;
+}
+
 function iwString(train, trainId, location) {
     var lat = location.lat(); // latitude
     var lng = location.lng(); // longitude
     lat = Math.round(lat * 1000) / 1000; // round to 3 decimal places
     lng = Math.round(lng * 1000) / 1000; // round to 3 decimal places
     var alarmString = ""; // alarm description
-
+	var etaMessage = "";
+	
+	var random = Math.random(); // random number between 0 and 1
+    if (random <= .1) {
+        var etaMessage = "Train expected early";
+    } else if (random >= .9) {
+		var etaMessage = "Train expected late";
+    } else {
+		var etaMessage = "Train expected on time";
+	}
+	
+	
+	
+	var datetime = "Last Sync: " + currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+	var hrs = 1+currentdate.getHours();
+	var min = getMin(train.id);
+	
 	// html content of the infowindow
     var contentString = '<div class="scrollFix">' +
-        '<h1 id="firstHeading" class="firstHeading">Train #' + trainId + '</h1>' +
-        '<div id="bodyContent">' +
+        '<h1 id="firstHeading" class="firstHeading">Train ' + train.name + '</h1>' +
+        '<div id="bodyContent" class="padded">' +
         '<p>Speed: ' + document.getElementById('speed' + trainId).innerHTML + ' km/h<br />' +
         'Latitude: ' + lat + '<br />' +
         'Longitude: ' + lng + '<br />' +
-        'Alarms: ' + alarmString + '<br />' +
-		'<button type="button" onclick="resetAlarm()">Reset Alarm</button><br />' +
-        'Southeastern Trains</p>' +
+		'Arrival: ' + hrs + ':' + min + '<br />' +
+		etaMessage + '<br />' +
+        'Norwegian National Rail</p>' +
         '</div>' +
         '</div>';
 

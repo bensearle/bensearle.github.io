@@ -15,7 +15,7 @@ h1{
 #side {
 	font-family: "Trebuchet MS", Helvetica, sans-serif;
 	float:left;
-	width:40%;
+	width:20%;
 	height:100%;
 }
 #side_top{
@@ -50,10 +50,16 @@ h1{
 	width: 3*;
 	color: red;
 }
-
+.gm-style-iw {
+	background:black;
+	color:white;
+}
+div.padded {  
+      padding-right: 10px;  
+      padding-left: 10px;  
+    } 
 #side_bottom{
-	color: white;
-	background:#1F1750;
+	background:white;
 	bottom: 0px;
 	left: 0px;
 	height:45%;
@@ -67,16 +73,16 @@ h1{
 
 #map-canvas {
 	float:right;
-	width:60%;
+	width:80%;
     height: 100%;
 }
 
-#selogo {
+#jlogo {
 	margin: 5px;
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
-
+	width:18%;
 }
 #fstlogo {
 	padding-right:100%;
@@ -84,4 +90,5 @@ h1{
 	bottom: 1%;
 	float:left;
     clear:left;
+	width:90%;
 }
