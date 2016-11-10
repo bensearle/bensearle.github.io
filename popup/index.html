@@ -23,9 +23,22 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<img class="view" id="mapbtn" src="images/mapview.png" alt="" onclick="mapview()" />
-				<img class="view" id="listbtn" src="images/listview.png" alt="" onclick="listview()" />
-				<img class="popupIcon" src="images/gps.png" alt="" onclick="locateUser()" />
+				<div class="listdiv">
+					<span>List</span>
+					<img class="view" id="listbtn" src="images/listview.png" alt="" onclick="listview()" />
+				</div>
+				<div class="mapdiv">
+					<span>Map</span>
+					<img id="mapbtn" src="images/mapview.png" alt="" onclick="mapview()" />
+				</div>
+				<div class="mapdiv">
+					<span>GPS</span>
+					<img class="popupIcon" src="images/gps.png" alt="" onclick="locateUser()" />
+				</div>
+				<div class="searchdiv">
+					<span>Search</span>
+					<img class="popupIcon" src="images/search.png" alt="" onclick="search()" />
+				</div>
 				<input class="search" type="text">
 				<h3>Modal Footer</h3>
 			</div>

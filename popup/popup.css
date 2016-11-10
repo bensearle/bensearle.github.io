@@ -19,7 +19,7 @@
     font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: black;
     color: white;
-    font-size: 16px; 
+    font-size: 18px; 
     max-width: 500px;
     max-height: 500px;
     position: relative;
@@ -56,7 +56,9 @@
 .modal-content .modal-header img, .modal-footer img{
     height: 20px;
     width: 20px;
-    padding: 5px;
+    padding: 5px; /* top right bottom left*/
+    margin: 0px 10px 0px 0px; /* top right bottom left*/
+
 }
 
 /* The Close Button */
@@ -78,8 +80,6 @@
 }
 
 
-
-
 /* Modal Header */
 .modal-content .modal-footer img:hover, img:focus {
     cursor: pointer;
@@ -90,9 +90,17 @@
     outline:none;
 }
 
+.modal-content .modal-footer .mapdiv, .listdiv, .gpsdiv, .searchdiv {
+    height: 30px;
+    float: left;
+    margin: 5px; 
+}
 
-
-
+.modal-content .modal-footer span {
+    float: left;
+    margin-right: 5px;
+    margin-top: 3px;
+}
 
 /* Modal Body */
 .modal-content .modal-body {
