@@ -1,0 +1,197 @@
+/* The Modal (background) */
+.modal {
+
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    top: 10%;
+    font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: black;
+    color: white;
+    font-size: 16px; 
+    max-width: 500px;
+    max-height: 500px;
+    position: relative;
+    margin-top: auto;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+.modal-content button {
+    background-color: black;
+    border: none;
+    color: white;
+    padding: 5px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 5px;
+    cursor: pointer;
+}
+
+/* Modal Header */
+.modal-content .modal-header, .modal-footer {
+    padding: 5px 10px;
+}
+
+/* Modal Header */
+.modal-content .modal-header img, .modal-footer img{
+    height: 20px;
+    width: 20px;
+    padding: 5px;
+}
+
+/* The Close Button */
+.modal-content .modal-header .close {
+    border: 0;
+    background: transparent;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    cursor: pointer;
+}
+
+.modal-content .modal-header .close:hover,
+.modal-content .modal-header .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+
+
+/* Modal Header */
+.modal-content .modal-footer img:hover, img:focus {
+    cursor: pointer;
+}
+
+/* Modal Header */
+.modal-content .modal-footer .search {
+    outline:none;
+}
+
+
+
+
+
+/* Modal Body */
+.modal-content .modal-body {
+    width: 500px;
+    height: 400px;
+}
+
+.modal-content .modal-body p { 
+    margin:0.5em;
+}
+
+/* Modal Body */
+.modal-content .modal-body .tables {
+    float:left;
+    clear:left;
+    overflow: auto;
+    background:white;
+    background-color: white;
+    color: white;
+    width: 500px;
+    height: 400px;
+}
+
+/* Modal Body */
+.modal-content .modal-body .tables table {
+    width: 500px;
+    border-collapse: collapse;
+}
+
+.modal-content .modal-body .tables tr {
+    border-bottom: 2px solid black;
+}
+/* Modal Body */
+.modal-content .modal-body .map {
+    color: black;
+    width: 500px;
+    height: 400px;
+}
+
+/* Modal Body */
+.modal-content .modal-body .iwContent {
+    color: black;
+    width: 150px;
+}
+
+/* Modal Body */
+.modal-content .modal-body .iwContent .p1 {
+    font-size: 14px;
+}
+/* Modal Body */
+.modal-content .modal-body .iwContent .p2 {
+    font-size: 12px;
+}
+
+
+/* Modal Body */
+.modal-content .modal-body .tableRow {
+    float: center;
+    color: black;
+    width: 450px;
+}
+
+/* Modal Body */
+.modal-content .modal-body .tableRow .left {
+    width: 200px;
+    float: left;
+    padding: 5px 10px 5px 10px /* top right bottom left*/
+}
+/* Modal Body */
+.modal-content .modal-body .tableRow .right {
+    width: 200px;
+    float: left;
+    padding: 5px 10px 5px 10px /* top right bottom left*/
+}
+/* Modal Body */
+.modal-content .modal-body .tableRow .p1 {
+    font-size: 14px;
+}
+.modal-content .modal-body .tableRow .p2 {
+    font-size: 12px;
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+    from {top: -300px; opacity: 0} 
+    to {top: 0; opacity: 1}
+}
+
+@keyframes animatetop {
+    from {top: -300px; opacity: 0}
+    to {top: 0; opacity: 1}
+}
+
+/* cannot do in production, breach of terms. 9.4 https://developers.google.com/maps/terms */
+a[href^="http://maps.google.com/maps"]{display:none !important}
+a[href^="https://maps.google.com/maps"]{display:none !important}
+.gmnoprint a, .gmnoprint span, .gm-style-cc {
+    display:none;
+}
+.gmnoprint div {
+    /* background:none !important;  zoom in/out buttons */
+}

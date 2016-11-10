@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="popup.css" type="text/css">
+</head>
+<body>
+	<h2>Modal</h2>
+	<!-- Trigger/Open The Modal -->
+	<button id="myBtn">Open Modal</button>
+	<!-- The Modal -->
+	<div id="myModal" class="modal">
+		<!-- Modal content -->
+		<div class="modal-content">
+			<div class="modal-header">
+				<span class="modalHead">Modal Header</span>
+				<img class="close" src="images/close1.png" alt="" onclick="closeModal()" />
+			</div>
+			<div class="modal-body">
+				<div id="map" class="map"></div>
+				<div id="tables" class="tables">
+					<table id="table_inStock" class="table"></table>
+					<table id="table_noStock" class="table"></table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<img class="view" id="mapbtn" src="images/mapview.png" alt="" onclick="mapview()" />
+				<img class="view" id="listbtn" src="images/listview.png" alt="" onclick="listview()" />
+				<img class="popupIcon" src="images/gps.png" alt="" onclick="locateUser()" />
+				<input class="search" type="text">
+				<h3>Modal Footer</h3>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="popup.js"></script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD07c9hGOtQnuF30nwqml5OQkqzrPejIFs&callback=initMap" type="text/javascript"</script>
+	<script type="text/javascript" src="popup.js"></script>
+</body>
+</html>
