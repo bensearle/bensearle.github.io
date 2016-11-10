@@ -40,13 +40,24 @@ window.onclick = function(event) {
 	}
 }
 
+showSearch = function(){
+	console.log("show search bar");
+	var searchbtn = document.getElementById('searchicon');
+	searchbtn.src = "images/search_inverted.png"
+	searchbtn.style.backgroundColor = "white";	
+	document.getElementById("searchtxt").style.display = "none";
+	document.getElementById("searchbox").style.display = "block";
+	document.getElementById("searchbox").focus();
+}
+
+var selectedStoreId = "";
 
 mapview = function (){
 	// change button colours
-	listbutton = document.getElementById('listbtn');
-	listbutton.src='images/listview.png';
+	var listbutton = document.getElementById('listbtn');
+	listbutton.src ='images/listview.png';
 	listbutton.style.backgroundColor = "black";
-	mapbutton = document.getElementById('mapbtn');
+	var mapbutton = document.getElementById('mapbtn');
 	mapbutton.src='images/mapview_inverted.png';
 	mapbutton.style.backgroundColor = "white";
 
@@ -66,15 +77,17 @@ mapview = function (){
 
 listview = function(){
 	// change button colours
-	mapbutton = document.getElementById('mapbtn');
+	var mapbutton = document.getElementById('mapbtn');
 	mapbutton.src='images/mapview.png';
 	mapbutton.style.backgroundColor = "black";
-	listbutton = document.getElementById('listbtn');
+	var listbutton = document.getElementById('listbtn');
 	listbutton.src='images/listview_inverted.png';
 	listbutton.style.backgroundColor = "white";
 
 	document.getElementById("map").style.display = "none";
 	document.getElementById("tables").style.display = "block";
+
+	refreshTable();
 }
 
 var map;
@@ -119,42 +132,60 @@ function initMap() {
 	}); 
 }
 var bounds;
-function openModel() {
+var initialized;
 
-	console.log();
-	getStoreDetails();
+function refreshTable(){
+	var inStockTable = document.getElementById("table_inStock");
+	var noStockTable = document.getElementById("table_noStock");
 
-	bounds = new google.maps.LatLngBounds();
-
+	inStockTable.innerHTML = "";
+	//tbl2.innerHTML = "BBBENENENENE";
 	stores.forEach(function(storeDetails) {
-		console.log(storeDetails);
+
+		//console.log(storeDetails);
 		var stock = getStockCount(storeDetails.id);
 
 		new StoreMarker(storeDetails, stock);
 		bounds.extend(storeDetails.coords);
 
-		var inStockTable = document.getElementById("table_inStock"); // the minor alarm table
-		var row = inStockTable.insertRow(-1); // insert bottom row
+		//var inStockTable = document.getElementById("table_inStock"); 
+		var row;
+		console.log ("selected "+selectedStoreId+" actual "+storeDetails.id)
+		if (selectedStoreId==storeDetails.id){
+			row = inStockTable.insertRow(0);
+		} else {
+			row = inStockTable.insertRow(-1); // insert bottom row
+		}
 		row.insertCell(0).innerHTML = tableString(storeDetails, stock);
+
 	});
+}
+
+function openModel() {
 
 
-	mapview();
+	if (!initialized){
+		getStoreDetails();
+		bounds = new google.maps.LatLngBounds();
 
 
+		stores.forEach(function(storeDetails) {
 
-	/*
-	// set initial view of the map to show the entire track
-    var bounds = new google.maps.LatLngBounds();
-    for (var i = 0; i < train_stations.length; i++) {
-        bounds.extend(train_stations[i]);
-    }
-    map.fitBounds(bounds);
+			//console.log(storeDetails);
+			var stock = getStockCount(storeDetails.id);
 
-    */
+			new StoreMarker(storeDetails, stock);
+			bounds.extend(storeDetails.coords);
 
+		});
+		refreshTable();
 
+		mapview();
 
+		initialized = true;
+	} else {
+	}
+	
 }
 
 
@@ -282,6 +313,12 @@ function StoreMarker(storeDetails, stock) {
 
 }
 
+function selectStore(id, goToPage){
+	selectedStoreId = id;
+	if (goToPage=="list"){
+		listview();
+	}
+}
 function iwString(storeDetails, stock) {
 
 	// html content of the infowindow
@@ -292,9 +329,10 @@ function iwString(storeDetails, stock) {
 		storeDetails.address + '</p>' +
 		'<p class="p1">'+
 		stock.message + '</p>' +
-		'<button type="button" onclick="resetAlarm()">Select Store</button>' +
+		'<button type="button" onclick=selectStore("' + storeDetails.id + '","")>Select Store</button>' + 
+		'<button type="button" onclick=selectStore("' + storeDetails.id + '","list")>View Opening</button>' + 
 	'</div>';
-	
+
 	resetAlarm = function () { // button on infowindow function
         train.outAlarm(); // reset the train alarm
     }
@@ -324,8 +362,6 @@ function tableString(storeDetails, stock) {
 		'</div>' +
 	'</div>';
 	
-	console.log(contentString);
-
 	resetAlarm = function () { // button on infowindow function
         train.outAlarm(); // reset the train alarm
     }

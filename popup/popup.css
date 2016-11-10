@@ -79,21 +79,43 @@
     cursor: pointer;
 }
 
+.modal-content .modal-footer {
+    height: 40px;
+}
 
 /* Modal Header */
 .modal-content .modal-footer img:hover, img:focus {
     cursor: pointer;
 }
 
-/* Modal Header */
-.modal-content .modal-footer .search {
-    outline:none;
-}
 
 .modal-content .modal-footer .mapdiv, .listdiv, .gpsdiv, .searchdiv {
     height: 30px;
     float: left;
     margin: 5px; 
+}
+
+.modal-content .modal-footer .searchtxt {
+    text-align: right;
+    /*width: 180px;*/
+    margin-left: 128.5px;
+}
+.modal-content .modal-footer .searchbox {
+    font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 18px; 
+    vertical-align:middle;
+    outline:none;
+    float: left;
+    width: 175px;
+    height: 24px;
+    display: none;
+    border: 0px;
+    padding: 3px 5px 3px 5px /* top right bottom left*/
+}
+
+.modal-content .modal-footer .searchicon {
+    margin: 0px;
+    float: right;
 }
 
 .modal-content .modal-footer span {
