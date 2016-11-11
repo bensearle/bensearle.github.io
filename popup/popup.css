@@ -216,7 +216,8 @@
 }
 
 /* mobile view */
-@media screen and (max-width: 501px) {
+/*@media screen and (max-width: 501px) {*/
+@media only screen and (max-device-width: 501px) {
     .modal-content {
         top: 0%;
         width: 100%;
