@@ -190,7 +190,6 @@ function refreshTable(){
 
 
 function selectStore(id, goToPage){
-	console.log(id);
 	selectedStoreId = id;
 	if (goToPage=="list"){
 		refreshTable();
@@ -198,7 +197,7 @@ function selectStore(id, goToPage){
 		// go to top of list
 		var tbls = document.getElementById('tables');
 		tbls.scrollTop = 0;
-	} if (goToPage=="map"){
+	} else if (goToPage=="map"){
 		mapview();
 		all_store_marker.forEach(function(marker){
 			console.log (" "+marker.id+" actual "+id)
@@ -208,7 +207,8 @@ function selectStore(id, goToPage){
 				//map.setCenter(marker.location);
 			}
 		})
-		
+	} else if (goToPage==""){
+		closeModal();
 	}
 }
 
@@ -370,7 +370,7 @@ function tableString(storeDetails, stock) {
 			storeDetails.address +'</p>' +
 			'<p class="p1">'+
 			stock.message + '</p>' +
-			'<button type="button" onclick=selectStore("' + storeDetails.id + '")>View on Map</button>' + 
+			'<button type="button" onclick=selectStore("' + storeDetails.id + '","")>Select Store</button>' + 
 			'<button type="button" onclick=selectStore("' + storeDetails.id + '","map")>View on Map</button>' + 
 		'</div>' +
 		'<div class="right">' + 

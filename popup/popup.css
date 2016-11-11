@@ -19,7 +19,7 @@
     font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: black;
     color: white;
-    font-size: 1.125em; 
+    font-size: 18px; 
     width: 500px;
     height: 483px;
     position: relative;
@@ -42,7 +42,7 @@
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 0.750em;
+    font-size: 12px;
     margin: 4px 5px;
     cursor: pointer;
 }
@@ -103,7 +103,7 @@
 }
 .modal-content .modal-footer .searchbox {
     font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 1.125em; 
+    font-size: 18px; 
     vertical-align:middle;
     outline:none;
     float: left;
@@ -173,11 +173,11 @@
 
 /* Modal Body */
 .modal-content .modal-body .iwContent .p1 {
-    font-size: 0.875em;
+    font-size: 14px;
 }
 /* Modal Body */
 .modal-content .modal-body .iwContent .p2 {
-    font-size: 0.750em;
+    font-size: 12px;
 }
 
 
@@ -185,7 +185,7 @@
 .modal-content .modal-body .tableRow {
     float: center;
     color: black;
-    width: 450px;
+    width: 90%;
 }
 
 /* Modal Body */
@@ -198,10 +198,10 @@
 
 /* Modal Body */
 .modal-content .modal-body .tableRow .p1 {
-    font-size: 0.875em;
+    font-size: 14px;
 }
 .modal-content .modal-body .tableRow .p2 {
-    font-size: 0.750em;
+    font-size: 12px;
 }
 
 /* Add Animation */
@@ -221,39 +221,24 @@
     .modal-content {
         position: absolute;
         top: 0%;
-        left: 0%;
         width: 100%;
         height: 100%;
-        font-size: 300%;
     }
 
-    .modal-content .modal-header img, .modal-footer img{
-        height: 60px;
-        width: 60px;
-    }
-    .modal-content .modal-footer .mapdiv, .listdiv, .gpsdiv, .searchdiv {
-        height: 90px;
-        float: left;
-        margin: 5px; 
-    }
-    .modal-content .modal-footer .searchbox {
-        width: calc(100% - 90px);;
-        height: 72px;
-        display: none;
-        border: 0px;
-        padding: 3px 5px 3px 5px /* top right bottom left*/
-    }
-        /* Modal Body */
     .modal-content .modal-body {
         width: 100%;
         height: 80%;
     }
-    /* Modal Body */
+
     .modal-content .modal-body .map {
         height: 100%;
     }
     .modal-content .modal-body .tables {
         height: 100%;
+    }
+
+    .modal-content .modal-body, .map, .tables {
+        width: 100%;
     }
 
     .modal-content .modal-body .iwContent {
