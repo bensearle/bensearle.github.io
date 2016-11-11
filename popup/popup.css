@@ -19,9 +19,9 @@
     font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: black;
     color: white;
-    font-size: 18px; 
-    max-width: 500px;
-    max-height: 500px;
+    font-size: 1.125em; 
+    width: 500px;
+    height: 483px;
     position: relative;
     margin-top: auto;
     margin: auto;
@@ -42,7 +42,7 @@
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 12px;
+    font-size: 0.750em;
     margin: 4px 5px;
     cursor: pointer;
 }
@@ -103,7 +103,7 @@
 }
 .modal-content .modal-footer .searchbox {
     font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 18px; 
+    font-size: 1.125em; 
     vertical-align:middle;
     outline:none;
     float: left;
@@ -173,11 +173,11 @@
 
 /* Modal Body */
 .modal-content .modal-body .iwContent .p1 {
-    font-size: 14px;
+    font-size: 0.875em;
 }
 /* Modal Body */
 .modal-content .modal-body .iwContent .p2 {
-    font-size: 12px;
+    font-size: 0.750em;
 }
 
 
@@ -198,10 +198,10 @@
 
 /* Modal Body */
 .modal-content .modal-body .tableRow .p1 {
-    font-size: 14px;
+    font-size: 0.875em;
 }
 .modal-content .modal-body .tableRow .p2 {
-    font-size: 12px;
+    font-size: 0.750em;
 }
 
 /* Add Animation */
@@ -219,19 +219,41 @@
 /*@media screen and (max-width: 501px) {*/
 @media only screen and (max-device-width: 501px) {
     .modal-content {
+        position: absolute;
         top: 0%;
+        left: 0%;
         width: 100%;
-        max-height: 1000px;
+        height: 100%;
+        font-size: 300%;
     }
 
-    /* Modal Body */
-    .modal-content .modal-body, .map, .tables {
-        width: 100%;
+    .modal-content .modal-header img, .modal-footer img{
+        height: 60px;
+        width: 60px;
     }
-
+    .modal-content .modal-footer .mapdiv, .listdiv, .gpsdiv, .searchdiv {
+        height: 90px;
+        float: left;
+        margin: 5px; 
+    }
+    .modal-content .modal-footer .searchbox {
+        width: calc(100% - 90px);;
+        height: 72px;
+        display: none;
+        border: 0px;
+        padding: 3px 5px 3px 5px /* top right bottom left*/
+    }
         /* Modal Body */
-    .modal-content .modal-body, .map, .tables td {
-        max-width: 100%;
+    .modal-content .modal-body {
+        width: 100%;
+        height: 80%;
+    }
+    /* Modal Body */
+    .modal-content .modal-body .map {
+        height: 100%;
+    }
+    .modal-content .modal-body .tables {
+        height: 100%;
     }
 
     .modal-content .modal-body .iwContent {
@@ -240,7 +262,7 @@
 
     /* Modal Body */
     .modal-content .modal-body .tableRow .left, .right {
-        width: 50%;
+        width: 100%;
     }
 
     .modal-content .modal-footer .mapdiv, .listdiv, .gpsdiv, .searchdiv {
