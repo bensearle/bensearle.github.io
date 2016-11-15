@@ -1,6 +1,5 @@
-/* The Modal (background) */
-.modal {
-    display: none; /* Hidden by default */
+.purecommModal {
+    /* display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
     left: 0;
@@ -9,11 +8,11 @@
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    background-color: rgba(100,0,0,0.4); /* Black w/ opacity */
 }
 
 /* Modal Content/Box */
-.modal-content {
+.purecommModalContent {
     top: 10%;
     font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: black;
@@ -33,7 +32,7 @@
     animation-duration: 0.4s
 }
 
-.modal-content button {
+.purecommModalContent button {
     background-color: black;
     border: none;
     color: white;
@@ -47,12 +46,12 @@
 }
 
 /* Modal Header */
-.modal-content .modal-header, .modal-footer {
+.purecommModalContent .purecommModalHeader, .purecommModalFooter {
     padding: 5px 10px;
 }
 
 /* Modal Header */
-.modal-content .modal-header img, .modal-footer img{
+.purecommModalContent .purecommModalHeader img, .purecommModalFooter img{
     height: 20px;
     width: 20px;
     padding: 5px; /* top right bottom left*/
@@ -61,7 +60,7 @@
 }
 
 /* The Close Button */
-.modal-content .modal-header .close {
+.purecommModalContent .purecommModalHeader .close {
     border: 0;
     background: transparent;
     position: absolute;
@@ -71,36 +70,36 @@
     cursor: pointer;
 }
 
-.modal-content .modal-header .close:hover,
-.modal-content .modal-header .close:focus {
+.purecommModalContent .purecommModalHeader .close:hover,
+.purecommModalContent .purecommModalHeader .close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
 }
 
-.modal-content .modal-footer {
+.purecommModalContent .purecommModalFooter {
     /*height: 40px;*/
     overflow:hidden;
 }
 
 /* Modal Header */
-.modal-content .modal-footer img:hover, img:focus {
+.purecommModalContent .purecommModalFooter img:hover, img:focus {
     cursor: pointer;
 }
 
 
-.modal-content .modal-footer .mapdiv, .listdiv, .gpsdiv, .searchdiv {
+.purecommModalContent .purecommModalFooter .mapdiv, .listdiv, .gpsdiv, .searchdiv {
     height: 30px;
     float: left;
     margin: 5px; 
 }
 
-.modal-content .modal-footer .searchtxt {
+.purecommModalContent .purecommModalFooter .searchtxt {
     text-align: right;
     /*width: 180px; (-23)*/
     margin-left: 105.5px;
 }
-.modal-content .modal-footer .searchbox {
+.purecommModalContent .purecommModalFooter .searchbox {
     font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 18px; 
     vertical-align:middle;
@@ -113,30 +112,37 @@
     padding: 3px 5px 3px 5px /* top right bottom left*/
 }
 
-.modal-content .modal-footer .searchicon {
+.purecommModalContent .purecommModalFooter .searchicon {
     margin: 0px;
     float: right;
 }
 
-.modal-content .modal-footer span {
+.purecommModalContent .purecommModalFooter span {
     float: left;
     margin-right: 5px;
     margin-top: 3px;
 }
 
 /* Modal Body */
-.modal-content .modal-body {
+.purecommModalContent .purecommModalBody {
     width: 500px;
     height: 400px;
 }
 
-.modal-content .modal-body p, pre { 
+.purecommModalContent .purecommModalBody p, pre { 
     font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
     margin:0.5em;
 }
 
 /* Modal Body */
-.modal-content .modal-body .tables {
+.purecommModalContent .purecommModalBody .tables, .map {
+    display: none;
+    width: 100%;
+    height: 400px;
+}
+
+.purecommModalContent .purecommModalBody .tables {
+
     float:left;
     clear:left;
     overflow: auto;
@@ -144,51 +150,48 @@
     background:white;
     background-color: white;
     color: white;
-    width: 100%;
-    height: 400px;
+
 }
 
 /* Modal Body */
-.modal-content .modal-body .tables table {
+.purecommModalContent .purecommModalBody .tables table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.modal-content .modal-body .tables tr {
+.purecommModalContent .purecommModalBody .tables tr {
     border-bottom: 2px solid black;
 }
 /* Modal Body */
-.modal-content .modal-body .map {
+.purecommModalContent .purecommModalBody .map {
     color: black;
-    width: 100%;
-    height: 400px;
 }
 
 /* Modal Body */
-.modal-content .modal-body .iwContent {
+.purecommModalContent .purecommModalBody .iwContent {
     color: black;
     width: 190px;
 }
 
 /* Modal Body */
-.modal-content .modal-body .iwContent .p1 {
+.purecommModalContent .purecommModalBody .iwContent .p1 {
     font-size: 14px;
 }
 /* Modal Body */
-.modal-content .modal-body .iwContent .p2 {
+.purecommModalContent .purecommModalBody .iwContent .p2 {
     font-size: 12px;
 }
 
 
 /* Modal Body */
-.modal-content .modal-body .tableRow {
+.purecommModalContent .purecommModalBody .tableRow {
     float: center;
     color: black;
     width: 90%;
 }
 
 /* Modal Body */
-.modal-content .modal-body .tableRow .left, .right{
+.purecommModalContent .purecommModalBody .tableRow .left, .right{
     width: 200px;
     float: left;
     word-wrap: break-word;
@@ -196,10 +199,10 @@
 }
 
 /* Modal Body */
-.modal-content .modal-body .tableRow .p1 {
+.purecommModalContent .purecommModalBody .tableRow .p1 {
     font-size: 14px;
 }
-.modal-content .modal-body .tableRow .p2 {
+.purecommModalContent .purecommModalBody .tableRow .p2 {
     font-size: 12px;
 }
 
@@ -217,46 +220,46 @@
 /* mobile view */
 /*@media screen and (max-width: 501px) {*/
 @media only screen and (max-device-width: 501px) {
-    .modal-content {
+    .purecommModalContent {
         position: absolute;
         top: 0%;
         width: 100%;
         height: 100%;
     }
 
-    .modal-content .modal-body {
+    .purecommModalContent .purecommModalBody {
         width: 100%;
         height: 70%;
     }
 
-    .modal-content .modal-body .map {
+    .purecommModalContent .purecommModalBody .map {
         height: 100%;
     }
-    .modal-content .modal-body .tables {
+    .purecommModalContent .purecommModalBody .tables {
         height: 100%;
     }
 
-    .modal-content .modal-body, .map, .tables {
+    .purecommModalContent .purecommModalBody, .map, .tables {
         width: 100%;
     }
 
-    .modal-content .modal-body .iwContent {
+    .purecommModalContent .purecommModalBody .iwContent {
         width: 140px;
     }   
 
     /* Modal Body */
-    .modal-content .modal-body .tableRow .left, .right {
+    .purecommModalContent .purecommModalBody .tableRow .left, .right {
         width: 100%;
     }
 
     /* Modal Header */
-    .modal-content .modal-footer {
+    .purecommModalContent .purecommModalFooter {
         position: fixed; 
         bottom: 0;
         padding: 5px 10px;
     }
 
-    .modal-content .modal-footer .mapdiv, .listdiv, .gpsdiv, .searchdiv {
+    .purecommModalContent .purecommModalFooter .mapdiv, .listdiv, .gpsdiv, .searchdiv {
         float: right;
     }
 
@@ -271,3 +274,4 @@ a[href^="https://maps.google.com/maps"]{display:none !important}
 .gmnoprint div {
     /* background:none !important;  zoom in/out buttons */
 }
+
