@@ -40,7 +40,7 @@ sessionId,
 		return {mapView:1, listView:1, defaultView:"map", iconNearby:true, bgColor:"black", fgColor:"white", fontFamily:"'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif",
 		mapPointer:{anchor: "bottom", default:"images/markergreen.png", green:"images/markergreen.png", amber:"images/markeramber.png", red:"images/markerred.png"}};
 	} else {
-		return {mapView:0, listView:1, defaultView:"list", iconNearby:false, bgColor:"blue", fgColor:"red", fontFamily:"'Times New Roman', Helvetica, Arial, sans-serif",
+		return {mapView:1, listView:1, defaultView:"list", iconNearby:false, bgColor:"blue", fgColor:"red", fontFamily:"'Times New Roman', Helvetica, Arial, sans-serif",
 		mapPointer:{anchor: "middle", default:"images/markergreen.png", green:"images/markergreen.png", amber:"images/markeramber.png", red:"images/markerred.png"}};
 	}
 }
@@ -195,25 +195,31 @@ sessionId,
 	});
 }
 
-
+/*
+ * when the popup is opened for the first time, the store information is initialized
+ * this function is called from 3 places, in 3 different ways
+ * purecommFindAStorePopup	 		-->	storesInit()
+ * purecommProductAvailabilityPopup	-->	storesInit(sku)
+ * purecommCartAvailabilityPopup	-->	storesInit(cartItems)
+ */
 function storesInit(items){
 	if (!storesInitialized){
 		stores = getStores();
 
 		var bounds = new google.maps.LatLngBounds();
 		var mv = popupConfig.mapView; // map view to be shown
-		var lv = popupConfig.lisView; // list view to be shown
+		var lv = popupConfig.listView; // list view to be shown
 		if (items){
 			if (items.constructor == Array){
 				// cartItems
 				stores.forEach(function(store) {
 					var availability = purecommGetCartAvailability(items, store);
 					if(mv){
-						mapStoreMarker(store, availability);
+						new mapStoreMarker(store, availability);
 						bounds.extend(store.coords);
 					}
 					if (lv){
-
+						populateTable(store, availability);
 					}
 				});
 			} else {
@@ -221,11 +227,11 @@ function storesInit(items){
 				stores.forEach(function(store) {
 					var availability = purecommGetSkuAvailability(items, store);
 					if(mv){
-						mapStoreMarker(store, availability);
+						new mapStoreMarker(store, availability);
 						bounds.extend(store.coords);
 					}
 					if (lv){
-
+						populateTable(store, availability);
 					}
 				});
 			}
@@ -233,11 +239,11 @@ function storesInit(items){
 			// no sku or cart items
 			stores.forEach(function(store) {
 				if(mv){
-					mapStoreMarker(store);
+					new mapStoreMarker(store);
 					bounds.extend(store.coords);
 				}
 				if (lv){
-
+					populateTable(store);
 				}
 			});
 		}
@@ -262,7 +268,7 @@ function storesInit(items){
 	} 
 }
 
-showMapView = function (){
+showMapView = function (storeID){
 	// change button colours
 	var listbutton = document.getElementById('listbtn');
 	listbutton.src ='images/listview.png';
@@ -274,6 +280,21 @@ showMapView = function (){
 	document.getElementById("purecommTables").style.display = "none";
 	//closeIW();
 	document.getElementById("purecommMap").style.display = "block";
+
+	console.log("ID = "+storeID);
+	if (storeID){
+		mapStoreMarkers.forEach(function(marker){
+			console.log (" marker "+marker.getID())
+			console.log (" marker1 "+marker.id1)
+			console.log (" marker2 "+marker.id2)
+			console.log (" actual "+storeID)
+			if(marker.getID()==storeID){
+				marker.viewOnMap();
+				//console.log ("selected "+marker.id+" actual "+id)
+				//map.setCenter(marker.location);
+			}
+		})
+	}
 }
 
 showListView = function(){
@@ -451,6 +472,63 @@ showListView = function(){
 }
 
 
+function populateTable(store, availability){
+	console.log("populateTable");
+	var inStockTable = document.getElementById("table_inStock");
+	var noStockTable = document.getElementById("table_noStock");
+
+	//inStockTable.innerHTML = "";
+
+	//console.log(storeDetails);
+	//var stock = getStockCount(storeDetails.id);
+
+	//new StoreMarker(storeDetails, stock);
+	//bounds.extend(storeDetails.coords);
+
+	//var inStockTable = document.getElementById("table_inStock"); 
+	var row;
+	if (selectedStore){
+		if(selectedStore.id==store.id){
+			row = inStockTable.insertRow(0);
+		} 
+	} else {
+		row = inStockTable.insertRow(-1); // insert bottom row
+	}
+	row.insertCell(0).innerHTML = tableString(store, availability);
+
+}
+
+function tableString(store, stock) {
+	var openinghoursString = '<pre class="p2">';
+	var dayhrs = store.opening.split(',');
+	dayhrs.forEach(function(hrs){
+		openinghoursString += hrs + "<br/>"
+	})
+	openinghoursString +=  "</pre>"
+	// html content of the table
+	var contentString = '<div class="tableRow">' +
+		'<div class="left">' +
+			'<p class="p1">'+
+			store.name + '<br />' + 
+			'<p class="p2">'+
+			store.address +'</p>' +
+			'<p class="p1">'+
+			'stock.message' + '</p>' +
+			'<button type="button" onclick=selectStore("' + store.id + '","")>Select Store</button>' + 
+			'<button type="button" onclick=showMapView("' + store.id + '","map")>View on Map</button>' + 
+		'</div>' +
+		'<div class="right">' + 
+			'<p class="p2">'+
+			openinghoursString + '</p>' + 
+		'</div>' +
+	'</div>';
+	
+	getStore = function () { // button on infowindow function
+        return store; // reset the train alarm
+    }
+    return contentString;
+}
+
 
 function mapStoreMarker(store, availability) {
 	var markerIcon,
@@ -460,8 +538,6 @@ function mapStoreMarker(store, availability) {
 	var id = store.id;
 	if (availability){
 		var markerdetails = getMarkerDetails(availability);
-		console.log(availability);
-		console.log(markerdetails);
 		markerIcon = markerdetails.icon;
 		markerZ = markerdetails.z;
 	} else {
@@ -480,8 +556,6 @@ function mapStoreMarker(store, availability) {
 		zIndex: markerZ
 	});
 	
-    mapStoreMarkers.push(this); // push the marker
-
     var markerIW  = new google.maps.InfoWindow({
         	//content: contentString
         });
@@ -493,8 +567,7 @@ function mapStoreMarker(store, availability) {
     	openIW();
 		map.setZoom(14);
 	};
-
-	this.id = function (){
+	this.getID = function (){
 		return id;
 	}
 	this.marker = function () {
@@ -505,6 +578,11 @@ function mapStoreMarker(store, availability) {
 	}
 	this.setIcon = function (icon) {
 		return marker.setIcon(icon);
+	}
+	this.viewOnMap = function(){
+		map.setCenter(marker.getPosition());
+		map.setZoom(14);
+		openIW();
 	}
 
 	google.maps.event.addListener(marker, 'click', function () {
@@ -536,6 +614,8 @@ function mapStoreMarker(store, availability) {
 			mapOpenedIW = null; // no IW is open
 		}
 	}
+
+    mapStoreMarkers.push(this); // push the marker
 }
 
 
