@@ -1,10 +1,12 @@
 // cartItems is an array of SKUs
 
 var popupConfig, // the details from the config file for popup customization
-branchId, 
-sessionId,
+	branchId, // a “virtual branch” used to identify the client website, and pick up the config file. 
+	sessionId, // a website Id that’s used as a temporary Purecomm order number, until the actual order number is allocated
 	popupInitialized, // has the popup been initialized
 	storesInitialized, // have the stores been initialized
+	currentItems, // sku or cartItems for availability
+	availabilityInitialized, 
 	currentView, // current view of popup is either 'map' or 'list'
 	stores = [], // list of JSON store details
 	selectedStore, // JSON of selected store id and details
@@ -13,7 +15,7 @@ sessionId,
 	mapOpenedIW, // the infowindow that is currently open
 	mapBounds, // the bound for the map when first opened
 	mapInitialized, // true after the map has been opened for the first time and resized
-	mapCurrentLocationMarker, // marker for the current location of the user
+	mapCurrentLocationMarker, // marker for the current/searched location of the user
 	test;
 
 
@@ -73,14 +75,16 @@ sessionId,
 		modalCSS.href = 'purecommClickAndCollect.css';
 		head.appendChild(modalCSS);
 
-	    // create modal html
-	    var modal = document.createElement('div');
-	    modal.id = 'purecommModal';
-	    modal.className = 'purecommModal';
+		// create modal html
+		var modal = document.createElement('div');
+		modal.id = 'purecommModal';
+		modal.className = 'purecommModal';
 
-	    modal.onclick = function(event) {
-	    	if (event.target == purecommModal) {
+		modal.onclick = function(event) {
+			if (event.target == purecommModal) {
 				purecommModal.style.display = "none"; // close modal if  user clicks outside of it
+				console.log("closing modal");
+				console.log(stores);
 			}
 		}
 
@@ -93,11 +97,11 @@ sessionId,
 		'<div class="purecommModalFooter" id="purecommModalFooter">' +
 		'<div class="mapdiv">' +
 		'<span>Nearby</span>' +
-		'<img src="images/gps.png" alt="" onclick="locateUser()" />' +
+		'<img src="images/gps.png" alt="" onclick="findLocation()" />' +
 		'</div>' +
 		'<div class="searchdiv">' +
 		'<span class="searchtxt" id="searchtxt" onclick="showSearch()">Search</span>' +
-		'<input class="searchbox" id="searchbox" type="text">' +
+		'<input class="searchbox" id="searchbox" type="text" placeholder="Search">' +
 		'<img class="searchicon" id="searchicon" src="images/search.png" alt="" onclick="search()" />' +
 		'</div>' +
 		'</div>' +
@@ -109,9 +113,9 @@ sessionId,
 		//TODO change CSS based on config
 		//console.log(body);
 		var purecommModalContent = document.getElementById('purecommModalContent');
-	    if (popupConfig.fgColor) purecommModalContent.style.color = popupConfig.fgColor;
-	    if (popupConfig.bgColor) purecommModalContent.style.backgroundColor = popupConfig.bgColor;
-	    if (popupConfig.fontFamily) purecommModalContent.style.fontFamily = popupConfig.fontFamily;
+		if (popupConfig.fgColor) purecommModalContent.style.color = popupConfig.fgColor;
+		if (popupConfig.bgColor) purecommModalContent.style.backgroundColor = popupConfig.bgColor;
+		if (popupConfig.fontFamily) purecommModalContent.style.fontFamily = popupConfig.fontFamily;
 
 		// initialize the map and list view based on popupConfig
 		if(popupConfig.defaultView == "list"){ // default view is list
@@ -140,13 +144,13 @@ sessionId,
  	var modalBody = document.getElementById('purecommModalBody');
  	var modalFooter = document.getElementById('purecommModalFooter');
  	var bodyHTML =  '<div id="purecommTables" class="tables">' +
-				 	'<table id="table_inStock" class="table"></table>' +
-				 	'<table id="table_noStock" class="table"></table>' +
-				 	'</div>';
+ 	'<table id="table_inStock" class="table"></table>' +
+ 	'<table id="table_noStock" class="table"></table>' +
+ 	'</div>';
  	var footerHTML ='<div class="listdiv">' +
-				 	'<span>List</span>' +
-				 	'<img class="view" id="listbtn" src="images/listview.png" alt="" onclick="showListView()" />' +
-				 	'</div>';
+ 	'<span>List</span>' +
+ 	'<img class="view" id="listbtn" src="images/listview.png" alt="" onclick="showListView()" />' +
+ 	'</div>';
 
  	modalBody.innerHTML += bodyHTML;
  	modalFooter.innerHTML += footerHTML;
@@ -166,16 +170,16 @@ sessionId,
 	// load google maps api and call initializeMap when complete
 	var head = document.getElementsByTagName('head')[0];
 	var script = document.createElement('script');
-	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyD07c9hGOtQnuF30nwqml5OQkqzrPejIFs&callback=initializeMap";
+	script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyD07c9hGOtQnuF30nwqml5OQkqzrPejIFs&libraries=places&callback=initializeMap";
 	head.appendChild(script);
 
 	var modalBody = document.getElementById('purecommModalBody');
 	var modalFooter = document.getElementById('purecommModalFooter');
 	var bodyHTML = 	'<div id="purecommMap" class="map"></div>';
 	var footerHTML ='<div class="mapdiv">' +
-					'<span>Map</span>' +
-					'<img id="mapbtn" src="images/mapview.png" alt="" onclick="showMapView()" />' +
-					'</div>';	
+	'<span>Map</span>' +
+	'<img id="mapbtn" src="images/mapview.png" alt="" onclick="showMapView()" />' +
+	'</div>';	
 
 	modalBody.innerHTML += bodyHTML;
 	modalFooter.innerHTML += footerHTML;
@@ -193,95 +197,88 @@ sessionId,
  * map is defined 
  */
  function initializeMap() {
- 	console.log("map being initialized");
  	map = new google.maps.Map(document.getElementById('purecommMap'), {
-		zoom: 15,
-		mapTypeId: google.maps.MapTypeId.ROADMAP,
+ 		zoom: 15,
+ 		mapTypeId: google.maps.MapTypeId.ROADMAP,
 		mapTypeControl: false // no option to change map type
 	});
 	google.maps.event.addListener(map, 'click', function () { // click on the map
-		console.log(mapOpenedIW);
-	    if(mapOpenedIW){
+		if(mapOpenedIW){
 			mapOpenedIW.close(); // close IW
 			mapOpenedIW = null; // no IW is open
 		}
 	});
 }
 
+
 /*
  * when the popup is opened for the first time, the store information is initialized
  * this function is called from 3 places, in 3 different ways
- * purecommFindAStorePopup	 		-->	storesInit()
- * purecommProductAvailabilityPopup	-->	storesInit(sku)
- * purecommCartAvailabilityPopup	-->	storesInit(cartItems)
+ * purecommFindAStorePopup	 		-->	purecommOpenModal()
+ * purecommProductAvailabilityPopup	-->	purecommOpenModal(sku)
+ * purecommCartAvailabilityPopup	-->	purecommOpenModal(cartItems)
  */
-function storesInit(items){
-	if (!storesInitialized){
-		stores = getStores();
+ function purecommOpenModal(items){
+ 	console.log(stores);
+	var mv = popupConfig.mapView; // map view to be shown
+	var lv = popupConfig.listView; // list view to be shown
+	document.getElementById('purecommModal').style.display = "block"; // open the model
+ 	
+ 	if (!storesInitialized){ // if stores aren't itialized
+ 		stores = getStores(); // get information on all stores
+ 		mapBounds = new google.maps.LatLngBounds(); // bounds for the initial view of the map
+ 	}
 
-		mapBounds = new google.maps.LatLngBounds();
-		var mv = popupConfig.mapView; // map view to be shown
-		var lv = popupConfig.listView; // list view to be shown
-		if (items){
-			if (items.constructor == Array){
-				// cartItems
-				stores.forEach(function(store) {
-					var availability = purecommGetCartAvailability(items, store);
-					store['availability'] = availability;
-					if(mv){
-						new mapStoreMarker(store);
-						mapBounds.extend(store.coords);
-					}
-					if (lv){
-						populateTableRow(store); // table populated by default order, use populateTable("name") to sort alphabetically
-					}
-				});
-			} else {
-				// sku
-				stores.forEach(function(store) {
-					var availability = purecommGetSkuAvailability(items, store);
-					store['availability'] = availability;
-					if(mv){
-						new mapStoreMarker(store);
-						mapBounds.extend(store.coords);
-					}
-					if (lv){
-						populateTableRow(store);
-					}
-				});
+	stores.forEach(function(store) {
+		purecommGetAvailability(items, store); // get availability for store
+		if (!storesInitialized){
+			if(mv){
+				new mapStoreMarker(store); // create map marker for every store
+				mapBounds.extend(store.coords); // extend bounds to show the marker
 			}
-		} else {
-			// no sku or cart items
-			stores.forEach(function(store) {
-				if(mv){
-					new mapStoreMarker(store);
-					mapBounds.extend(store.coords);
-				}
-				if (lv){
-					populateTableRow(store);
-				}
-			});
 		}
 
-
-		
-		//if(stock.count>0){
-		//	totalStoresWithStock ++;
-		//}
-		
-		//document.getElementById('purecommModalHeader').innerHTML = "Item is stocked in "+totalStoresWithStock+" stores";
-		//refreshTable();
-		if(popupConfig.defaultView == "map"){ // default view is list
-			showMapView();
-		} else {
-			showListView();
-		}
-
-		storesInitialized = true;
+	});
+	
+	if(mv && storesInitialized){
+		mapStoreMarkers.forEach(function(marker){
+			marker.update(); 
+		});
 	}
+
+	if (lv){
+		//TO DO if distance is known
+		if (stores[0].distance){ // check first store to see if distance is known
+			populateTable("distances"); // table populated by default order, use populateTable("name") to sort alphabetically
+
+		} else {
+			populateTable("name"); // table populated by default order, use populateTable("name") to sort alphabetically
+		}
+	}
+
+
+	
+	//if(stock.count>0){
+	//	totalStoresWithStock ++;
+	//}
+	
+	//document.getElementById('purecommModalHeader').innerHTML = "Item is stocked in "+totalStoresWithStock+" stores";
+	//refreshTable();
+	if(popupConfig.defaultView == "map"){
+		showMapView();
+	} else {
+		showListView();
+	}
+
+	storesInitialized = true;
 }
 
-showMapView = function (storeID){
+
+/*
+ * function to display the map view
+ * storeID is given if there 
+ */
+function showMapView(storeID){
 	// change button colours
 	var listbutton = document.getElementById('listbtn');
 	listbutton.src ='images/listview.png';
@@ -309,7 +306,7 @@ showMapView = function (storeID){
 	}
 }
 
-showListView = function(storeID){
+function showListView(storeID){
 	// change button colours
 	var mapbutton = document.getElementById('mapbtn');
 	mapbutton.src='images/mapview.png';
@@ -324,10 +321,7 @@ showListView = function(storeID){
 
 	if (storeID){
 		var storeRow = document.getElementById(storeID);
-		//var table = document.getElementById('tables');
 		storeRow.scrollIntoView(true);
-		//var tbls = document.getElementById('tables');
-		//tbls.scrollTop = 0;
 	}
 
 
@@ -343,8 +337,7 @@ showListView = function(storeID){
  	if (popupInitialized){
 		// popup has been initialized
 		// do stuff
- 		document.getElementById('purecommModal').style.display = "block";
-		storesInit();
+		purecommOpenModal();
 		return true;
 	} else {
 		return false;
@@ -358,8 +351,10 @@ showListView = function(storeID){
  	if (popupInitialized){
 		// popup has been initialized
 		// do stuff
- 		document.getElementById('purecommModal').style.display = "block";
-		storesInit(sku);
+		purecommOpenModal(sku);
+		//if (currentSku != sku){
+			// different sku
+		//}
 		return true;
 	} else {
 		return false;
@@ -408,6 +403,33 @@ showListView = function(storeID){
 		// no store has been selected
 		return false;
 	}
+}
+
+
+/*
+ * 
+ */
+ function purecommGetAvailability(items, store){
+
+	if (items){
+		if (items.constructor == Array){
+			// cartItems
+			console.log("purecommGetAvailability for cartItems: " )
+			console.log(items)
+			var availability = purecommGetCartAvailability(items, store);
+			store['availability'] = availability;
+		} else {
+			// sku
+			console.log("purecommGetAvailability for sku: " )
+			console.log(items)
+			var availability = purecommGetSkuAvailability(items, store);
+			store['availability'] = availability;
+		}
+	} else {
+		// no sku or cart items
+	}
+
+
 }
 
 /*
@@ -495,52 +517,118 @@ showListView = function(storeID){
 	}
 }
 
-function refreshAvailability(){
 
+showSearch = function(){
+	console.log("show search bar");
+	var searchbtn = document.getElementById('searchicon');
+	searchbtn.src = "images/search_inverted.png";
+	searchbtn.style.backgroundColor = "white";
+	document.getElementById("searchtxt").style.display = "none";
+	document.getElementById("searchbox").style.display = "block";
+	document.getElementById("searchbox").focus();
+
+
+
+	// google maps search
+	var input = document.getElementById('searchbox');
+
+	var searchBox = new google.maps.places.SearchBox(input);
+	searchBox.setBounds(mapBounds); // search the location of the origninal map bounds
+	searchBox.addListener('places_changed', function() {
+		var places = searchBox.getPlaces();
+
+		if (places.length == 0) {
+			return;
+		}
+
+		// For each place, get the icon, name and location.
+		//var bounds = new google.maps.LatLngBounds();
+		places.forEach(function(place) {
+			if (!place.geometry) {
+				console.log("Returned place contains no geometry");
+				return;
+			}
+			findLocation(place.geometry.location);
+		});
+
+	});
 }
 
-locateUser = function(){
-  	// Try HTML5 geolocation.
-  	if (navigator.geolocation) {
-  		navigator.geolocation.getCurrentPosition(function(position) {
-  			var pos = {
-  				lat: position.coords.latitude,
-  				lng: position.coords.longitude
-  			};
-  			map.setCenter(pos);
-			if (!mapCurrentLocationMarker){
-  				var markerImage = new google.maps.MarkerImage('images/currentLocation.png', // ** TODO take image from config file
-                new google.maps.Size(30, 30), // size
-                new google.maps.Point(0, 0), // origin
-                new google.maps.Point(15, 15), // anchor (location on map)
-                new google.maps.Size(30, 30)); // scaled size
+search = function(){
+	var txt = document.getElementById("searchtxt").value;
+	if(txt){
+		console.log("Searching for: " + txt);
+	} else {
+		var searchbtn = document.getElementById('searchicon');
+		searchbtn.src = "images/search.png";
+		searchbtn.style.backgroundColor = "black";	
+		document.getElementById("searchbox").style.display = "none";
+		document.getElementById("searchtxt").style.display = "block";
+		
+	}
+}
 
-	  			var marker = new google.maps.Marker({
-	  				map: map,
-	  				position: pos,
-	  				icon: markerImage
-	  			});
-	  			mapCurrentLocationMarker = marker;
-  			} else {
-  				mapCurrentLocationMarker.setPosition(pos);
-  			}
+/*
+ * find a location on the map and calculate distances to that location
+ * position is given, when called from a search
+ * position is null, when locating the user
+ */
+function findLocation(position){
+	if (position){
+		// position given
+  		var location = { lat: position.lat(), lng: position.lng() };
+		localize(location);
+	} else if (navigator.geolocation) {
+		// HTML5 geolocation.
+		navigator.geolocation.getCurrentPosition(function(pos) {
+  			var location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+			localize(location);
 
-  			getStoreDistances(pos); // get the distance between each store and this postion
+		}, function() {
+			handleLocationError(true, infoWindow, map.getCenter());
+		});
+	} else {
+		// Browser doesn't support Geolocation
+		handleLocationError(false, infoWindow, map.getCenter());
+	}
 
-  		}, function() {
-  			handleLocationError(true, infoWindow, map.getCenter());
-  		});
-  	} else {
-    	// Browser doesn't support Geolocation
-    	handleLocationError(false, infoWindow, map.getCenter());
-    }
+	function localize (location){
+		map.setCenter(location);
+		if (!mapCurrentLocationMarker){
+			var markerImage = new google.maps.MarkerImage('images/currentLocation.png', // ** TODO take image from config file
+			new google.maps.Size(30, 30), // size
+			new google.maps.Point(0, 0), // origin
+			new google.maps.Point(15, 15), // anchor (location on map)
+			new google.maps.Size(30, 30)); // scaled size
+
+			var marker = new google.maps.Marker({
+				map: map,
+				position: location,
+				icon: markerImage
+			});
+			mapCurrentLocationMarker = marker;
+		} else {
+			mapCurrentLocationMarker.setPosition(location);
+		}
+		console.log("** location ** "+location);
+		getStoreDistances(location); // get the distance between each store and this postion
+
+		// fit bounds of map to the searched location and the nearest store
+		var newBounds = new google.maps.LatLngBounds();
+		newBounds.extend(location);
+		newBounds.extend(stores[0].coords);
+		console.log(newBounds);
+		map.fitBounds(newBounds);
+		console.log("zoom "+map.getZoom());
+		if (map.getZoom() > 15) map.setZoom(15); // max zoom to 15
+	}
 }
 
 /*
  * find disance between a point and each store
  * referencePoint is either current location or a searched location
  */
-function getStoreDistances(referencePoint){
+ function getStoreDistances(referencePoint){
 	// get distances
 	stores.forEach(function(store) {
 		store['distance'] = distanceBetweenPoints(referencePoint, store.coords);
@@ -548,7 +636,6 @@ function getStoreDistances(referencePoint){
 
 	// resort the table
 	populateTable("distance");
-
 
 	// Haversine formula
 	function distanceBetweenPoints(p1, p2){
@@ -565,6 +652,7 @@ function getStoreDistances(referencePoint){
 		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 		var d = R * c;
 		return d; // returns the distance in meter
+
 	}
 
 }
@@ -574,23 +662,24 @@ function getStoreDistances(referencePoint){
 
 
 function populateTable(sortBy){
-	console.log(stores);
 	// sort the stores
 	if (sortBy == "name"){
 		stores.sort(function(a,b){
-	   		if(a.name < b.name) return -1;
-	    	if(a.name > b.name) return 1;
-	    	return 0;})
+			if(a.name < b.name) return -1;
+			if(a.name > b.name) return 1;
+			return 0;})
 	} else if (sortBy == "distance"){
 		stores = stores.sort(function(a,b){return a.distance - b.distance})
 	}
-	console.log(stores);
+	//console.log(stores);
 
 	// repopulate table
-	document.getElementById("table_inStock").innerHTML = "";
+	var table = document.getElementById("table_inStock");
+	table.innerHTML = "";
 	stores.forEach(function(store) {
 		populateTableRow(store);
 	});
+	table.scrollIntoView(true); // go to top of table
 }
 
 function populateTableRow(store){
@@ -626,37 +715,36 @@ function tableString(store, stock) {
 	openinghoursString +=  "</pre>"
 	// html content of the table
 	var contentString = '<div class="tableRow" id="' + store.id + '" >' +
-		'<div class="left">' +
-			'<p class="p1">'+
-			store.name + '<br />' + 
-			'<p class="p2">'+
-			store.address +'</p>' +
-			'<p class="p1">'+
-			'stock.message' + '</p>' +
-			'<button type="button" onclick=selectStore("' + store.id + '","")>Select Store</button>' + 
-			'<button type="button" onclick=showMapView("' + store.id + '","map")>View on Map</button>' + 
-		'</div>' +
-		'<div class="right">' + 
-			'<p class="p2">'+
-			openinghoursString + '</p>' + 
-		'</div>' +
+	'<div class="left">' +
+	'<p class="p1">'+
+	store.name + ' ' + store.distance + '<br />' + 
+	'<p class="p2">'+
+	store.address +'</p>' +
+	'<p class="p1">'+
+	'stock.message' + '</p>' +
+	'<button type="button" onclick=selectStore("' + store.id + '","")>Select Store</button>' + 
+	'<button type="button" onclick=showMapView("' + store.id + '","map")>View on Map</button>' + 
+	'</div>' +
+	'<div class="right">' + 
+	'<p class="p2">'+
+	openinghoursString + '</p>' + 
+	'</div>' +
 	'</div>';
 	
 	getStore = function () { // button on infowindow function
-        return store; // reset the train alarm
-    }
-    return contentString;
+		return store; // reset the train alarm
+	}
+	return contentString;
 }
 
 
 function mapStoreMarker(store) {
 	var markerIcon,
 	markerZ;
-	var availability = store.availability;
 
 	var id = store.id;
-	if (availability){
-		var markerdetails = getMarkerDetails(availability);
+	if (store.availability){
+		var markerdetails = getMarkerDetails(store.availability);
 		markerIcon = markerdetails.icon;
 		markerZ = markerdetails.z;
 	} else {
@@ -664,7 +752,7 @@ function mapStoreMarker(store) {
 		markerIcon = popupConfig.mapPointer.default;
 		markerZ = 3;
 	}
-    var location = store.coords; // initial position of train
+	var location = store.coords; // initial position of train
 
 	// create store marker
 	var marker = new google.maps.Marker({
@@ -675,15 +763,15 @@ function mapStoreMarker(store) {
 		zIndex: markerZ
 	});
 	
-    var markerIW  = new google.maps.InfoWindow({
-        	//content: contentString
-        });
-    var infowindowString = iwString(store, availability);
+	var markerIW  = new google.maps.InfoWindow({
+			//content: contentString
+		});
+	var infowindowString = iwString(store, store.availability);
 	markerIW.setContent(infowindowString);
 
-    this.select = function () {
-    	map.setCenter(location);
-    	openIW();
+	this.select = function () {
+		map.setCenter(location);
+		openIW();
 		map.setZoom(14);
 	};
 	this.getID = function (){
@@ -703,13 +791,21 @@ function mapStoreMarker(store) {
 		map.setZoom(14);
 		openIW();
 	}
+	this.update = function(){
+		if (store.availability){
+			var markerdetails = getMarkerDetails(store.availability);
+			marker.setIcon(markerdetails.icon);
+			marker.setZIndex(markerdetails.z);
+		}
+		// TODO update distance?
+	}
 
 	google.maps.event.addListener(marker, 'click', function () {
 		if (isInfoWindowOpen()) {
 			// infowindow is open
-            closeOpenedIW(); // close this IW
-        } else {
-            // infowindow is closed
+			closeOpenedIW(); // close this IW
+		} else {
+			// infowindow is closed
 			openIW();
 		}
 	});
@@ -723,7 +819,7 @@ function mapStoreMarker(store) {
 	function openIW(){
 		closeOpenedIW();
 		markerIW.close(map, marker); // close this IW
-	    markerIW.open(map, marker); // open this IW
+		markerIW.open(map, marker); // open this IW
 		mapOpenedIW = markerIW; // set this IW to the opened IW
 	}
 
@@ -734,7 +830,7 @@ function mapStoreMarker(store) {
 		}
 	}
 
-    mapStoreMarkers.push(this); // push the marker
+	mapStoreMarkers.push(this); // push the marker
 }
 
 
@@ -754,13 +850,14 @@ function iwString(store, availability) {
 	'</div>';
 
 	getStore = function () { // button on infowindow function
-        return store; // reset the train alarm
-    }
-    return contentString;
+		return store; // reset the train alarm
+	}
+	return contentString;
 }
 
 
 function getStores (){
+	var stores_ = [];
 	var openinghours = "Monday:\t\t10:00am-7:00pm,Tuesday:\t\t10:00am-7:00pm,Wednesday:\t10:00am-7:00pm,Thursday:\t\t10:00am-7:00pm,Friday:\t\t\t10:00am-9:00pm,Saturday:\t\t10:00am-9:00pm,Sunday:\t\t11:00am-5:00pm";
 	s1 = {"id":"id1", "name":"PERTH MYER", "coords":{"lat":-31.953317, "lng":115.860819}, "address":"D200 Murray Street, PERTH, 6000 WA", "opening":openinghours}
 	s2 = {"id":"id2", "name":"PERTH DJ", "coords":{"lat":-31.954218, "lng":115.859006}, "address":"Hay Street, PERTH, 6000 WA", "opening":openinghours}
@@ -779,23 +876,22 @@ function getStores (){
 	//s1 = {"id":"id1", "name":"name", "coords":{"lat":000000, "lng":000000}, "address":"aaaaaaa", "opening":openinghours}
 	//s1 = {"id":"id1", "name":"name", "coords":{"lat":000000, "lng":000000}, "address":"aaaaaaa", "opening":openinghours}
 
-	stores.push(s1);
-	stores.push(s2);
-	stores.push(s3);
-	stores.push(s4);
-	stores.push(s5);
-	stores.push(s6);
-	stores.push(s7);
-	stores.push(s8);
-	stores.push(s9);
-	stores.push(s10);
-	stores.push(s11);
-	stores.push(s12);
-	stores.push(s13);
-	stores.push(s14);
-	//stores.push(s1);
+	stores_.push(s1);
+	stores_.push(s2);
+	stores_.push(s3);
+	stores_.push(s4);
+	stores_.push(s5);
+	stores_.push(s6);
+	stores_.push(s7);
+	stores_.push(s8);
+	stores_.push(s9);
+	stores_.push(s10);
+	stores_.push(s11);
+	stores_.push(s12);
+	stores_.push(s13);
+	stores_.push(s14);
 
-	return stores;
+	return stores_;
 }
 
 function getMarkerDetails(availability){
@@ -830,9 +926,9 @@ function getMarkerDetails(availability){
  */
  function setCookie(cname,cvalue,exdays) {
  	var d = new Date();
-    d.setTime(d.getTime() + (exdays*86400000)); // 86400000=24*60*60*1000
-    var expires = "expires=" + d.toGMTString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	d.setTime(d.getTime() + (exdays*86400000)); // 86400000=24*60*60*1000
+	var expires = "expires=" + d.toGMTString();
+	document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 function getCookie(cname) {
 	var name = cname + "=";
@@ -846,7 +942,7 @@ function getCookie(cname) {
 			return c.substring(name.length, c.length);
 		}
 	}
-    return false; // return false if the cookie does not exist 
+	return false; // return false if the cookie does not exist 
 }
 function deleteCookie(cname) {
 	setCookie(cname,"",-1);
