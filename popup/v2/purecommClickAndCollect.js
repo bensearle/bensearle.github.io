@@ -11,7 +11,11 @@ sessionId,
 	map, // the google map
 	mapStoreMarkers = [],
 	mapOpenedIW, // the infowindow that is currently open
+	mapBounds, // the bound for the map when first opened
+	mapInitialized, // true after the map has been opened for the first time and resized
+	mapCurrentLocationMarker, // marker for the current location of the user
 	test;
+
 
 /*
  * 
@@ -35,10 +39,11 @@ sessionId,
 	// mapPointer.anchor ("top","bottom","left","right","center") where to anchor the pointer to the map
 	// mapPointer.default (url) url to for the marker image before stock is known
 	// mapPointer.green,amber,reg (url) url to the image used for each type of marker
+	// currentLocationPointer (url) url to the image for the users current location
 
 	if (branchId == "id123"){
 		return {mapView:1, listView:1, defaultView:"map", iconNearby:true, bgColor:"black", fgColor:"white", fontFamily:"'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-		mapPointer:{anchor: "bottom", default:"images/markergreen.png", green:"images/markergreen.png", amber:"images/markeramber.png", red:"images/markerred.png"}};
+		mapPointer:{anchor: "bottom", default:"images/markergreen.png", green:"images/markergreen.png", amber:"images/markeramber.png", red:"images/markerred.png"}, currentLocationPointer:"images/currentLocation.png"};
 	} else {
 		return {mapView:1, listView:1, defaultView:"list", iconNearby:false, bgColor:"blue", fgColor:"red", fontFamily:"'Times New Roman', Helvetica, Arial, sans-serif",
 		mapPointer:{anchor: "middle", default:"images/markergreen.png", green:"images/markergreen.png", amber:"images/markeramber.png", red:"images/markerred.png"}};
@@ -68,8 +73,6 @@ sessionId,
 		modalCSS.href = 'purecommClickAndCollect.css';
 		head.appendChild(modalCSS);
 
-	    //TODO change CSS based on config
-
 	    // create modal html
 	    var modal = document.createElement('div');
 	    modal.id = 'purecommModal';
@@ -81,7 +84,7 @@ sessionId,
 			}
 		}
 
-		var modalHTML =	'<div class="purecommModalContent">' +
+		var modalHTML =	'<div class="purecommModalContent" id="purecommModalContent">' +
 		'<div class="purecommModalHeader" id="purecommModalHeader">' +
 		'<span class="modalHead" id="modalHead">Modal Header</span>' +
 		'<img class="close" src="images/close1.png" alt="" onclick="closeModal()" />' +
@@ -102,6 +105,13 @@ sessionId,
 
 		modal.innerHTML = modalHTML;
 		body.appendChild(modal);
+
+		//TODO change CSS based on config
+		//console.log(body);
+		var purecommModalContent = document.getElementById('purecommModalContent');
+	    if (popupConfig.fgColor) purecommModalContent.style.color = popupConfig.fgColor;
+	    if (popupConfig.bgColor) purecommModalContent.style.backgroundColor = popupConfig.bgColor;
+	    if (popupConfig.fontFamily) purecommModalContent.style.fontFamily = popupConfig.fontFamily;
 
 		// initialize the map and list view based on popupConfig
 		if(popupConfig.defaultView == "list"){ // default view is list
@@ -174,6 +184,8 @@ sessionId,
 		currentView = 'map';
 		document.getElementById('purecommMap').style.display = "block";
 	}
+
+
 }
 
 /*
@@ -188,8 +200,9 @@ sessionId,
 		mapTypeControl: false // no option to change map type
 	});
 	google.maps.event.addListener(map, 'click', function () { // click on the map
+		console.log(mapOpenedIW);
 	    if(mapOpenedIW){
-			mapOpenedIW.close(map, marker); // close IW
+			mapOpenedIW.close(); // close IW
 			mapOpenedIW = null; // no IW is open
 		}
 	});
@@ -206,7 +219,7 @@ function storesInit(items){
 	if (!storesInitialized){
 		stores = getStores();
 
-		var bounds = new google.maps.LatLngBounds();
+		mapBounds = new google.maps.LatLngBounds();
 		var mv = popupConfig.mapView; // map view to be shown
 		var lv = popupConfig.listView; // list view to be shown
 		if (items){
@@ -214,24 +227,26 @@ function storesInit(items){
 				// cartItems
 				stores.forEach(function(store) {
 					var availability = purecommGetCartAvailability(items, store);
+					store['availability'] = availability;
 					if(mv){
-						new mapStoreMarker(store, availability);
-						bounds.extend(store.coords);
+						new mapStoreMarker(store);
+						mapBounds.extend(store.coords);
 					}
 					if (lv){
-						populateTable(store, availability);
+						populateTableRow(store); // table populated by default order, use populateTable("name") to sort alphabetically
 					}
 				});
 			} else {
 				// sku
 				stores.forEach(function(store) {
 					var availability = purecommGetSkuAvailability(items, store);
+					store['availability'] = availability;
 					if(mv){
-						new mapStoreMarker(store, availability);
-						bounds.extend(store.coords);
+						new mapStoreMarker(store);
+						mapBounds.extend(store.coords);
 					}
 					if (lv){
-						populateTable(store, availability);
+						populateTableRow(store);
 					}
 				});
 			}
@@ -240,10 +255,10 @@ function storesInit(items){
 			stores.forEach(function(store) {
 				if(mv){
 					new mapStoreMarker(store);
-					bounds.extend(store.coords);
+					mapBounds.extend(store.coords);
 				}
 				if (lv){
-					populateTable(store);
+					populateTableRow(store);
 				}
 			});
 		}
@@ -261,11 +276,9 @@ function storesInit(items){
 		} else {
 			showListView();
 		}
-		google.maps.event.trigger(map,'resize');
-		map.fitBounds(bounds);
 
 		storesInitialized = true;
-	} 
+	}
 }
 
 showMapView = function (storeID){
@@ -281,23 +294,22 @@ showMapView = function (storeID){
 	//closeIW();
 	document.getElementById("purecommMap").style.display = "block";
 
-	console.log("ID = "+storeID);
+	if(!mapInitialized){
+		google.maps.event.trigger(map,'resize');
+		map.fitBounds(mapBounds);
+		mapInitialized = 1;
+	}
+
 	if (storeID){
 		mapStoreMarkers.forEach(function(marker){
-			console.log (" marker "+marker.getID())
-			console.log (" marker1 "+marker.id1)
-			console.log (" marker2 "+marker.id2)
-			console.log (" actual "+storeID)
 			if(marker.getID()==storeID){
 				marker.viewOnMap();
-				//console.log ("selected "+marker.id+" actual "+id)
-				//map.setCenter(marker.location);
 			}
 		})
 	}
 }
 
-showListView = function(){
+showListView = function(storeID){
 	// change button colours
 	var mapbutton = document.getElementById('mapbtn');
 	mapbutton.src='images/mapview.png';
@@ -308,6 +320,18 @@ showListView = function(){
 
 	document.getElementById("purecommMap").style.display = "none";
 	document.getElementById("purecommTables").style.display = "block";
+
+
+	if (storeID){
+		var storeRow = document.getElementById(storeID);
+		//var table = document.getElementById('tables');
+		storeRow.scrollIntoView(true);
+		//var tbls = document.getElementById('tables');
+		//tbls.scrollTop = 0;
+	}
+
+
+	//("name"); // *** testing repopulate table by name
 
 	//refreshTable();
 }
@@ -471,13 +495,108 @@ showListView = function(){
 	}
 }
 
+function refreshAvailability(){
 
-function populateTable(store, availability){
-	console.log("populateTable");
+}
+
+locateUser = function(){
+  	// Try HTML5 geolocation.
+  	if (navigator.geolocation) {
+  		navigator.geolocation.getCurrentPosition(function(position) {
+  			var pos = {
+  				lat: position.coords.latitude,
+  				lng: position.coords.longitude
+  			};
+  			map.setCenter(pos);
+			if (!mapCurrentLocationMarker){
+  				var markerImage = new google.maps.MarkerImage('images/currentLocation.png', // ** TODO take image from config file
+                new google.maps.Size(30, 30), // size
+                new google.maps.Point(0, 0), // origin
+                new google.maps.Point(15, 15), // anchor (location on map)
+                new google.maps.Size(30, 30)); // scaled size
+
+	  			var marker = new google.maps.Marker({
+	  				map: map,
+	  				position: pos,
+	  				icon: markerImage
+	  			});
+	  			mapCurrentLocationMarker = marker;
+  			} else {
+  				mapCurrentLocationMarker.setPosition(pos);
+  			}
+
+  			getStoreDistances(pos); // get the distance between each store and this postion
+
+  		}, function() {
+  			handleLocationError(true, infoWindow, map.getCenter());
+  		});
+  	} else {
+    	// Browser doesn't support Geolocation
+    	handleLocationError(false, infoWindow, map.getCenter());
+    }
+}
+
+/*
+ * find disance between a point and each store
+ * referencePoint is either current location or a searched location
+ */
+function getStoreDistances(referencePoint){
+	// get distances
+	stores.forEach(function(store) {
+		store['distance'] = distanceBetweenPoints(referencePoint, store.coords);
+	});
+
+	// resort the table
+	populateTable("distance");
+
+
+	// Haversine formula
+	function distanceBetweenPoints(p1, p2){
+		var radians = function(x) {
+			return x * Math.PI / 180;
+		};
+		
+		var R = 6378137; // Earth’s mean radius in meter
+		var dLat = radians(p2.lat - p1.lat); // lat distance
+		var dLng = radians(p2.lng - p1.lng); // lng distance
+		var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos(radians(p1.lat)) * Math.cos(radians(p2.lat)) *
+			Math.sin(dLng / 2) * Math.sin(dLng / 2);
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		var d = R * c;
+		return d; // returns the distance in meter
+	}
+
+}
+
+
+
+
+
+function populateTable(sortBy){
+	console.log(stores);
+	// sort the stores
+	if (sortBy == "name"){
+		stores.sort(function(a,b){
+	   		if(a.name < b.name) return -1;
+	    	if(a.name > b.name) return 1;
+	    	return 0;})
+	} else if (sortBy == "distance"){
+		stores = stores.sort(function(a,b){return a.distance - b.distance})
+	}
+	console.log(stores);
+
+	// repopulate table
+	document.getElementById("table_inStock").innerHTML = "";
+	stores.forEach(function(store) {
+		populateTableRow(store);
+	});
+}
+
+function populateTableRow(store){
 	var inStockTable = document.getElementById("table_inStock");
 	var noStockTable = document.getElementById("table_noStock");
 
-	//inStockTable.innerHTML = "";
 
 	//console.log(storeDetails);
 	//var stock = getStockCount(storeDetails.id);
@@ -494,7 +613,7 @@ function populateTable(store, availability){
 	} else {
 		row = inStockTable.insertRow(-1); // insert bottom row
 	}
-	row.insertCell(0).innerHTML = tableString(store, availability);
+	row.insertCell(0).innerHTML = tableString(store);
 
 }
 
@@ -506,7 +625,7 @@ function tableString(store, stock) {
 	})
 	openinghoursString +=  "</pre>"
 	// html content of the table
-	var contentString = '<div class="tableRow">' +
+	var contentString = '<div class="tableRow" id="' + store.id + '" >' +
 		'<div class="left">' +
 			'<p class="p1">'+
 			store.name + '<br />' + 
@@ -530,10 +649,10 @@ function tableString(store, stock) {
 }
 
 
-function mapStoreMarker(store, availability) {
+function mapStoreMarker(store) {
 	var markerIcon,
 	markerZ;
-
+	var availability = store.availability;
 
 	var id = store.id;
 	if (availability){
@@ -588,7 +707,7 @@ function mapStoreMarker(store, availability) {
 	google.maps.event.addListener(marker, 'click', function () {
 		if (isInfoWindowOpen()) {
 			// infowindow is open
-            closeOpenedIW(); // close all info infowindows
+            closeOpenedIW(); // close this IW
         } else {
             // infowindow is closed
 			openIW();
@@ -610,7 +729,7 @@ function mapStoreMarker(store, availability) {
 
 	function closeOpenedIW(){
 		if(mapOpenedIW){
-			mapOpenedIW.close(map, marker); // close this IW
+			mapOpenedIW.close(); // close the opened IW
 			mapOpenedIW = null; // no IW is open
 		}
 	}
@@ -631,7 +750,7 @@ function iwString(store, availability) {
 	'<p class="p1">'+
 	availability + '</p>' +
 	'<button type="button" onclick=selectStore("' + store.id + '","")>Select Store</button>' + 
-	'<button type="button" onclick=selectStore("' + store.id + '","list")>View Opening</button>' + 
+	'<button type="button" onclick=showListView("' + store.id + '","list")>View Opening</button>' + 
 	'</div>';
 
 	getStore = function () { // button on infowindow function

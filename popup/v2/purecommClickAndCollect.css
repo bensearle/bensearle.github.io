@@ -72,7 +72,7 @@
 
 .purecommModalContent .purecommModalHeader .close:hover,
 .purecommModalContent .purecommModalHeader .close:focus {
-    color: black;
+    /*color: black;*/
     text-decoration: none;
     cursor: pointer;
 }
@@ -100,7 +100,7 @@
     margin-left: 105.5px;
 }
 .purecommModalContent .purecommModalFooter .searchbox {
-    font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /*font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
     font-size: 18px; 
     vertical-align:middle;
     outline:none;
@@ -130,7 +130,7 @@
 }
 
 .purecommModalContent .purecommModalBody p, pre { 
-    font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /*font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
     margin:0.5em;
 }
 
