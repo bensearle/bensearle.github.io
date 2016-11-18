@@ -13,9 +13,10 @@ var popupConfig, // the details from the config file for popup customization
 	map, // the google map
 	mapStoreMarkers = [],
 	mapOpenedIW, // the infowindow that is currently open
-	mapBounds, // the bound for the map when first opened
+	mapBounds, // bounds initially contains all stores, then contain search location and some stores
 	mapInitialized, // true after the map has been opened for the first time and resized
 	mapCurrentLocationMarker, // marker for the current/searched location of the user
+	searchRefresh, // true if the user has searched and the map needs bounds set/table top row needs to be in view
 	test;
 
 
@@ -30,25 +31,104 @@ var popupConfig, // the details from the config file for popup customization
 	// Colour and font for header/footer
 	// All text strings for localisations
 
-	// JSON standard is to use "double quotes" for strings
-	// mapView (0,1) whether to show the mapview
-	// listView (0,1) whether to show the listview
-	// defaultView ("map","list") which view to show when the popup is opened
-	// iconNearby (0,1) whether to show the nearby icon
-	// bgColor (css: background-color) backgroud color of the popup
-	// fgColor (css: color) foreground color of the popup (text color)
-	// fontFamily (css: font-family) font of the popup
-	// mapPointer.anchor ("top","bottom","left","right","center") where to anchor the pointer to the map
-	// mapPointer.default (url) url to for the marker image before stock is known
-	// mapPointer.green,amber,reg (url) url to the image used for each type of marker
-	// currentLocationPointer (url) url to the image for the users current location
+	var defaultConfiguration = {
+		mapView:1, // (0,1) whether to show the mapview
+		listView:1, // (0,1) whether to show the listview
+		defaultView:"map", // ("map","list") which view to show when the popup is opened for the first time
+		iconNearby:true, // (0,1) whether to show the nearby icon
+		fontFamily:"'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif", // (css: font-family) font of the popup
+		colors:{
+			modalBG:"black", // (css: background-color) backgroud/foreground color of the popup (header/footer/buttons)
+			modalFG:"white", // (css: color)
+			bodyBG:"white", // (css: background-color) backgroud/foreground color of the body (table/infowindow)
+			bodyFG:"black"}, // (css: color)
+		icons:{
+			close:"images/close_white.png",
+			list:"images/listview_white.png",
+			listSelected:"images/listview_black.png",
+			map:"images/mapview_white.png",
+			mapSelected:"images/mapview_black.png",
+			nearby:"images/gps_white.png",
+			search:"images/search_white.png",
+			searchSelected:"images/search_black.png"
+		},
+		mapPointer:{
+			currentLocation:"images/currentLocation.png", // (url) url to the image used for current/searched location
+			anchor: "bottom", // ("top","bottom","left","right","center") where to anchor the pointer to the map
+			default:"images/markergreen.png", // (url) url to for the marker image before stock is known
+			green:"images/markergreen.png", // (url) url to the image used for each type of marker
+			amber:"images/markeramber.png", 
+			red:"images/markerred.png"} 
+		};
 
-	if (branchId == "id123"){
-		return {mapView:1, listView:1, defaultView:"map", iconNearby:true, bgColor:"black", fgColor:"white", fontFamily:"'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-		mapPointer:{anchor: "bottom", default:"images/markergreen.png", green:"images/markergreen.png", amber:"images/markeramber.png", red:"images/markerred.png"}, currentLocationPointer:"images/currentLocation.png"};
-	} else {
-		return {mapView:1, listView:1, defaultView:"list", iconNearby:false, bgColor:"blue", fgColor:"red", fontFamily:"'Times New Roman', Helvetica, Arial, sans-serif",
-		mapPointer:{anchor: "middle", default:"images/markergreen.png", green:"images/markergreen.png", amber:"images/markeramber.png", red:"images/markerred.png"}};
+	var configuration = updateConfig(defaultConfiguration,getConfig(branchId));
+	
+	var cssConfig = ':root {' + 	
+	'--purecommFontFamily: ' + configuration.fontFamily + ';' +
+	'--purecommModalBG: ' + configuration.colors.modalBG + ';' +
+	'--purecommModalFG: ' + configuration.colors.modalFG + ';' +
+	'--purecommBodyBG: ' + configuration.colors.bodyBG + ';' +
+	'--purecommBodyFG: ' + configuration.colors.bodyFG + ';' +
+	'}';
+	var node = document.createElement('style');
+	node.innerHTML = cssConfig;
+	document.body.appendChild(node);
+
+	return configuration;
+
+	// copy data from newConfig to ogConfig
+	function updateConfig (ogconfig,newConfig){
+		console.log(newConfig);
+		for (var attribute in newConfig) {
+			var value = newConfig[attribute]; // value for the attribute
+			if (value !== null && value !== "" ){
+				if (typeof value === 'object'){
+					// value is an object, recurcively call this method
+					updateConfig(ogconfig[attribute],newConfig[attribute]);
+				} else {
+					ogconfig[attribute] = value;
+				}
+			}
+		}
+		return ogconfig;
+	}
+
+	function getConfig (branchId){
+		if (branchId == "id123"){
+			return {mapView:1, listView:1, defaultView:"map", iconNearby:true, modalBG:"black", modalFG:"white", bodyBG:"white", bodyFG:"black", fontFamily:"'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+			mapPointer:{anchor: "bottom", default:"images/markergreen.png", green:"images/markergreen.png", amber:"images/markeramber.png", red:"images/markerred.png"}, currentLocationPointer:"images/currentLocation.png"};
+		} else {
+			return {
+				mapView:1, // (0,1) whether to show the mapview
+				listView:1, // (0,1) whether to show the listview
+				defaultView:"list", // ("map","list") which view to show when the popup is opened for the first time
+				iconNearby:true, // (0,1) whether to show the nearby icon
+				colors:{
+					modalBG:"purple", // (css: background-color) backgroud/foreground color of the popup (header/footer/buttons)
+					modalFG:"yellow", // (css: color)
+					bodyBG:"yellow", // (css: background-color) backgroud/foreground color of the body (table/infowindow)
+					bodyFG:"purple"}, // (css: color)
+				fontFamily:"'Times New Roman', 'Helvetica Neue', Helvetica, Arial, sans-serif", // (css: font-family) font of the popup
+				icons:{
+					close:"images/close_yellow.png",
+					list:"images/listview_yellow.png",
+					listSelected:"images/listview_purple.png",
+					map:"images/mapview_yellow.png",
+					mapSelected:"images/mapview_purple.png",
+					nearby:"images/gps_yellow.png",
+					search:"images/search_white.png",
+					searchSelected:"images/search_black.png"
+				},
+				mapPointer:{
+					currentLocation:"images/currentLocation.png", // (url) url to the image used for current/searched location
+					anchor: "bottom", // ("top","bottom","left","right","center") where to anchor the pointer to the map
+					default:"images/markergreen.png", // (url) url to for the marker image before stock is known
+					green:"images/markergreen.png", // (url) url to the image used for each type of marker
+					amber:"images/markeramber.png", 
+					red:"images/markerred.png"} 
+				};
+			
+		}
 	}
 }
 
@@ -57,10 +137,10 @@ var popupConfig, // the details from the config file for popup customization
  * sessionId is a website Id that’s used as a temporary Purecomm order number, until the actual order number is allocated 
  * (eg. Could use Magneto quoteId)
  */
- function purecommClickAndCollectInit(branchId, sessionId) {
- 	if (!popupInitialized) {
- 		this.branchId = branchId;
- 		this.sessionId = sessionId;
+function purecommClickAndCollectInit(branchId, sessionId) {
+	if (!popupInitialized) {
+		this.branchId = branchId;
+		this.sessionId = sessionId;
 
 		// global popup initialization
 		popupConfig = getConfigFile(branchId);
@@ -91,31 +171,16 @@ var popupConfig, // the details from the config file for popup customization
 		var modalHTML =	'<div class="purecommModalContent" id="purecommModalContent">' +
 		'<div class="purecommModalHeader" id="purecommModalHeader">' +
 		'<span class="modalHead" id="modalHead">Modal Header</span>' +
-		'<img class="close" src="images/close1.png" alt="" onclick="closeModal()" />' +
+		'<img class="close" src="'+popupConfig.icons.close+'" alt="" onclick="closeModal()" />' +
 		'</div>' +
 		'<div class="purecommModalBody" id="purecommModalBody"></div>' +
 		'<div class="purecommModalFooter" id="purecommModalFooter">' +
-		'<div class="mapdiv">' +
-		'<span>Nearby</span>' +
-		'<img src="images/gps.png" alt="" onclick="findLocation()" />' +
-		'</div>' +
-		'<div class="searchdiv">' +
-		'<span class="searchtxt" id="searchtxt" onclick="showSearch()">Search</span>' +
-		'<input class="searchbox" id="searchbox" type="text" placeholder="Search">' +
-		'<img class="searchicon" id="searchicon" src="images/search.png" alt="" onclick="search()" />' +
-		'</div>' +
+
 		'</div>' +
 		'</div>';
 
 		modal.innerHTML = modalHTML;
 		body.appendChild(modal);
-
-		//TODO change CSS based on config
-		//console.log(body);
-		var purecommModalContent = document.getElementById('purecommModalContent');
-		if (popupConfig.fgColor) purecommModalContent.style.color = popupConfig.fgColor;
-		if (popupConfig.bgColor) purecommModalContent.style.backgroundColor = popupConfig.bgColor;
-		if (popupConfig.fontFamily) purecommModalContent.style.fontFamily = popupConfig.fontFamily;
 
 		// initialize the map and list view based on popupConfig
 		if(popupConfig.defaultView == "list"){ // default view is list
@@ -130,6 +195,18 @@ var popupConfig, // the details from the config file for popup customization
 				listInit(0);
 			}
 		}
+
+ 		var modalFooter = document.getElementById('purecommModalFooter');
+
+ 		modalFooter.innerHTML += '<div class="mapdiv">' +
+		'<span>Nearby</span>' +
+		'<img src="' + popupConfig.icons.nearby + '" alt="" onclick="findLocation()" />' +
+		'</div>' +
+		'<div class="searchdiv">' +
+		'<img class="searchicon" id="searchicon" src="' + popupConfig.icons.search + '" alt="" onclick="search()" />' +
+		'<span class="searchtxt" id="searchtxt" onclick="showSearch()">Search</span>' +
+		'<input class="searchbox" id="searchbox" type="text" placeholder="Search">' +
+		'</div>';
 
 		popupInitialized = true;
 	}
@@ -149,7 +226,7 @@ var popupConfig, // the details from the config file for popup customization
  	'</div>';
  	var footerHTML ='<div class="listdiv">' +
  	'<span>List</span>' +
- 	'<img class="view" id="listbtn" src="images/listview.png" alt="" onclick="showListView()" />' +
+ 	'<img class="view" id="listbtn" src="' + popupConfig.icons.list + '" alt="" onclick="showListView()" />' +
  	'</div>';
 
  	modalBody.innerHTML += bodyHTML;
@@ -178,7 +255,7 @@ var popupConfig, // the details from the config file for popup customization
 	var bodyHTML = 	'<div id="purecommMap" class="map"></div>';
 	var footerHTML ='<div class="mapdiv">' +
 	'<span>Map</span>' +
-	'<img id="mapbtn" src="images/mapview.png" alt="" onclick="showMapView()" />' +
+	'<img id="mapbtn" src="' + popupConfig.icons.map + '" alt="" onclick="showMapView()" />' +
 	'</div>';	
 
 	modalBody.innerHTML += bodyHTML;
@@ -226,7 +303,7 @@ var popupConfig, // the details from the config file for popup customization
  	
  	if (!storesInitialized){ // if stores aren't itialized
  		stores = getStores(); // get information on all stores
- 		mapBounds = new google.maps.LatLngBounds(); // bounds for the initial view of the map
+ 		if (mv) mapBounds = new google.maps.LatLngBounds(); // bounds for the initial view of the map
  	}
 
 	stores.forEach(function(store) {
@@ -255,8 +332,6 @@ var popupConfig, // the details from the config file for popup customization
 			populateTable("name"); // table populated by default order, use populateTable("name") to sort alphabetically
 		}
 	}
-
-
 	
 	//if(stock.count>0){
 	//	totalStoresWithStock ++;
@@ -281,11 +356,11 @@ var popupConfig, // the details from the config file for popup customization
 function showMapView(storeID){
 	// change button colours
 	var listbutton = document.getElementById('listbtn');
-	listbutton.src ='images/listview.png';
-	listbutton.style.backgroundColor = "black";
+	listbutton.src = popupConfig.icons.list;
+	listbutton.style.backgroundColor = popupConfig.colors.modalBG;
 	var mapbutton = document.getElementById('mapbtn');
-	mapbutton.src='images/mapview_inverted.png';
-	mapbutton.style.backgroundColor = "white";
+	mapbutton.src=popupConfig.icons.mapSelected;
+	mapbutton.style.backgroundColor = popupConfig.colors.modalFG;
 
 	document.getElementById("purecommTables").style.display = "none";
 	//closeIW();
@@ -304,16 +379,21 @@ function showMapView(storeID){
 			}
 		})
 	}
+
+	if(searchRefresh){
+		map.fitBounds(mapBounds);
+		searchRefresh = false;
+	}
 }
 
 function showListView(storeID){
 	// change button colours
 	var mapbutton = document.getElementById('mapbtn');
-	mapbutton.src='images/mapview.png';
-	mapbutton.style.backgroundColor = "black";
+	mapbutton.src = popupConfig.icons.map;
+	mapbutton.style.backgroundColor = popupConfig.colors.modalBG;
 	var listbutton = document.getElementById('listbtn');
-	listbutton.src='images/listview_inverted.png';
-	listbutton.style.backgroundColor = "white";
+	listbutton.src = popupConfig.icons.listSelected;
+	listbutton.style.backgroundColor = popupConfig.colors.modalFG;
 
 	document.getElementById("purecommMap").style.display = "none";
 	document.getElementById("purecommTables").style.display = "block";
@@ -324,6 +404,10 @@ function showListView(storeID){
 		storeRow.scrollIntoView(true);
 	}
 
+	if(searchRefresh){
+		document.getElementById("table_inStock").scrollIntoView(true);
+		searchRefresh = false;
+	}
 
 	//("name"); // *** testing repopulate table by name
 
@@ -619,8 +703,16 @@ function findLocation(position){
 		newBounds.extend(stores[0].coords);
 		console.log(newBounds);
 		map.fitBounds(newBounds);
-		console.log("zoom "+map.getZoom());
+		mapBounds = newBounds;
 		if (map.getZoom() > 15) map.setZoom(15); // max zoom to 15
+		searchRefresh = true;
+		console.log("zoom "+map.getZoom());
+
+		// close infowindow
+		if(mapOpenedIW){
+			mapOpenedIW.close(); // close IW
+			mapOpenedIW = null; // no IW is open
+		}
 	}
 }
 
@@ -680,61 +772,60 @@ function populateTable(sortBy){
 		populateTableRow(store);
 	});
 	table.scrollIntoView(true); // go to top of table
-}
 
-function populateTableRow(store){
-	var inStockTable = document.getElementById("table_inStock");
-	var noStockTable = document.getElementById("table_noStock");
+	function populateTableRow(store){
+		var inStockTable = document.getElementById("table_inStock");
+		var noStockTable = document.getElementById("table_noStock");
 
 
-	//console.log(storeDetails);
-	//var stock = getStockCount(storeDetails.id);
+		//console.log(storeDetails);
+		//var stock = getStockCount(storeDetails.id);
 
-	//new StoreMarker(storeDetails, stock);
-	//bounds.extend(storeDetails.coords);
+		//new StoreMarker(storeDetails, stock);
+		//bounds.extend(storeDetails.coords);
 
-	//var inStockTable = document.getElementById("table_inStock"); 
-	var row;
-	if (selectedStore){
-		if(selectedStore.id==store.id){
-			row = inStockTable.insertRow(0);
-		} 
-	} else {
-		row = inStockTable.insertRow(-1); // insert bottom row
+		var row;
+		if (selectedStore){
+			if(selectedStore.id==store.id){
+				row = inStockTable.insertRow(0);
+			} 
+		} else {
+			row = inStockTable.insertRow(-1); // insert bottom row
+		}
+		row.insertCell(0).innerHTML = tableString(store);
+
 	}
-	row.insertCell(0).innerHTML = tableString(store);
 
-}
-
-function tableString(store, stock) {
-	var openinghoursString = '<pre class="p2">';
-	var dayhrs = store.opening.split(',');
-	dayhrs.forEach(function(hrs){
-		openinghoursString += hrs + "<br/>"
-	})
-	openinghoursString +=  "</pre>"
-	// html content of the table
-	var contentString = '<div class="tableRow" id="' + store.id + '" >' +
-	'<div class="left">' +
-	'<p class="p1">'+
-	store.name + ' ' + store.distance + '<br />' + 
-	'<p class="p2">'+
-	store.address +'</p>' +
-	'<p class="p1">'+
-	'stock.message' + '</p>' +
-	'<button type="button" onclick=selectStore("' + store.id + '","")>Select Store</button>' + 
-	'<button type="button" onclick=showMapView("' + store.id + '","map")>View on Map</button>' + 
-	'</div>' +
-	'<div class="right">' + 
-	'<p class="p2">'+
-	openinghoursString + '</p>' + 
-	'</div>' +
-	'</div>';
-	
-	getStore = function () { // button on infowindow function
-		return store; // reset the train alarm
+	function tableString(store, stock) {
+		var openinghoursString = '<pre class="p2">';
+		var dayhrs = store.opening.split(',');
+		dayhrs.forEach(function(hrs){
+			openinghoursString += hrs + "<br/>"
+		})
+		openinghoursString +=  "</pre>"
+		// html content of the table
+		var contentString = '<div class="tableRow" id="' + store.id + '" >' +
+		'<div class="left">' +
+		'<p class="p1">'+
+		store.name + ' ' + store.distance + '<br />' + 
+		'<p class="p2">'+
+		store.address +'</p>' +
+		'<p class="p1">'+
+		'stock.message' + '</p>' +
+		'<button class="purecommTextButton" type="button" onclick=selectStore("' + store.id + '","")>Select Store</button>' + 
+		'<button class="purecommTextButton" type="button" onclick=showMapView("' + store.id + '","map")>View on Map</button>' + 
+		'</div>' +
+		'<div class="right">' + 
+		'<p class="p2">'+
+		openinghoursString + '</p>' + 
+		'</div>' +
+		'</div>';
+		
+		getStore = function () { // button on infowindow function
+			return store; // reset the train alarm
+		}
+		return contentString;
 	}
-	return contentString;
 }
 
 
@@ -821,6 +912,17 @@ function mapStoreMarker(store) {
 		markerIW.close(map, marker); // close this IW
 		markerIW.open(map, marker); // open this IW
 		mapOpenedIW = markerIW; // set this IW to the opened IW
+		// make the IW window color match the config
+		if (popupConfig.colors.bodyBG){
+			var color = popupConfig.colors.bodyBG;
+			var iwOuter = document.getElementsByClassName('gm-style-iw')[0];//or $('#outerDivId')[0];
+			var iwBackground = iwOuter.previousSibling;
+			var children = iwBackground.getElementsByTagName('div');
+			//children[1].style.backgroundColor = color; // iw shadow
+			children[4].style.backgroundColor = color; // iw arrow 
+			children[6].style.backgroundColor = color; // iw arrow
+			children[7].style.backgroundColor = color; // iw padding	
+		}
 	}
 
 	function closeOpenedIW(){
@@ -831,30 +933,34 @@ function mapStoreMarker(store) {
 	}
 
 	mapStoreMarkers.push(this); // push the marker
-}
 
+	function iwString(store, availability) {
 
+		// html content of the infowindow
+		var contentString = '<div class="iwContent">' +
+		'<p class="p1">'+
+		store.name + '</p>' +
+		'<p class="p2">'+
+		store.address + '</p>' +
+		'<p class="p1">'+
+		availability + '</p>' +
+		'<button class="purecommTextButton" type="button" onclick=selectStore("' + store.id + '","")>Select Store</button>' + 
+		'<button class="purecommTextButton" type="button" onclick=showListView("' + store.id + '","list")>View Opening</button>' + 
+		'</div>';
 
-function iwString(store, availability) {
-
-	// html content of the infowindow
-	var contentString = '<div class="iwContent">' +
-	'<p class="p1">'+
-	store.name + '</p>' +
-	'<p class="p2">'+
-	store.address + '</p>' +
-	'<p class="p1">'+
-	availability + '</p>' +
-	'<button type="button" onclick=selectStore("' + store.id + '","")>Select Store</button>' + 
-	'<button type="button" onclick=showListView("' + store.id + '","list")>View Opening</button>' + 
-	'</div>';
-
-	getStore = function () { // button on infowindow function
-		return store; // reset the train alarm
+		getStore = function () { // button on infowindow function
+			return store; // reset the train alarm
+		}
+		return contentString;
 	}
-	return contentString;
+
+
 }
 
+
+
+
+	
 
 function getStores (){
 	var stores_ = [];

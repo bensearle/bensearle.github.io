@@ -14,9 +14,10 @@
 /* Modal Content/Box */
 .purecommModalContent {
     top: 10%;
-    font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    background-color: black;
-    color: white;
+    font-family: var(--purecommFontFamily);
+    /*background-color: black;*/
+    background-color: var(--purecommModalBG);
+    color:  var(--purecommModalFG);
     font-size: 18px; 
     width: 500px;
     height: 483px;
@@ -32,10 +33,13 @@
     animation-duration: 0.4s
 }
 
-.purecommModalContent button {
-    background-color: black;
+
+
+.purecommModalContent .purecommTextButton {
+    font-family: var(--purecommFontFamily);
+    color: var(--purecommModalFG);
+    background-color: var(--purecommModalBG);
     border: none;
-    color: white;
     padding: 5px 5px;
     text-align: center;
     text-decoration: none;
@@ -94,22 +98,28 @@
     margin: 5px; 
 }
 
+.purecommModalContent .purecommModalFooter .searchdiv {
+    float: right;
+}
+
 .purecommModalContent .purecommModalFooter .searchtxt {
     text-align: right;
     /*width: 180px; (-23)*/
+    float: right;
     margin-left: 105.5px;
 }
 .purecommModalContent .purecommModalFooter .searchbox {
     /*font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+    font-family: var(--purecommFontFamily);
     font-size: 18px; 
     vertical-align:middle;
     outline:none;
-    float: left;
-    width: 152px;
+    width: 150px; /*152*/
     height: 24px;
     display: none;
     border: 0px;
-    padding: 3px 5px 3px 5px /* top right bottom left*/
+    padding: 3px 5px 3px 5px; /* top right bottom left*/
+    float: right;
 }
 
 .purecommModalContent .purecommModalFooter .searchicon {
@@ -131,6 +141,7 @@
 
 .purecommModalContent .purecommModalBody p, pre { 
     /*font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+    font-family: var(--purecommFontFamily);
     margin:0.5em;
 }
 
@@ -148,8 +159,8 @@
     overflow: auto;
     overflow-x: hidden;
     background:white;
-    background-color: white;
-    color: white;
+    background-color: var(--purecommBodyBG);
+    color: var(--purecommBodyFG);
 
 }
 
@@ -164,12 +175,16 @@
 }
 /* Modal Body */
 .purecommModalContent .purecommModalBody .map {
-    color: black;
+    color: var(--purecommBodyFG);
 }
+
+.gm-style-iw + div {
+    display: none; /* remove X from infowindow */
+} 
 
 /* Modal Body */
 .purecommModalContent .purecommModalBody .iwContent {
-    color: black;
+    color: var(--purecommBodyFG);
     width: 190px;
 }
 
@@ -186,7 +201,7 @@
 /* Modal Body */
 .purecommModalContent .purecommModalBody .tableRow {
     float: center;
-    color: black;
+    color: var(--purecommBodyFG);
     width: 90%;
 }
 
