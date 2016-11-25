@@ -19,6 +19,48 @@ var popupConfig, // the details from the config file for popup customization
 	searchRefresh, // true if the user has searched and the map needs bounds set/table top row needs to be in view
 	test;
 
+var purecommFAPI, // instance of the FAPI interface
+	purecommItems, // array for skus
+	purecommOrderNumber, // order number for this session
+	purecommStores, // array of stores
+	testttt;
+
+
+/*
+ * function that runs when the purecommFAPIjsInterface.js is loaded
+ */
+function purecommFAPIjsInterfaceLoaded(){
+	//purecommFAPI = new purecommFAPIjsInterface('XQ1XA6', 'password57', 'uat');
+	purecommFAPI = new purecommFAPIjsInterface('67ZQJH', 'password57', 'uat');
+/*
+	var clientId = 57;
+	var orderNumber = "abcBEN2";
+	var skus = [{"barcode":"1234","quantity":2,"unitPrice":2.10}];
+	//var skus = [];
+	//var replacedOrder = "231-332-001";
+
+	purecommFAPI.createOrder(createOrderResponse,orderNumber,skus);
+
+	purecommFAPI.cancelOrder(cancelOrderResponse,orderNumber);
+	purecommFAPI.storeAvailability(storeAvailabilityResponse,orderNumber);
+    //var host = "uat";
+    //var store = "S9TBCG"; // Forever New
+    //var store = "67ZQJH"; // WebReserve
+    purecommFAPI.orderStatus(orderStatusResponse,orderNumber);
+
+    var date = new Date();
+	date.setDate(date.getDate() - 7);
+
+	//date.setMilliseconds(0);
+
+    //var d = dateFormat(date..toISOString(),"isoDateTime");
+
+    purecommFAPI.monitorForOrderChanges(monitorForOrderChangesResponse,date);
+    purecommFAPI.shippableStockOnHand(shippableStockOnHandResponse,date);
+    var store = "";
+    purecommFAPI.updateOrder(updateOrderResponse,orderNumber,"","","",skus,"","","",store);
+    */
+}
 
 /*
  * 
@@ -138,6 +180,12 @@ var popupConfig, // the details from the config file for popup customization
  * (eg. Could use Magneto quoteId)
  */
 function purecommClickAndCollectInit(branchId, sessionId) {
+	console.log(createUUID());
+
+	console.log(document.cookie);
+	var ccc = getCookie("document.cookie");
+	console.log(ccc);
+
 	if (!popupInitialized) {
 		this.branchId = branchId;
 		this.sessionId = sessionId;
@@ -148,13 +196,31 @@ function purecommClickAndCollectInit(branchId, sessionId) {
 		var head = document.getElementsByTagName('head')[0];
 		var body = document.getElementsByTagName('body')[0];
 
+		var hostExtension = "/en/map_popup/v2/"
+		var	purecommHost = "https://uat.purecomm.hk" + hostExtension; // uat is default host
+		//if(hostParam == "pp") {
+		//	host = "https://pp.purecomm.hk" + hostExtension;
+		//} else if(hostParam == "prod") {
+		//	host = "https://www.purecomm.hk" + hostExtension;
+		//} 
+
 		// load css file
 		var modalCSS  = document.createElement('link');
 		modalCSS.type = 'text/css';
 		modalCSS.rel = 'stylesheet';
-		modalCSS.href = 'purecommClickAndCollect.css';
+		modalCSS.href = purecommHost + 'purecommClickAndCollect.css';
 		head.appendChild(modalCSS);
+			
+		var head = document.getElementsByTagName('head')[0];	
+		fapiScript = document.createElement('script');
+		fapiScript.type = 'text/javascript';
+		fapiScript.src = purecommHost + 'purecommFAPIjsInterface.js';
+		head.appendChild(fapiScript);
 
+		//document.write("<script type='text/javascript' src='purecommFAPIjsInterface.js'><\/script>");
+
+		//document.write("<link rel=\"stylesheet\" href=\"purecommClickAndCollect.css\" type=\"text/css\" />");
+	        	
 		// create modal html
 		var modal = document.createElement('div');
 		modal.id = 'purecommModal';
@@ -179,6 +245,7 @@ function purecommClickAndCollectInit(branchId, sessionId) {
 		'</div>' +
 		'</div>';
 
+		closeModal = function(){purecommModal.style.display = "none";}
 		modal.innerHTML = modalHTML;
 		body.appendChild(modal);
 
@@ -275,6 +342,8 @@ function purecommClickAndCollectInit(branchId, sessionId) {
  */
  function initializeMap() {
  	map = new google.maps.Map(document.getElementById('purecommMap'), {
+ 		styles: [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }]}], // remove points of interest
+ 		clickableIcons: false, // disable google's clickable items and stop their infowindows appearing
  		zoom: 15,
  		mapTypeId: google.maps.MapTypeId.ROADMAP,
 		mapTypeControl: false // no option to change map type
@@ -348,6 +417,74 @@ function purecommClickAndCollectInit(branchId, sessionId) {
 	storesInitialized = true;
 }
 
+/*
+ * when the popup is opened for the first time, the store information is initialized
+ * this function is called from 3 places, in 3 different ways
+ * purecommFindAStorePopup	 		-->	purecommOpenModal()
+ * purecommProductAvailabilityPopup	-->	purecommOpenModal(sku)
+ * purecommCartAvailabilityPopup	-->	purecommOpenModal(cartItems)
+ */
+ function purecommOpenModal_(){
+ 	console.log(stores);
+	var mv = popupConfig.mapView; // map view to be shown
+	var lv = popupConfig.listView; // list view to be shown
+	document.getElementById('purecommModal').style.display = "block"; // open the model
+ 	
+ 	if (!storesInitialized){ // if stores aren't itialized
+ 		stores = getStores(); // get information on all stores
+ 		if (mv) mapBounds = new google.maps.LatLngBounds(); // bounds for the initial view of the map
+ 	}
+
+	purecommStores.forEach(function(store) {
+		if (!storesInitialized){
+			if(mv){
+				console.log("STORE",store);
+				console.log("LAT",store["latitude"]);
+				console.log("LNG",store.longitude);
+				var lat = parseFloat(store.latitude), lng = parseFloat(store.longitude);
+				if (typeof lat !== "undefined" && typeof lng !== "undefined"){
+					coords = {"lat":lat,"lng":lng};
+					store['coords'] =  coords;
+					console.log("COORDS",store.coords);
+					new mapStoreMarker(store); // create map marker for every store
+					mapBounds.extend(coords); // extend bounds to show the marker
+				}
+			}
+		}
+
+	});
+	
+	if(mv && storesInitialized){
+		mapStoreMarkers.forEach(function(marker){
+			marker.update(); 
+		});
+	}
+
+	if (lv){
+		//TO DO if distance is known
+		if (stores[0].distance){ // check first store to see if distance is known
+			populateTable("distances"); // table populated by default order, use populateTable("name") to sort alphabetically
+
+		} else {
+			populateTable("name"); // table populated by default order, use populateTable("name") to sort alphabetically
+		}
+	}
+	
+	//if(stock.count>0){
+	//	totalStoresWithStock ++;
+	//}
+	
+	//document.getElementById('purecommModalHeader').innerHTML = "Item is stocked in "+totalStoresWithStock+" stores";
+	//refreshTable();
+	if(popupConfig.defaultView == "map"){
+		showMapView();
+	} else {
+		showListView();
+	}
+
+	storesInitialized = true;
+}
+
 
 /*
  * function to display the map view
@@ -368,8 +505,11 @@ function showMapView(storeID){
 
 	if(!mapInitialized){
 		google.maps.event.trigger(map,'resize');
+		console.log("*******mapBounds",mapBounds);
 		map.fitBounds(mapBounds);
 		mapInitialized = 1;
+
+		//smoothZoom (12, map.getZoom())
 	}
 
 	if (storeID){
@@ -385,6 +525,21 @@ function showMapView(storeID){
 		searchRefresh = false;
 	}
 }
+
+/*
+// the smooth zoom function
+function smoothZoom (max, cnt) {
+	if (cnt > max) {
+		return;
+	}
+	else {
+		map.setCenter({"lat":-31.953317, "lng":115.860819});
+		console.log("zoom "+cnt);
+		map.setZoom(cnt);
+
+		setTimeout(function(){smoothZoom(max, cnt + 0.5)}, 100); // 80ms is what I found to work well on my system -- it might not work well on all systems
+	}
+} */
 
 function showListView(storeID){
 	// change button colours
@@ -449,12 +604,95 @@ function showListView(storeID){
  * popup store selection map for one or more skus in the shopping cart (listed as a JSON array)
  */
  function purecommCartAvailabilityPopup(cartItems){
+ 	purecommOrderNumber = "abcBEN2";
  	if (popupInitialized){
+ 		if (purecommItems == cartItems){
+ 			// same items, just open popup
+ 		} else {
+ 			// new items
+ 			purecommItems = cartItems;
+ 			purecommProcessNewItems(cartItems)
+ 		}
 		// popup has been initialized
 		// do stuff
 		return true;
 	} else {
 		return false;
+	}
+}
+
+function purecommProcessNewItems(items){
+	if (!items) items = [];
+	var purecommOrderNumber = "benOrder5";
+	//var skus = [];
+	//var items = [{"barcode":"686050011000","quantity":1,"unitPrice":2.10},{"barcode":"737045001883","quantity":1,"unitPrice":2.10}];
+	var items = [{"barcode":"887278437802","quantity":1,"unitPrice":2.10}];
+	purecommFAPI.createOrder(createOrderResponse,purecommOrderNumber,items);
+
+	function createOrderResponse(success,data){
+		if (success){
+			console.log("createOrderResponse",data);
+			if (data.result == "OK"){
+				// order created, get availabilty and store details
+				purecommFAPI.storeAvailability(storeAvailabilityResponse,purecommOrderNumber);
+			} else if (data.result == "Duplicate Order"){
+				// order exists, update it
+				purecommFAPI.updateOrder(updateOrderResponse,purecommOrderNumber,"","","",items,"","","","");
+			} else {
+				console.error(data);
+			}
+		} else {
+			console.error(data);
+		}
+	}
+
+	function updateOrderResponse (success,data){
+		if (success){
+			console.log("updateOrderResponse",data);
+			if (data.result == "OK"){
+				// order created, get availabilty and store details
+				purecommFAPI.storeAvailability(storeAvailabilityResponse,purecommOrderNumber);
+			} else {
+				console.error(data);
+			}
+		} else {
+			console.error(data);
+		}
+	}
+
+	function storeAvailabilityResponse (success,data){
+		if (success){
+			console.log("storeAvailabilityResponse",data);
+			//purecommFAPI.storeAvailability(storeAvailabilityResponse,purecommOrderNumber);
+			purecommStores = data.stores;
+
+			// cancel order by updating all quantities to 0
+			for (var sku in items) {
+				items[sku].quantity = 0;
+			}
+			purecommFAPI.updateOrder(itemsRemoved,purecommOrderNumber,"","","",items,"","","","");
+
+			purecommOpenModal_(); // open the modal
+		} else {
+			console.error(data);
+		}
+	}
+
+	function itemsRemoved (success,data){
+		if (success){
+			console.log("itemsRemoved",data);
+			purecommFAPI.orderStatus(orderStatusResponse,purecommOrderNumber);
+		} else {
+			console.error(data);
+		}
+	}
+
+	function orderStatusResponse (success,data){
+		if (success){
+			console.log("orderStatusResponse",data);
+		} else {
+			console.error(data);
+		}
 	}
 }
 
@@ -833,7 +1071,7 @@ function mapStoreMarker(store) {
 	var markerIcon,
 	markerZ;
 
-	var id = store.id;
+	var id = store.storeId;
 	if (store.availability){
 		var markerdetails = getMarkerDetails(store.availability);
 		markerIcon = markerdetails.icon;
@@ -1021,16 +1259,35 @@ function getMarkerDetails(availability){
 		default:
 		return {"icon":popupConfig.mapPointer.red, "z":5};
 		break;
+
+		// Immediate, Insufficient Stock
 	}
 }
 
+
+
+
+
 /*
+ * Create a version 4 UUID is defined in RFC 4122 
+ * 128 randomly-generated bits with six bits at certain positions set to particular values
+ * eg 4513c570-5db9-408e-9ded-e1bben24436a
+ */
+function createUUID(){
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+		return v.toString(16);
+	});
+}
+
+/*
+ **************************************************************************************
  * Cookie functionality
  * cname: name of cookie
  * cvalie: value of cookie
  * exdays: days until the cookie expires
  */
- function setCookie(cname,cvalue,exdays) {
+function setCookie(cname,cvalue,exdays) {
  	var d = new Date();
 	d.setTime(d.getTime() + (exdays*86400000)); // 86400000=24*60*60*1000
 	var expires = "expires=" + d.toGMTString();
