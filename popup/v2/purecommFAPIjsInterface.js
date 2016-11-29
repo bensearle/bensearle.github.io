@@ -30,6 +30,7 @@ function purecommFAPIjsInterface(usr, pwd, hostParam){
 	//var auth = "67ZQJH:password57";
 	var auth = usr + ":" + pwd;
 	var	host = "https://uat.purecomm.hk"; // uat is default host
+	//var	host = "https://uat.purecomm.hk"; // uat is default host
 	if(hostParam == "pp") {
 		host = "https://pp.purecomm.hk";
 	} else if(hostParam == "prod") {
@@ -219,7 +220,7 @@ function purecommFAPIjsInterface(usr, pwd, hostParam){
 	 * url类型：String默认值: 当前页地址。发送请求的地址。
 	 */
 	function ajax(settings) {
-		console.log(settings);
+		//console.log(settings);
 		var async = true;
 		if(settings.async == false) {
 			async = false;
@@ -261,9 +262,17 @@ function purecommFAPIjsInterface(usr, pwd, hostParam){
 		            
 		        } 
 		    }
-		      
+
 		    xmlHttp.open(settings.type, settings.url, async);
-			xmlHttp.setRequestHeader("Authorization", "Basic " + auth);
+			if(settings.authorization !== undefined) {
+				if (settings.authorization === null || settings.authorization === ""){
+					// do not set authorization
+				} else {
+					xmlHttp.setRequestHeader("Authorization", settings.authorization); // if the ajax call defines the authorization, use that
+				}
+			} else{
+				xmlHttp.setRequestHeader("Authorization", "Basic " + auth);
+			}
 
 		    if(settings.dataType) {
 				xmlHttp.setRequestHeader("Content-Type", settings.dataType);
@@ -279,12 +288,9 @@ function purecommFAPIjsInterface(usr, pwd, hostParam){
 		        	 
 		        	 settings.success(data);
 		        }  
-		    }  
-		    
+		    } 
 	    	xmlHttp.send(settings.data);
-	    	
 	    }
-	  
 	};
 	
 	function getIEVersion() {
@@ -326,6 +332,7 @@ function purecommFAPIjsInterface(usr, pwd, hostParam){
 		updateOrder: updateOrder,
 		cancelOrder: cancelOrder,
 		monitorForOrderChanges: monitorForOrderChanges,
-		orderStatus: orderStatus
+		orderStatus: orderStatus,
+		ajax,ajax
 	};
 }

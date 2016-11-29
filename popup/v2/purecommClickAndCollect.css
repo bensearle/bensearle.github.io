@@ -58,8 +58,8 @@
 .purecommModalContent .purecommModalHeader img, .purecommModalFooter img{
     height: 20px;
     width: 20px;
-    padding: 5px; /* top right bottom left*/
-    margin: 0px 10px 0px 0px; /* top right bottom left*/
+    margin: 5px; /* top right bottom left*/
+    /* margin: 0px 10px 0px 0px; top right bottom left*/
 
 }
 
@@ -95,35 +95,38 @@
 .purecommModalContent .purecommModalFooter .mapdiv, .listdiv, .gpsdiv, .searchdiv {
     height: 30px;
     float: left;
+    padding: 0px 5px 0px 5px; /* top right bottom left */
     margin: 5px; 
 }
 
+.purecommModalContent .purecommModalFooter .mapdiv, .listdiv {
+    cursor: pointer;
+    margin: 5px 10px 5px 5px; /* top right bottom left */
+
+}
+
 .purecommModalContent .purecommModalFooter .searchdiv {
+    background-color: var(--purecommModalFG);
     float: right;
 }
 
-.purecommModalContent .purecommModalFooter .searchtxt {
-    text-align: right;
-    /*width: 180px; (-23)*/
-    float: right;
-    margin-left: 105.5px;
-}
 .purecommModalContent .purecommModalFooter .searchbox {
     /*font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+    line-height: normal;
     font-family: var(--purecommFontFamily);
     font-size: 18px; 
     vertical-align:middle;
     outline:none;
-    width: 150px; /*152*/
+    width: 200px; /*152*/
     height: 24px;
-    display: none;
+    /*display: none;*/
     border: 0px;
     padding: 3px 5px 3px 5px; /* top right bottom left*/
     float: right;
 }
 
 .purecommModalContent .purecommModalFooter .searchicon {
-    margin: 0px;
+    margin: 5px 0px 5px 0px; /*top right bottom left*/
     float: right;
 }
 
@@ -281,10 +284,17 @@
 }
 
 /* cannot do in production, breach of terms. 9.4 https://developers.google.com/maps/terms */
+/* google logo
 a[href^="http://maps.google.com/maps"]{display:none !important}
-a[href^="https://maps.google.com/maps"]{display:none !important}
+a[href^="https://maps.google.com/maps"]{display:none !important}*/
 .gmnoprint a, .gmnoprint span, .gm-style-cc {
-    display:none;
+    /*display:none;*/ /*copyright*/
+}
+.gm-style a {
+    display:none; /*copyright*/
+}
+.gmnoprint.gm-style-cc {
+    display:none; /*Terms of Use*/
 }
 .gmnoprint div {
     /* background:none !important;  zoom in/out buttons */
