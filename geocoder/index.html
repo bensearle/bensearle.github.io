@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!--<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />-->
+	<head>
+		<!--<link rel="stylesheet" type="text/css" href="geocoder.css">-->
+	</head>
+	<body>
+		<div class="left">
+			<textarea class="input" id="input"></textarea>
+			<p>This is the instructions.</p>
+			<button id="button" onclick="GetCoordinates()">Get Coordinates</button>
+		</div>
+		<div class="center">
+			<div class="map" id="map"></div>
+			<table class="table" id="table"></table>
+		</div>
+		<div class="right">
+			<textarea class="output" id="json"></textarea>
+			<textarea class="output" id="toml"></textarea>
+			<textarea class="output" id="yaml"></textarea>
+		</div>
+	</body>
+	<!-- Change Google Maps Key -->
+	<script type="text/javascript" src="geocoder.js"></script>
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD07c9hGOtQnuF30nwqml5OQkqzrPejIFs&callback=initializeMap"></script>
+</html>
