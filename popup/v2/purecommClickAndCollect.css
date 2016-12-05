@@ -143,8 +143,7 @@
 }
 
 .purecommModalContent .purecommModalBody p, pre { 
-    /*font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
-    font-family: var(--purecommFontFamily);
+    font-family: var(--purecommFontFamily) !important;
     margin:0.5em;
 }
 
@@ -161,13 +160,12 @@
     clear:left;
     overflow: auto;
     overflow-x: hidden;
-    background:white;
+    background: white;
     background-color: var(--purecommBodyBG);
     color: var(--purecommBodyFG);
 
 }
 
-/* Modal Body */
 .purecommModalContent .purecommModalBody .tables table {
     width: 100%;
     border-collapse: collapse;
@@ -176,44 +174,65 @@
 .purecommModalContent .purecommModalBody .tables tr {
     border-bottom: 2px solid var(--purecommBodyFG);
 }
-/* Modal Body */
+
 .purecommModalContent .purecommModalBody .map {
     color: var(--purecommBodyFG);
 }
 
 .gm-style-iw + div {
     display: none; /* remove X from infowindow */
-} 
+}
 
-/* Modal Body */
 .purecommModalContent .purecommModalBody .iwContent {
     color: var(--purecommBodyFG);
     width: 190px;
+    font-weight: 400;
 }
 
-/* Modal Body */
 .purecommModalContent .purecommModalBody .iwContent .p1 {
     font-size: 14px;
 }
-/* Modal Body */
+
 .purecommModalContent .purecommModalBody .iwContent .p2 {
     font-size: 12px;
 }
 
-
-/* Modal Body */
 .purecommModalContent .purecommModalBody .tableRow {
     float: center;
     color: var(--purecommBodyFG);
     width: 90%;
 }
 
-/* Modal Body */
+
+
+.tableRow figure {
+    position: relative;
+    float: left;
+    width: 40px;
+    height: 40px;
+    margin: 10px 0px 5px 5px; /*top right bottom left*/
+}
+.tableRow figure img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.tableRow figcaption {
+    font-size: 14px;
+    text-align: center;
+    color: black;
+    position: absolute;
+    top: 6px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
 .purecommModalContent .purecommModalBody .tableRow .left, .right{
     width: 200px;
     float: left;
     word-wrap: break-word;
-    padding: 5px 10px 5px 10px /* top right bottom left*/
+    padding: 5px 10px 5px 0px; /* top right bottom left*/
 }
 
 /* Modal Body */
