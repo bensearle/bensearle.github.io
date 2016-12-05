@@ -5,15 +5,18 @@
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />-->
 	<head>
-		<!--<link rel="stylesheet" type="text/css" href="geocoder.css">-->
+		<link rel="stylesheet" type="text/css" href="geocoder.css">
 	</head>
 	<body>
 		<div class="left">
-			<textarea class="input" id="input"></textarea>
+			<textarea class="input" id="input">
+                Old Central Police Station, Hollywood Road, Central, Hong Kong
+                "lat":22.281896,"lng":114.155153
+            </textarea>
 			<p>This is the instructions.</p>
-			<button id="button" onclick="GetCoordinates()">Get Coordinates</button>
+			<button id="button" onclick="process()">Get Coordinates</button>
 		</div>
-		<div class="center">
+		<div class="centre">
 			<div class="map" id="map"></div>
 			<table class="table" id="table"></table>
 		</div>
