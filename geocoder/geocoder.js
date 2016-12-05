@@ -1,8 +1,11 @@
-var input = document.getElementById("input").value;
+var input = document.getElementById("input");
+var outputJSON = document.getElementById("json");
+var outputTOML = document.getElementById("toml");
+var outputYAML = document.getElementById("yaml");
 
 var map,
     geocoder;
-
+var output = [];// 
 function initializeMap() {
 	geocoder = new google.maps.Geocoder();
 	map = new google.maps.Map(document.getElementById('map'), {
@@ -16,7 +19,12 @@ function initializeMap() {
 //var geocoder = new google.maps.Geocoder();
 
 function readInput(){
-    var lines = document.getElementById("input").value.split('\n');
+    output = []; // clear output
+    outputJSON.value = '';
+    outputTOML.value = '';
+    outputYAML.value = '';
+
+    var lines = input.value.split('\n');
     lines.forEach(function(line){
         if(line.trim().length == 0){
             // whitespace
@@ -151,4 +159,12 @@ function recieveData(address,coordinates){
 			zIndex: markerZ}*/
         //TODO extend map bounds
 	});
+
+    output.push({"address":address,"coordinates":coordinates});
+    console.log(JSON.stringify(output));
+    
+    outputJSON.value = JSON.stringify(output);
+    outputTOML.value += coordinates.lat + "," + coordinates.lng + "," + address.replace(/[,]/g, ";") + "\n"
 }
+
+//TODO implement copy to clipboard for output http://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
