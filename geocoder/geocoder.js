@@ -150,8 +150,8 @@ function recieveData(address,coordinates){
 		zIndex: 1, // 100000 - index;
 		icon: {
 			url: 'markerOG.png',
-			labelOrigin: new google.maps.Point(15,12),
-			scaledSize: new google.maps.Size(30,30)},
+			labelOrigin: new google.maps.Point(20,15),
+			scaledSize: new google.maps.Size(40,40)},
 		/*label: {
 			text: ""+store.index,
 			color: 'black',
