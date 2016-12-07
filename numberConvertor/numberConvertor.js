@@ -5,7 +5,27 @@ var binary, // base 2
     octal, // base 8
     decimal, // base 10
     hex, // base 16
-    roman;
+    roman,
+    base2 = document.getElementById('base2'),
+    base3 = document.getElementById('base3'),
+    base4 = document.getElementById('base4'),
+    base5 = document.getElementById('base5'),
+    base6 = document.getElementById('base6'),
+    base8 = document.getElementById('base8'),
+    base10 = document.getElementById('base10'),
+    base11 = document.getElementById('base11'),
+    base12 = document.getElementById('base12'),
+    base13 = document.getElementById('base13'),
+    base14 = document.getElementById('base14'),
+    base15 = document.getElementById('base15'),
+    base16 = document.getElementById('base16'),
+    base20 = document.getElementById('base20'),
+    base24 = document.getElementById('base24'),
+    base26 = document.getElementById('base26'),
+    roman = document.getElementById('roman');
+
+
+    
 // chinese numerals
 
 //wikipedia.org/wiki/List_of_numeral_systems
@@ -17,6 +37,7 @@ var base2set = ['0', '1'],
     base10set = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
     base16set = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'],
     baseSet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'],
+    base13set = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '&#8586', '&#8587'], // rotated2, rotated3
     romanSet = { // line on top ( ̄ ) means *1000
         1: 'I',
         4: 'IV',
@@ -45,22 +66,28 @@ var base2set = ['0', '1'],
         1000000: 'M&#772' // M̄
     };
 
+// call stack size may exceed max for really big numbers because function uses recursion// TODO change to while loop
 function covertToRoman(number) {
     "use strict";
+    number = parseFloat(number);
     if (number === 0) { return ""; } // end recursion when number is 0
     var keyset = Object.keys(romanSet),
         key = Math.max.apply(Math, keyset.filter(function (k) {return k <= number; })); // largest key that is less than number
     return romanSet[key] + covertToRoman(number - key);
 }
 
-// call stack size may exceed max for really big numbers because function uses recursion
+// call stack size may exceed max for really big numbers because function uses recursion// TODO change to while loop
 function convertFromBase10(number, base) {
     "use strict";
+    var digitSet = baseSet; // the set that the digits belong to
+    if (base === 13) {
+        digitSet = base13set;
+    }
     var r = number % base; // get the mod/remainder
     if (r === number) {
-        return baseSet[r];
+        return digitSet[r];
     } else {
-        return convertFromBase10((number - r) / base, base) + baseSet[r];
+        return convertFromBase10((number - r) / base, base) + digitSet[r];
     }
 }
 
@@ -68,14 +95,43 @@ function convertFromBase10(number, base) {
 function convertToBase10(number, base) {
     "use strict";
     var digits = number.split(''), // get digits from number '1011' --> [1,0,1,1] && '8C' --> [8,12]
-        base10 = 0,
+        digitSet = baseSet, // the set that the digits belong to
+        base10number = 0,
         i = digits.length - 1;
+    if (number === 13) {
+        digitSet = base13set;
+    }
     
     digits.forEach(function (digit) {
-        base10 += baseSet.indexOf(digit) * Math.pow(base, i);
+        base10number += digitSet.indexOf(digit) * Math.pow(base, i);
         i -= 1;
     });
-    return base10;
+    return base10number;
+}
+
+function recalculate() {
+    "use strict";
+    var base10number = base10.value;
+    
+    base2.value = convertFromBase10(base10number, 2);
+    //base3.value = convertFromBase10(base10number, 3);
+    base4.value = convertFromBase10(base10number, 4);
+    base5.value = convertFromBase10(base10number, 5);
+    base6.value = convertFromBase10(base10number, 6);
+    base8.value = convertFromBase10(base10number, 8);
+    //base10.value = convertFromBase10(base10number, 10);
+    base11.value = convertFromBase10(base10number, 11);
+    //base12.value = convertFromBase10(base10number, 12);
+    base13.value = convertFromBase10(base10number, 13);
+    base14.value = convertFromBase10(base10number, 14);
+    //base15.value = convertFromBase10(base10number, 15);
+    base16.value = convertFromBase10(base10number, 16);
+    //base20.value = convertFromBase10(base10number, 20);
+    //base24.value = convertFromBase10(base10number, 24);
+    //base26.value = convertFromBase10(base10number, 26);
+    roman.value = covertToRoman(base10number, 16);
+
+    console.log(convertFromBase10(base10number, 13));
 }
 
 console.log(convertFromBase10(5, 2));

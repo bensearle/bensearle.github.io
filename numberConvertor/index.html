@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
 	<!--<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />-->
@@ -8,7 +8,44 @@
 		<!--<link rel="stylesheet" type="text/css" href="geocoder.css">-->
 	</head>
 	<body>
-
+        <p>&#8586 &#8587
+        40000: 'X&#772L&#772', // X̄L̄
+        50000: 'L&#772', // L̄
+        90000: 'X&#772C&#772', // X̄C̄
+        100000: 'C&#772', // C̄
+        400000: 'C&#772D&#772', // C̄D̄
+        500000: 'D&#772', // D̄
+        900000: 'C&#772M&#772', // C̄M̄
+        1000000: 'M&#772' /</p>
+        <table border="1">
+            <tr><td><input type="text" id="base2"></td><td>Base 2</td><td>Binary</td></tr>
+            <tr><td><input type="text" id="base3"></td><td>Base 3</td><td>Ternary</td></tr>
+            <tr><td><input type="text" id="base4"></td><td>Base 4</td><td>Quaternary</td></tr>
+            <tr><td><input type="text" id="base5"></td><td>Base 5</td><td>Quinary</td></tr>
+            <tr><td><input type="text" id="base6"></td><td>Base 6</td><td>Senary</td></tr>
+            <tr><td><input type="text" id="base8"></td><td>Base 8</td><td>Octal</td></tr>
+            <tr><td><input type="text" id="base10"></td><td>Base 10</td><td>Decimal</td></tr>
+            <tr><td><input type="text" id="base11"></td><td>Base 11</td><td>Undecimal</td></tr>
+            <tr><td><input type="text" id="base12"></td><td>Base 12</td><td>Duodecimal</td></tr>
+            <tr><td><input type="text" id="base13"></td><td>Base 13</td><td>Tridecimal</td></tr>
+            <tr><td><input type="text" id="base14"></td><td>Base 14</td><td>Tetradecimal</td></tr>
+            <tr><td><input type="text" id="base15"></td><td>Base 15</td><td>Pentadecimal</td></tr>
+            <tr><td><input type="text" id="base16"></td><td>Base 16</td><td>Hexadecimal</td></tr>
+            <tr><td><input type="text" id="base20"></td><td>Base 20</td><td>Vigesimal</td></tr>
+            <tr><td><input type="text" id="base24"></td><td>Base 24</td><td>Tetravigesimal</td></tr>
+            <tr><td><input type="text" id="base26"></td><td>Base 26</td><td>Hexavigesimal</td></tr>
+            <tr><td><input type="text" id="roman"></td><td></td><td>Roman Numerals</td></tr>
+            <!--<tr><td><input type="text" id="base2"></td><td>Base 2</td><td>Binary</td></tr>
+            <tr><td><input type="text" id="base2"></td><td>Base 2</td><td>Binary</td></tr>
+            <tr><td><input type="text" id="base2"></td><td>Base 2</td><td>Binary</td></tr>
+            <tr><td><input type="text" id="base2"></td><td>Base 2</td><td>Binary</td></tr>
+            <tr><td><input type="text" id="base2"></td><td>Base 2</td><td>Binary</td></tr>-->
+        <tr>
+        <td>Row 2, Column 1</td>
+        <td>Row 2, Column 2</td>
+            <td><button onclick="recalculate()" type="button">Click Me!</button></td>
+        </tr>
+        </table>
 	</body>
 	<!-- Change Google Maps Key -->
 	<script type="text/javascript" src="numberConvertor.js"></script>
