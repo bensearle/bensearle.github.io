@@ -37,7 +37,9 @@ var base2set = ['0', '1'],
     base10set = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
     base16set = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'],
     baseSet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'],
-    base13set = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '&#8586', '&#8587'], // rotated2, rotated3
+    //base13set = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '&#8586', '&#8587'], // rotated2, rotated3
+    base12set = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '\u218a', '\u218b'], // rotated2, rotated3
+
     romanSet = { // line on top ( ̄ ) means *1000
         1: 'I',
         4: 'IV',
@@ -80,8 +82,8 @@ function covertToRoman(number) {
 function convertFromBase10(number, base) {
     "use strict";
     var digitSet = baseSet; // the set that the digits belong to
-    if (base === 13) {
-        digitSet = base13set;
+    if (base === 12) {
+        digitSet = base12set;
     }
     var r = number % base; // get the mod/remainder
     if (r === number) {
@@ -98,8 +100,8 @@ function convertToBase10(number, base) {
         digitSet = baseSet, // the set that the digits belong to
         base10number = 0,
         i = digits.length - 1;
-    if (number === 13) {
-        digitSet = base13set;
+    if (number === 12) {
+        digitSet = base12set;
     }
     
     digits.forEach(function (digit) {
@@ -114,17 +116,17 @@ function recalculate() {
     var base10number = base10.value;
     
     base2.value = convertFromBase10(base10number, 2);
-    //base3.value = convertFromBase10(base10number, 3);
+    base3.value = convertFromBase10(base10number, 3);
     base4.value = convertFromBase10(base10number, 4);
     base5.value = convertFromBase10(base10number, 5);
     base6.value = convertFromBase10(base10number, 6);
     base8.value = convertFromBase10(base10number, 8);
     //base10.value = convertFromBase10(base10number, 10);
     base11.value = convertFromBase10(base10number, 11);
-    //base12.value = convertFromBase10(base10number, 12);
+    base12.value = convertFromBase10(base10number, 12); // other digit sets.. https://en.wikipedia.org/wiki/Duodecimal
     base13.value = convertFromBase10(base10number, 13);
     base14.value = convertFromBase10(base10number, 14);
-    //base15.value = convertFromBase10(base10number, 15);
+    base15.value = convertFromBase10(base10number, 15);
     base16.value = convertFromBase10(base10number, 16);
     //base20.value = convertFromBase10(base10number, 20);
     //base24.value = convertFromBase10(base10number, 24);
