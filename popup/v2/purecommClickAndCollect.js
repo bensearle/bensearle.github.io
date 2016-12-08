@@ -41,8 +41,10 @@ var purecommPopupConfiguration = { // default config for the popup, will be upda
             },
             "iconNearby": "true",
             "icons": {
-                "map": "https://" + purecommHostParam + ".purecomm.hk/en/map_popup/v2/images/mapview_white.png",
-                "mapSelected": "https://" + purecommHostParam + ".purecomm.hk/en/map_popup/v2/images/mapview_black.png",
+                //"map": "https://" + purecommHostParam + ".purecomm.hk/en/map_popup/v2/images/mapview_white.png",
+                "map": "images/mapview_white.png",
+                //"mapSelected": "https://" + purecommHostParam + ".purecomm.hk/en/map_popup/v2/images/mapview_black.png",
+                "mapSelected": "images/mapview_black.png",
                 "list": "https://" + purecommHostParam + ".purecomm.hk/en/map_popup/v2/images/listview_white.png",
                 "listSelected": "https://" + purecommHostParam + ".purecomm.hk/en/map_popup/v2/images/listview_black.png",
                 "search": "https://" + purecommHostParam + ".purecomm.hk/en/map_popup/v2/images/search_black.png",
@@ -73,24 +75,6 @@ function purecommFAPIjsInterfaceLoaded(){
 	//purecommFAPI = new purecommFAPIjsInterface('XQ1XA6', 'password57', 'uat');
 	//purecommFAPI = new purecommFAPIjsInterface('67ZQJH', 'password57', 'uat');
 	purecommFAPI = new purecommFAPIjsInterface('JZLDKH', 'rmw88', 'uat');
-}
-
-/*
- * 
- */
-function getConfigFile (branchId){
-	// Config file allows per-branchId config of:
-	// Which of nav icons to show
-	// Start in map or list view?
-	// Sprite for the map pointers
-	// Colour and font for header/footer
-	// All text strings for localisations
-
-
-
-	//var configuration = updateConfig(defaultConfiguration,getConfig(branchId));
-
-
 }
 
 /*
@@ -126,6 +110,9 @@ function purecommClickAndCollectInit(branchId, sessionId) {
             purecommPopupConfiguration = updateConfig(purecommPopupConfiguration, configFile);
         }
         
+		var head = document.getElementsByTagName('head')[0],
+			body = document.getElementsByTagName('body')[0];
+
         var cssConfig = ':root {' + 	
         '--purecommFontFamily: ' + purecommPopupConfiguration.css.fontFamily + ';' +
         '--purecommModalBG: ' + purecommPopupConfiguration.css.colors.modalBG + ';' +
@@ -136,17 +123,6 @@ function purecommClickAndCollectInit(branchId, sessionId) {
         var node = document.createElement('style');
         node.innerHTML = cssConfig;
         document.body.appendChild(node);
-
-        console.log("<><><><><><><><><><><><><><><><><><><><><><>")
-        //if(purecommFAPI) getConfig (branchId);
-
-        //return configuration;
-
-
-        
-        
-        var head = document.getElementsByTagName('head')[0];
-		var body = document.getElementsByTagName('body')[0];
 
 		var hostExtension = "/en/map_popup/v2/"
 		//var	purecommHost = "https://purecomm.hk" + hostExtension; // uat is default host
@@ -214,11 +190,12 @@ function purecommClickAndCollectInit(branchId, sessionId) {
 		'<img src="' + purecommPopupConfiguration.icons.nearby + '" alt="" onclick="findLocation()" />' +
 		'</div>' +*/
 		'<div class="searchdiv">' +
-		'<img class="searchicon" id="searchicon" src="' + purecommPopupConfiguration.icons.search + '" alt="" onclick="searchLocation()" />' +
+		'<img class="searchicon" id="searchicon" src="' + purecommPopupConfiguration.icons.search + '"\/>' +
 		//'<span class="searchtxt" id="searchtxt" onclick="showSearch()">Search</span>' +
-		'<input class="searchbox" id="searchbox" type="text" placeholder="Search">' +
+		'<input class="searchbox" id="pac-input" type="text" placeholder="Search">' +
 
 		'</div>';
+
 
 		popupInitialized = true;
     } 
@@ -236,7 +213,10 @@ function purecommClickAndCollectInit(branchId, sessionId) {
 		//fapiScript.src =  'purecommFAPIjsInterface.js'; //todo change back
         fapiScript.onreadystatechange = fapiScript.onload = function() {
            purecommFAPI = new purecommFAPIjsInterface('JZLDKH', 'rmw88', 'uat');
+            
             // get the .properties file
+			init(); //TODO sort out CORS error and init after getting configfile
+            /*
             purecommFAPI.ajax({
                 type: "GET",
                 url: "https://uat.purecomm.hk/en/testnewpop/config/readConfig.jsp?m=getByAttribute&a=page&c=testnewpop/config/" + branchId + ".properties",
@@ -254,17 +234,9 @@ function purecommClickAndCollectInit(branchId, sessionId) {
                     console.error("Cannot get properties file",response);
                     init(); // initialize the popup
                 }
-            });         
+            });*/       
         };
 		head.appendChild(fapiScript);
-        //head.insertBefore(fapiScript, head.firstChild);
-        
-
-
-		// global popup initialization
-		//purecommPopupConfiguration = getConfigFile(branchId);
-		//console.log(purecommPopupConfiguration);
-		
 	}
 }
 
@@ -350,6 +322,7 @@ function purecommClickAndCollectInit(branchId, sessionId) {
 	});
 
 
+/*
 	google.maps.event.addListenerOnce(map, 'tilesloaded', function(){
 
 		var gmnoprint = document.getElementsByClassName('gmnoprint')[0];
@@ -376,7 +349,62 @@ function purecommClickAndCollectInit(branchId, sessionId) {
 		console.log("***********",div1,span[0].innerHTML);
 		//document.getElementsByTagName('gmnoprint');
 
-	});	
+	});	*/
+
+    // Create the search box and link it to the UI element.
+    var input = ( document.getElementById('pac-input'));
+    
+	var options = {
+		bounds: mapBounds,
+		types: ['(cities)'] // doesn't work for SearchBox, only Autocomplete
+	}
+    var searchBox = new google.maps.places.SearchBox(input, options);
+
+
+	// google maps search
+	/*var input = document.getElementById('pac-input');
+	var options = {
+		bounds: mapBounds,
+		types: ['(cities)'] // doesn't work for SearchBox, only Autocomplete
+	}
+
+	//purecommMapSearchBox = new google.maps.places.Autocomplete(input,options);
+	purecommMapSearchBox = new google.maps.places.SearchBox(input,options);
+	//purecommMapSearchBox.setBounds(mapBounds); // search the location of the origninal map bounds
+	//purecommMapSearchBox.addListener('places_changed', searchLocation);
+	*/
+
+	//google.maps.event.addListener(purecommMapSearchBox, 'places_changed', searchLocation);
+
+
+/**/
+	google.maps.event.addListener(searchBox, 'places_changed', function () {
+
+        var places = searchBox.getPlaces();
+		
+		var markers = [];
+        if (places.length == 0) {
+            return;
+        }
+
+		places.forEach(function(place) {
+			if (!place.geometry) {
+				console.log("Returned place contains no geometry");
+				return;
+			}
+			console.log("*****PLACE",place);
+			findLocation(place.geometry.location,place.geometry.viewport);
+		});
+    });
+
+    // Trigger search on button click
+    document.getElementById('searchicon').onclick = function () {
+        var input = document.getElementById('pac-input');
+        google.maps.event.trigger(input, 'focus')
+        google.maps.event.trigger(input, 'keydown', {
+            keyCode: 13
+        });
+    };
 }
 
 
@@ -453,17 +481,6 @@ function purecommClickAndCollectInit(branchId, sessionId) {
 					mapBounds.extend(coords); // extend bounds to show the marker
 				}
 			});
-
-			// google maps search
-			var input = document.getElementById('searchbox');
-			var options = {
-				bounds: mapBounds,
-				types: ['(cities)'] // doesn't work for SearchBox, only Autocomplete
-			}
-
-			purecommMapSearchBox = new google.maps.places.SearchBox(input,options);
-			//purecommMapSearchBox.setBounds(mapBounds); // search the location of the origninal map bounds
-			purecommMapSearchBox.addListener('places_changed', searchLocation);
 		}
 	}
 
@@ -535,7 +552,6 @@ function removeItem(array, item) {
 		google.maps.event.trigger(map,'resize');
 		map.fitBounds(mapBounds);
 		mapInitialized = 1;
-		findLocation();
 
 		//smoothZoom (12, map.getZoom())
 	}
@@ -546,9 +562,7 @@ function removeItem(array, item) {
 				marker.viewOnMap();
 			}
 		})
-	}
-
-	if(searchRefresh){
+	} else if(searchRefresh){
 		map.fitBounds(mapBounds);
 		searchRefresh = false;
 	}
@@ -581,20 +595,13 @@ function showListView(storeID){
 	document.getElementById("purecommMap").style.display = "none";
 	document.getElementById("purecommTables").style.display = "block";
 
-
 	if (storeID){
 		var storeRow = document.getElementById(storeID);
 		storeRow.scrollIntoView(true);
-	}
-
-	if(searchRefresh){
+	} else if(searchRefresh){
 		document.getElementById("table_inStock").scrollIntoView(true);
 		searchRefresh = false;
 	}
-
-	//("name"); // *** testing repopulate table by name
-
-	//refreshTable();
 }
 
 /*
@@ -630,29 +637,18 @@ function showListView(storeID){
 	}
 }
 
+/*
+ * compare whether 2 javascript objects are the same
+ * the 2 objects will be sku or cartItems
+ */
 function sameItems(items1,items2){
-	/*var same = true;
-	if(!items1 || !items2){
-		same = false; // not given 2 arrays of items
-	} else if (items1.length !== items2.length){ 
-		same = false; // the arrays are different length
-	}
-	for(var item in items1) {
-		console.log("()()()()",item);
-		//if(x[propertyName] !== y[propertyName]) {
-		//	objectsAreSame = false;
-		//	break;
-		//}
-	}
-	return same;*/
-
 	if (typeof items1 == 'undefined' || typeof items2 == 'undefined'){
 		return false;
 	} else {
-		console.log("$$$ ARE ITEMS THE SAME? ",JSON.stringify(items1),JSON.stringify(items2),JSON.stringify(items1) == JSON.stringify(items2))
 		return JSON.stringify(items1) == JSON.stringify(items2);
 	}
 }
+
 function openPurecommModal(){
  	document.getElementById('purecommModal').style.display = "block";
 
@@ -668,9 +664,7 @@ function closePurecommModal(){
  	sameItems(cartItems,cartItems);
  	if (popupInitialized){
  		purecommCallback = callback;
- 		console.log("#####",purecommItems,cartItems);
  		if (sameItems(purecommItems,cartItems)){
- 			console.log("##### same");
  			// same items, just open popup
  			openPurecommModal();
  		} else {
@@ -687,13 +681,27 @@ function closePurecommModal(){
 	}
 }
 
-function purecommProcessNewItems(items){
-	if (!items) items = [];
-	else if (!Array.isArray(items)) items = [items]; // change individual sku to array or 1 sku
+function purecommProcessNewItems(items, callback){
+ 	if (popupInitialized){
+ 		purecommCallback = callback;
+ 		if (sameItems(purecommItems,items)){
+ 			// same items, just open popup
+ 			openPurecommModal();
+ 		} else {
+ 			console.log("##### new");
+ 			// new items, get availability and update popup
+ 			purecommItems = items;
 
-	var purecommOrderNumber = "rmwDemoOrder2"; //TODO 
+			if (!items) items = []; // no items: "find a store" popup
+			else if (!Array.isArray(items)) items = [items]; // change individual sku to array of 1 sku
 
-	purecommFAPI.createOrder(createOrderResponse,purecommOrderNumber,items);
+			var purecommOrderNumber = "rmwDemoOrder2"; //TODO 
+			purecommFAPI.createOrder(createOrderResponse,purecommOrderNumber,items);
+ 		}
+		return true;
+	} else {
+		return false;
+	}
 
 	function createOrderResponse(success,data){
 		if (success){
@@ -868,8 +876,21 @@ function purecommProcessNewItems(items){
 	}
 }
 
+
+
 function searchLocation(address){
-	var places = purecommMapSearchBox.getPlaces();
+	/**/
+	//var input = document.getElementById('searchbox');
+    
+    //google.maps.event.trigger(purecommMapSearchBox, 'keydown', { keyCode: 13 });
+
+	//google.maps.event.trigger(purecommMapSearchBox, 'places_changed');
+
+    //console.log(input);
+    //console.log(purecommMapSearchBox);
+
+	var places = searchBox.getPlaces();
+    console.log(searchBox,places)
 	if (places.length == 0) {
 		return;
 	}
@@ -895,9 +916,9 @@ function searchLocation(address){
  	if (position){
 		// position given
 		var location = { lat: position.lat(), lng: position.lng() };
-		localize(location,purecommPopupConfiguration.map.searchedLocation);
+		localize(location);
 		//mapCurrentLocationMarker.setIcon(new google.maps.MarkerImage(purecommPopupConfiguration.map.searchedLocation));
-	} /*else if (navigator.geolocation) {
+	} else if (navigator.geolocation) {
 		// HTML5 geolocation.
 		navigator.geolocation.getCurrentPosition(function(pos) {
 			var location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
@@ -907,38 +928,33 @@ function searchLocation(address){
 		alert("Alert2: " + google.loader.ClientLocation);
 		var location = { lat: google.loader.ClientLocation.latitude, lng: google.loader.ClientLocation.longitude };
 		localize(location,purecommPopupConfiguration.map.currentLocation);
-	}*/
+	}
 
 	function localize (location,iconImage){
-	 	
-		//console.log("0000000000000000000000000",location)
-	 	//		var lat = parseFloat(store.latitude), lng = parseFloat(store.longitude);
-
- 		//if (store.longitude=="" || store.longitude=="" || typeof lat == "undefined" && typeof lng == "undefined"){
-
+	 	if (iconImage){
 		var markerImage = new google.maps.MarkerImage(iconImage, // ** TODO take image from config file
-		new google.maps.Size(30, 30), // size
-		new google.maps.Point(0, 0), // origin
-		new google.maps.Point(15, 15), // anchor (location on map)
-		new google.maps.Size(30, 30)); // scaled size
+			new google.maps.Size(30, 30), // size
+			new google.maps.Point(0, 0), // origin
+			new google.maps.Point(15, 15), // anchor (location on map)
+			new google.maps.Size(30, 30)); // scaled size
+			if (!mapCurrentLocationMarker){
 
-		map.setCenter(location);
-		if (!mapCurrentLocationMarker){
-
-			var marker = new google.maps.Marker({
-				map: map,
-				position: location,
-				icon: markerImage
-			});
-			mapCurrentLocationMarker = marker;
-		} else {
-			mapCurrentLocationMarker.setPosition(location);
-			mapCurrentLocationMarker.setIcon(markerImage);
+				var marker = new google.maps.Marker({
+					map: map,
+					position: location,
+					icon: markerImage
+				});
+				mapCurrentLocationMarker = marker;
+			} else {
+				mapCurrentLocationMarker.setPosition(location);
+				mapCurrentLocationMarker.setIcon(markerImage);
+			}
 		}
+		map.setCenter(location);
 		console.log("** location ** ",location);
-		getStoreDistances(location); // get the distance between each store and this postion
 
-		sortStores("distance");
+		getStoreDistances(location); // get the distance between each store and this postion
+		sortStores("distance"); // sort the stores by distance
 		
 		// resort the table
 		populateTable();
@@ -950,12 +966,12 @@ function searchLocation(address){
 		var newBounds = new google.maps.LatLngBounds();
 		newBounds.extend(location);
 		newBounds.extend(purecommStores[0].coords);
-		if(bounds){
+		//if(bounds){
+			//newBounds.union(bounds);
 			//newBounds.extend(bounds.getNorthEast());
 			//newBounds.extend(bounds.getSouthWest());
+		//}
 
-		}
-		console.log(newBounds);
 		map.fitBounds(newBounds);
 		mapBounds = newBounds;
 		if (map.getZoom() > 15) map.setZoom(15); // max zoom to 15
@@ -1050,12 +1066,9 @@ function populateTable(){
 		var contentString = '<div class="tableRow" id="' + store.storeId + '" >' +
 		'<figure><img src="' + store.icon.url + '"><figcaption>' + store.index + '</figcaption></figure>' +
 		'<div class="left">' +
-		'<p class="p1">'+
-		store.storeName + ' ' + distance + '<br />' + 
-		'<p class="p2">'+
-		store.storeAddress +'</p>' +
-		'<p class="p1">'+
-		store.availability + '</p>' +
+		'<p class="p1">' + store.availability + '</p>' +
+		'<p class="p1">'+ store.storeName + ' ' + distance + '</p>' + 
+		'<p class="p2">'+ store.storeAddress +'</p>' +
 		'<button class="purecommTextButton" type="button" onclick=purecommSetSelectedStore("' + store.storeId + '","")>Select Store</button>' + 
 		'<button class="purecommTextButton" type="button" onclick=showMapView("' + store.storeId + '","map")>View on Map</button>' + 
 		'</div>' +
@@ -1071,7 +1084,7 @@ function populateTable(){
 
 
 function mapStoreMarker(store) {
-	markerZ = store.icon.z + 10000 - store.index;
+	var markerZ = store.icon.z + 10000 - store.index;
 	// create store marker
 	var marker = new google.maps.Marker({
 		map: map,
@@ -1079,7 +1092,7 @@ function mapStoreMarker(store) {
 		zIndex: markerZ,
 		icon: {
 			url: store.icon.url,
-			labelOrigin: new google.maps.Point(14,10),
+			labelOrigin: new google.maps.Point(14,11),
 			scaledSize: new google.maps.Size(28,28)},
 		label: {
 			text: ""+store.index,
@@ -1116,15 +1129,20 @@ function mapStoreMarker(store) {
 	}
 	this.update = function(){
 		if (store.availability){
-			marker.setIcon(markerdetails.icon.url);
-			marker.setZIndex(markerdetails.icon.z);
+			marker.setIcon({
+				url: store.icon.url,
+				labelOrigin: new google.maps.Point(14,11),
+				scaledSize: new google.maps.Size(28,28)});
+			marker.setZIndex(markerZ);
 			marker.setLabel(""+store.index);
+			markerIW.setContent(iwString(store));
 		}
 		// TODO update distance?
 	}
 	this.updateLabel = function(){
 		if (store.availability){
 			marker.setLabel(""+store.index);
+			markerIW.setContent(iwString(store));
 		}
 	}
 
@@ -1172,15 +1190,13 @@ function mapStoreMarker(store) {
 	function iwString(store) {
 
 		// html content of the infowindow
-		var contentString = '<div class="iwContent">' +
-		'<p class="p1">'+
-		store.storeName + '</p>' +
-		'<p class="p2">'+
-		store.storeAddress + '</p>' +
-		'<p class="p1">'+
-		store.availability + '</p>' +
+		var contentString = '<figure><img src="' + store.icon.url + '"><figcaption>' + store.index + '</figcaption></figure>' +
+		'<div class="iwContent">' +
+		'<p class="p1">' + store.availability + '</p>' +
+		'<p class="p1">'+ store.storeName + '</p>' +
+		'<p class="p2">'+ store.storeAddress +'</p>' +
 		'<button class="purecommTextButton" type="button" onclick=purecommSetSelectedStore("' + store.storeId + '","")>Select Store</button>' + 
-		'<button class="purecommTextButton" type="button" onclick=showListView("' + store.storeId + '","list")>Store Details</button>' + 
+		'<button class="purecommTextButton" type="button" onclick=showListView("' + store.storeId + '","list")>View in List</button>' + 
 		'</div>';
 
 		getStore = function () { // button on infowindow function
