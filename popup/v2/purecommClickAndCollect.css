@@ -84,6 +84,8 @@
 .purecommModalContent .purecommModalFooter {
     /*height: 40px;*/
     overflow:hidden;
+    padding: 0px; /* top right bottom left */
+    margin: 0px; 
 }
 
 /* Modal Header */
@@ -92,22 +94,20 @@
 }
 
 
-.purecommModalContent .purecommModalFooter .mapdiv, .listdiv, .gpsdiv, .searchdiv {
+.purecommModalContent .purecommModalFooter .mapdiv, .listdiv {
     height: 30px;
     float: left;
-    padding: 0px 5px 0px 5px; /* top right bottom left */
-    margin: 5px; 
-}
-
-.purecommModalContent .purecommModalFooter .mapdiv, .listdiv {
     cursor: pointer;
-    margin: 5px 10px 5px 5px; /* top right bottom left */
-
+    padding: 10px 5px 0px 5px; /* top right bottom left */
+    margin: 0px 0px 0px 10px; /* top right bottom left */
 }
 
 .purecommModalContent .purecommModalFooter .searchdiv {
+    height: 30px;
     background-color: var(--purecommModalFG);
     float: right;
+    padding: 0px 5px 0px 5px; /* top right bottom left */
+    margin: 10px 10px 10px 5px;  
 }
 
 .purecommModalContent .purecommModalFooter .searchbox {
@@ -183,7 +183,15 @@
     display: none; /* remove X from infowindow */
 }
 
+.gm-style-iw {
+    width: 220px !important;
+    padding: 0;
+    margin: 0;
+}
+
 .purecommModalContent .purecommModalBody .iwContent {
+
+    float: left;
     color: var(--purecommBodyFG);
     width: 190px;
     font-weight: 400;
@@ -203,29 +211,33 @@
     width: 90%;
 }
 
-
-
-.tableRow figure {
+.purecommModalContent figure {
     position: relative;
     float: left;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     margin: 10px 0px 5px 5px; /*top right bottom left*/
 }
-.tableRow figure img {
+.purecommModalContent figure img {
     display: block;
     width: 100%;
     height: 100%;
 }
-.tableRow figcaption {
-    font-size: 14px;
+.purecommModalContent figcaption {
+    font-size: 12px;
     text-align: center;
     color: black;
     position: absolute;
-    top: 6px;
+    top: 5px;
     bottom: 0;
     left: 0;
     right: 0;
+}
+
+/* map infowindow */
+.purecommModalContent .map figure {
+    font-weight: 400;
+    margin: 4px 0px 0px 0px; /*top right bottom left*/
 }
 
 .purecommModalContent .purecommModalBody .tableRow .left, .right{
@@ -235,7 +247,6 @@
     padding: 5px 10px 5px 0px; /* top right bottom left*/
 }
 
-/* Modal Body */
 .purecommModalContent .purecommModalBody .tableRow .p1 {
     font-size: 14px;
 }

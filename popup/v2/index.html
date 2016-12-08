@@ -8,7 +8,7 @@
 	<!-- Trigger/Open The Modal -->
 	<button id="myBtn" onclick="purecommClickAndCollectInit('id123', 'sessionId')">Initialize A</button>
 	<button id="myBtn" onclick="purecommClickAndCollectInit('id1', 'sessionId')">Initialize B</button><br />
-	<button id="myBtn" onclick="purecommFindAStorePopup()">Find A Store Popup</button>
+	<button id="myBtn" onclick="findStoreClick()">Find A Store Popup</button>
 	<button id="myBtn" onclick="productClick()">Product Availability Popup</button><br />
 	<button id="myBtn" onclick="cartClick()">Cart Availability Popup</button><br />
 	<button id="myBtn" onclick="purecommProcessNewItems()">TESTING</button>
@@ -18,8 +18,9 @@
 		purecommClickAndCollectInit('67ZQJH', '4513c570-5db9-408e-9ded-e1bben24436a');
 		sku1 = {"barcode":'BE35S_84FGWU07_08',"quantity":1,"unitPrice":335.00};
 		sku2 = {"barcode":'B543Y_27FGCF06_08',"quantity":1,"unitPrice":520.00};
-		function productClick(){purecommProductAvailabilityPopup(sku1,localCallbackFunction);}
-		function cartClick(){purecommCartAvailabilityPopup([sku1, sku2],localCallbackFunction);}
+		function findStoreClick(){purecommProcessNewItems(null,localCallbackFunction);}
+		function productClick(){purecommProcessNewItems(sku1,localCallbackFunction);}
+		function cartClick(){purecommProcessNewItems([sku1, sku2],localCallbackFunction);}
 		console.log(purecommGetSelectedStore());
 		
 		function localCallbackFunction(storeDetails){
