@@ -11,22 +11,29 @@
 	<button id="myBtn" onclick="findStoreClick()">Find A Store Popup</button>
 	<button id="myBtn" onclick="productClick()">Product Availability Popup</button><br />
 	<button id="myBtn" onclick="cartClick()">Cart Availability Popup</button><br />
-	<button id="myBtn" onclick="purecommProcessNewItems()">TESTING</button>
+	<button id="myBtn" onclick="purecommAvailabilityPopup()">TESTING</button>
 	<button id="myBtn" onclick="getCoordsFromAddress()">getCoords</button>
 	<script type="text/javascript" src="purecommClickAndCollect.js"></script>
 	<script >
+		console.log('cookies', document.cookie);
+		console.log('cookies', getCookie('document.cookie'));
+		console.log('purecomm_SelectedStoreID', getCookie('purecomm_SelectedStoreID'));
+		console.log('purecomm_SortFrom', getCookie('purecomm_SortFrom'));
+		console.log('purecomm_MapBounds', getCookie('purecomm_MapBounds'));
+
 		purecommClickAndCollectInit('67ZQJH', '4513c570-5db9-408e-9ded-e1bben24436a');
 		sku1 = {"barcode":'BE35S_84FGWU07_08',"quantity":1,"unitPrice":335.00};
 		sku2 = {"barcode":'B543Y_27FGCF06_08',"quantity":1,"unitPrice":520.00};
-		function findStoreClick(){purecommProcessNewItems(null,localCallbackFunction);}
-		function productClick(){purecommProcessNewItems(sku1,localCallbackFunction);}
-		function cartClick(){purecommProcessNewItems([sku1, sku2],localCallbackFunction);}
+		function findStoreClick(){purecommAvailabilityPopup(null,localCallbackFunction);}
+		function productClick(){purecommAvailabilityPopup(sku1,localCallbackFunction);}
+		function cartClick(){purecommAvailabilityPopup([sku1, sku2],localCallbackFunction);}
 		console.log(purecommGetSelectedStore());
 		
 		function localCallbackFunction(storeDetails){
 			console.log("This store has been selected by the customer:",storeDetails);
 		}
 	</script>
+	<!--<script src="https://www.google.com/jsapi?key=AIzaSyD07c9hGOtQnuF30nwqml5OQkqzrPejIFs?findLocation" language="javascript"></script>-->
 </body>
 </html>
 

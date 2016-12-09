@@ -84,7 +84,7 @@
 .purecommModalContent .purecommModalFooter {
     /*height: 40px;*/
     overflow:hidden;
-    padding: 0px; /* top right bottom left */
+    padding: 0px 0px 0px 10px;; /* top right bottom left */
     margin: 0px; 
 }
 
@@ -98,12 +98,15 @@
     height: 30px;
     float: left;
     cursor: pointer;
-    padding: 10px 5px 0px 5px; /* top right bottom left */
-    margin: 0px 0px 0px 10px; /* top right bottom left */
+    border-left:1px solid var(--purecommModalFG);
+    border-right:1px solid var(--purecommModalFG);
+    border-bottom:1px solid var(--purecommModalFG);
+    padding: 10px 5px 0px 10px; /* top right bottom left */
+    margin: 0px 0px 0px 0px; /* top right bottom left */
 }
 
 .purecommModalContent .purecommModalFooter .searchdiv {
-    height: 30px;
+    height: 31px;
     background-color: var(--purecommModalFG);
     float: right;
     padding: 0px 5px 0px 5px; /* top right bottom left */
@@ -314,14 +317,14 @@
 }
 
 /* cannot do in production, breach of terms. 9.4 https://developers.google.com/maps/terms */
-/* google logo
+/* google logo */
 a[href^="http://maps.google.com/maps"]{display:none !important}
-a[href^="https://maps.google.com/maps"]{display:none !important}*/
+a[href^="https://maps.google.com/maps"]{display:none !important}
 .gmnoprint a, .gmnoprint span, .gm-style-cc {
     /*display:none;*/ /*copyright*/
 }
 .gm-style a {
-    display:none; /*copyright*/
+    display:none; /*report a map error*/
 }
 .gmnoprint.gm-style-cc {
     display:none; /*Terms of Use*/
