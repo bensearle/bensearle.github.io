@@ -63,6 +63,7 @@ var baseSet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 
     base65set = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I', 'i', 'J', 'j', 'K', 'k', 'l', 'L', 'M', 'm', 'N', 'n', 'O', 'o', 'P', 'p', 'Q', 'q', 'R', 'r', 'S', 's', 'T', 't', 'U', 'u', 'V', 'v', 'W', 'w', 'X', 'x', 'Y', 'y', 'Z', 'z', '.', '_', '-'], // defined in RFC 4648
     base85set = ['!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u'], // Ascii85, Adobe version: ASCII characters 33 to 117
     base91set = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '#', '$', '%', '&', '(', ')', '*', '+', ',', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', ']', '^', '_', '`', '{', '|', '}', '~', '"'], // printable ASCII characters 32 to 126 in a different order, excluding -, \, '
+    base92set = ['!', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~'], // printable ASCII (base94), excluding ", `
     base94set = ['!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~'], // printable ASCII characters 33 to 126
     base95set = [' ', '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~'], // ASCII characters 32 to 126, includes 32:space 
     locationSet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
@@ -97,6 +98,7 @@ var baseSet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 
 // call stack size may exceed max for really big numbers because function uses recursion// TODO change to while loop
 function covertToRoman(number) { // base 10 number
     "use strict";
+    if (!number) { return ''; }
     number = parseFloat(number);
     if (number === 0) { return ""; } // end recursion when number is 0
     var keyset = Object.keys(romanSet),
@@ -107,6 +109,7 @@ function covertToRoman(number) { // base 10 number
 
 function convertToLocation(number) { // take base2 number as a string
     "use strict";
+    if (!number) { return ''; }
     number = number.split('').reverse();
     var locationNumber = '',
         i, // iterate for loop
@@ -132,6 +135,7 @@ function convertToLocation(number) { // take base2 number as a string
 
 function convertFromLocation(number) { // convert to base10 number
     "use strict";
+    if (!number) { return ''; }
     number = number.split('');
     var base10number = 0;
     number.forEach(function (digit) {
@@ -141,26 +145,12 @@ function convertFromLocation(number) { // convert to base10 number
 }
 
 // call stack size may exceed max for really big numbers because function uses recursion// TODO change to while loop
-function convertFromBase10(number, base) {
+function convertFromBase10(number, base, alphabet) {
     "use strict";
     var digitSet = baseSet; // the set that the digits belong to
-    //TODO change to switch
-    if (base === 12) {
-        digitSet = base12set;
-    } else if (base === 30) {
-        digitSet = base30set;
-    } else if (base === 32) {
-        digitSet = base32set;
-    } else if (base === 52) {
-        digitSet = base52set;
-    } else if (base === 56) {
-        digitSet = base56set;
-    } else if (base === 57) {
-        digitSet = base57set;
-    } else if (base === 58) {
-        digitSet = base58set;
+    if (alphabet) {
+        digitSet = alphabet;
     }
-    
     var r = number % base; // get the mod/remainder
     if (number === 0) {
         return "";
@@ -172,28 +162,15 @@ function convertFromBase10(number, base) {
 }
 
 // call stack size may exceed max for really big numbers because function uses recursion
-function convertToBase10(number, base) {
+function convertToBase10(number, base, alphabet) {
     "use strict";
     var digits = number.split(''), // get digits from number '1011' --> [1,0,1,1] && '8C' --> [8,12]
         digitSet = baseSet, // the set that the digits belong to
         base10number = 0,
         i = digits.length - 1;
-    if (number === 12) {
-        digitSet = base12set;
-    } else if (base === 30) {
-        digitSet = base30set;
-    } else if (base === 32) {
-        digitSet = base32set;
-    } else if (base === 52) {
-        digitSet = base52set;
-    } else if (base === 56) {
-        digitSet = base56set;
-    } else if (base === 57) {
-        digitSet = base57set;
-    } else if (base === 58) {
-        digitSet = base58set;
+    if (alphabet) {
+        digitSet = alphabet;
     }
-    
     digits.forEach(function (digit) {
         base10number += digitSet.indexOf(digit) * Math.pow(base, i);
         i -= 1;
@@ -213,7 +190,7 @@ function recalculate() {
     base8.value = convertFromBase10(base10number, 8);
     //base10.value = convertFromBase10(base10number, 10);
     base11.value = convertFromBase10(base10number, 11);
-    base12.value = convertFromBase10(base10number, 12); // other digit sets.. https://en.wikipedia.org/wiki/Duodecimal
+    base12.value = convertFromBase10(base10number, 12, base12set);
     base13.value = convertFromBase10(base10number, 13);
     base14.value = convertFromBase10(base10number, 14);
     base15.value = convertFromBase10(base10number, 15);
@@ -223,22 +200,30 @@ function recalculate() {
     base26.value = convertFromBase10(base10number, 26);
 
     base27.value = convertFromBase10(base10number, 27);
-    base30.value = convertFromBase10(base10number, 30);
-    base32.value = convertFromBase10(base10number, 32);
+    base30.value = convertFromBase10(base10number, 30, base30set);
+    base32.value = convertFromBase10(base10number, 32, base32set);
     base36.value = convertFromBase10(base10number, 36);
-    base52.value = convertFromBase10(base10number, 52);
-    base56.value = convertFromBase10(base10number, 56);
-    base57.value = convertFromBase10(base10number, 57);
-    base58.value = convertFromBase10(base10number, 58);
-    base60.value = convertFromBase10(base10number, 60);
+    base52.value = convertFromBase10(base10number, 52, base52set);
+    base56.value = convertFromBase10(base10number, 56, base56set);
+    base57.value = convertFromBase10(base10number, 57, base57set);
+    base58.value = convertFromBase10(base10number, 58, base58set);
+    base60.value = convertFromBase10(base10number, 60, base60set);
 
+    base61.value = convertFromBase10(base10number, 61, base61set);
+    base62.value = convertFromBase10(base10number, 62);
+    base64.value = convertFromBase10(base10number, 64, base64set);
+    base65.value = convertFromBase10(base10number, 65, base65set);
+    base85.value = convertFromBase10(base10number, 85, base85set);
+    base91.value = convertFromBase10(base10number, 91, base91set);
+    base92.value = convertFromBase10(base10number, 92, base92set);
+    base94.value = convertFromBase10(base10number, 94, base94set);
+    base95.value = convertFromBase10(base10number, 95, base95set);
     
     
     
     
-    
-    
-    roman.value = covertToRoman(base10number, 16);
+    location_.value = convertToLocation(base2.value);
+    roman.value = covertToRoman(base10number);
 
     console.log(convertFromBase10(base10number, 13));
 }
