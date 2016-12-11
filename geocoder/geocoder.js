@@ -1,14 +1,19 @@
-/*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define */
+/*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50, regexp: true */
+/*global google*/
+/*regexp: true*/
 
-var input = document.getElementById("input");
-var outputJSON = document.getElementById("json");
-var outputTOML = document.getElementById("toml");
-var outputYAML = document.getElementById("yaml");
+
+var input = document.getElementById("input"),
+    outputJSON = document.getElementById("json"),
+    outputTOML = document.getElementById("toml"),
+    outputYAML = document.getElementById("yaml");
 
 var map,
-    geocoder;
-var output = [];// 
+    bounds,
+    markers = [],
+    geocoder,
+    output = [];// 
+
 function initializeMap() {
     'use strict';
 	geocoder = new google.maps.Geocoder();
@@ -22,42 +27,38 @@ function initializeMap() {
 
 //var geocoder = new google.maps.Geocoder();
 
-function readInput() {
+function recieveData(place) {
     'use strict';
-    output = []; // clear output
-    outputJSON.value = '';
-    outputTOML.value = '';
-    outputYAML.value = '';
-
-    var lines = input.value.split('\n');
-    lines.forEach(function (line) {
-        if (line.trim().length === 0) {
-            // whitespace
-        } else {
-            console.log("read line:", line);
-            var coordinates = readCoordinates(line); // return valid coordinates or false
-            if (coordinates) {
-                getAddress(coordinates); // get address from coordinates
-            } else {
-                getCoordinates(line); // get coordinates from address
-            }
+    console.log("***RESULTS***", place.address, place.coordinates);
+    var markerZ = 100000 - place.index;
+    var marker = new google.maps.Marker({
+		map: map,
+		position: place.coordinates,
+		zIndex: markerZ,
+		icon: {
+			url: 'markerOG.png',
+			labelOrigin: new google.maps.Point(20, 15),
+			scaledSize: new google.maps.Size(40, 40)
+        },
+		label: {
+			text: place.index.toString(),
+			color: 'white',
+			fontSize: '14px',
+			zIndex: markerZ
         }
-    });
+	});
+    
+    markers.push(marker);
+    bounds.extend(place.coordinates);
+    map.fitBounds(bounds);
+
+    output.push(place);
+    console.log(JSON.stringify(output));
+    
+    outputJSON.value = JSON.stringify(output);
+    outputTOML.value += place.coordinates.lat + "," + place.coordinates.lng + "," + place.address.replace(/[,]/g, ";") + "\n";
 }
 
-function process() {
-    'use strict';
-	//var branchId = document.getElementById('branchId').value;
-	//console.log(branchId);
-	//var a = coordStringToArray("{'lat=1.555,'lang':1");
-	var b = readCoordinates("{'lat=22.281896,'lang':114.155153");
-	//coordStringToArray("\"441.24422\"\"lat\" 15.3676745");
-
-	getAddress(b);
-    console.log(validCoodinates(34, 34));
-	console.log(validCoodinates(34, -202));
-    readInput();
-}
 
 /*
  * checks whether coordinates are valid
@@ -78,10 +79,8 @@ function validCoodinates(lat, lng) {
  */
 function readCoordinates(coordinateString) {
     'use strict';
-	var coordArray = coordinateString.match(/[+-]?\d+(\.\d+)/g); // matches decimal numbers (must contain ".")
+	var coordArray = coordinateString.match(/[+\-]?\d+(\.\d+)/g); // matches decimal numbers (must contain ".")
     if (coordArray) {
-        
-    
         if (coordArray.length === 2) { // exactly 2 coordinates
             var lat = parseFloat(coordArray[0]),
                 lng = parseFloat(coordArray[1]);
@@ -93,10 +92,10 @@ function readCoordinates(coordinateString) {
 	return false; // return false when there are not exactly 2 coordinates, both valid
 }
 
-function getAddress(coodinates, id) {
+function getAddress(place) {
     'use strict';
 	var firstLine = true; // first line of geocode returned address
-	geocoder.geocode({'location': coodinates}, function (results, status) {
+	geocoder.geocode({'location': place.coordinates}, function (results, status) {
 		if (status === 'OK') {
 			if (results[1]) {
 				console.log("", results[1]);
@@ -113,7 +112,8 @@ function getAddress(coodinates, id) {
 				fullAddress = fullAddress.replace(/[;]/g, ",");
 				console.log("", address);
 				console.log("", fullAddress);
-                recieveData(fullAddress, coodinates);
+                place.address = fullAddress;
+                recieveData(place);
 
 				/*
 				map.setZoom(11);
@@ -125,25 +125,28 @@ function getAddress(coodinates, id) {
 				infowindow.open(map, marker);
 				*/
 			} else {
+                console.error(results, status);
 				window.alert('No results found');
 			}
 		} else {
+            console.error(results, status, place.coordinates);
 			window.alert('Geocoder failed due to: ' + status);
 		}
 	});
 }
 
-function getCoordinates(address, id) {
+function getCoordinates(place, id) {
     'use strict';
-	var addressString =  address.replace(/[^A-Z0-9]+/ig, " "); // regex ^:not +:match-multiple i:case-insensitive g:global-match
+	var addressString =  place.address.replace(/[^A-Z0-9]+/ig, " "); // regex ^:not +:match-multiple i:case-insensitive g:global-match
 
-	geocoder.geocode({'address': address}, function (results, status) {
+	geocoder.geocode({'address': place.address}, function (results, status) {
 		if (status === 'OK') {
             if (results[0]) {
                 console.log(results[0].geometry.location);
                 var location = results[0].geometry.location;
                 var coordinates = {lat: location.lat(), lng: location.lng()};
-                recieveData(address.trim(), coordinates);
+                place.coordinates = coordinates;
+                recieveData(place);
             }
 		} else {
 			alert('Geocode was not successful for the following reason: ' + status);
@@ -151,31 +154,35 @@ function getCoordinates(address, id) {
 	});
 }
 
-function recieveData(address, coordinates) {
-    'use strict';
-    console.log("***RESULTS***", address, coordinates);
-    
-    var marker = new google.maps.Marker({
-		map: map,
-		position: coordinates,
-		zIndex: 1, // 100000 - index;
-		icon: {
-			url: 'markerOG.png',
-			labelOrigin: new google.maps.Point(20, 15),
-			scaledSize: new google.maps.Size(40, 40)},
-		/*label: {
-			text: ""+store.index,
-			color: 'black',
-			fontSize: "12px",
-			zIndex: markerZ}*/
-        //TODO extend map bounds
-	});
 
-    output.push({"address": address, "coordinates": coordinates});
-    console.log(JSON.stringify(output));
-    
-    outputJSON.value = JSON.stringify(output);
-    outputTOML.value += coordinates.lat + "," + coordinates.lng + "," + address.replace(/[,]/g, ";") + "\n";
+function readInput() {
+    'use strict';
+    output = []; // clear output
+    outputJSON.value = '';
+    outputTOML.value = '';
+    outputYAML.value = '';
+    bounds = new google.maps.LatLngBounds();
+    markers.forEach(function (marker) {
+        marker.setMap(null);
+    });
+
+    var lines = input.value.split('\n'),
+        index = 1; // index for the place
+    lines.forEach(function (line) {
+        if (line.trim().length === 0) {
+            // whitespace
+        } else {
+            console.log("read line:", line);
+            var coordinates = readCoordinates(line); // return valid coordinates or false
+            if (coordinates) {
+                getAddress({'index': index, 'coordinates': coordinates}); // get address from coordinates
+                index++;
+            } else {
+                getCoordinates({'index': index, 'address': line.trim()}); // get coordinates from address
+                index++;
+            }
+        }
+    });
 }
 
 //TODO implement copy to clipboard for output http://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
