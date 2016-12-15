@@ -51,7 +51,7 @@
 
 /* Modal Header */
 .purecommModalContent .purecommModalHeader, .purecommModalFooter {
-    padding: 5px 10px;
+    padding: 5px 9px;
 }
 
 /* Modal Header */
@@ -83,7 +83,7 @@
 
 .purecommModalContent .purecommModalFooter {
     /*height: 40px;*/
-    overflow:hidden;
+    overflow: hidden;
     padding: 0px 0px 0px 10px;; /* top right bottom left */
     margin: 0px; 
 }
@@ -101,16 +101,17 @@
     border-left:1px solid var(--purecommModalFG);
     border-right:1px solid var(--purecommModalFG);
     border-bottom:1px solid var(--purecommModalFG);
-    padding: 10px 5px 0px 10px; /* top right bottom left */
-    margin: 0px 0px 0px 0px; /* top right bottom left */
+    border-top:1px solid var(--purecommModalFG);
+    padding: 0px 5px 0px 10px; /* top right bottom left */
+    margin: 9px 0px 0px 0px; /* top right bottom left */
 }
 
 .purecommModalContent .purecommModalFooter .searchdiv {
-    height: 31px;
+    height: 32px;
     background-color: var(--purecommModalFG);
     float: right;
     padding: 0px 5px 0px 5px; /* top right bottom left */
-    margin: 10px 10px 10px 5px;  
+    margin: 9px 10px 10px 5px;  
 }
 
 .purecommModalContent .purecommModalFooter .searchbox {
@@ -303,7 +304,6 @@
         width: 100%;
     }
 
-    /* Modal Header */
     .purecommModalContent .purecommModalFooter {
         position: fixed; 
         bottom: 0;
@@ -316,20 +316,22 @@
 
 }
 
-/* cannot do in production, breach of terms. 9.4 https://developers.google.com/maps/terms */
 /* google logo */
 a[href^="http://maps.google.com/maps"]{display:none !important}
 a[href^="https://maps.google.com/maps"]{display:none !important}
 .gmnoprint a, .gmnoprint span, .gm-style-cc {
     /*display:none;*/ /*copyright*/
 }
-.gm-style a {
-    display:none; /*report a map error*/
+.gm-style-cc {
+    display:none; /*Report a Map error & Copyright*/
+}
+.gmnoprint .gm-style-cc {
+    display:block; /*copyright*/
 }
 .gmnoprint.gm-style-cc {
-    display:none; /*Terms of Use*/
+    /*display:none; /*Terms of Use*/
 }
 .gmnoprint div {
-    /* background:none !important;  zoom in/out buttons */
+    /* background:none !important; /*zoom in/out buttons*/
 }
 
