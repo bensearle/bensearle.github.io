@@ -190,6 +190,7 @@ function PurecommFAPIjsInterface(usr, pwd, hostParam) {
 	 */
 	function storeAvailability(callback, skus) {
 		var data = {"skus": skus};
+        //console.log("<>", auth, JSON.stringify(data));
 		ajax({
 			type: "POST",
 			url: host + "/fulfilment/storeAvailability",
