@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <tag autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
 	<!--<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />-->
@@ -12,13 +13,16 @@
 			<textarea class="input" id="input">
                 Old Central Police Station, Hollywood Road, Central, Hong Kong
                 "lat":22.281896,"lng":114.155153
+                dsfdgfdhjghdfg
+                dsfd44.3 34.43
             </textarea>
 			<p>This is the instructions.</p>
 			<button id="button" onclick="readInput()">Get Coordinates</button>
 		</div>
 		<div class="centre">
 			<div class="map" id="map"></div>
-			<table class="table" id="table"></table>
+			<textarea class="output_centre" id="csv"></textarea>
+			<textarea class="output_centre" id="errors"></textarea>
 		</div>
 		<div class="right">
 			<textarea class="output" id="json"></textarea>

@@ -6,7 +6,9 @@
 var input = document.getElementById("input"),
     outputJSON = document.getElementById("json"),
     outputTOML = document.getElementById("toml"),
-    outputYAML = document.getElementById("yaml");
+    outputYAML = document.getElementById("yaml"),
+    outputCSV = document.getElementById("csv"),
+    outputErrors = document.getElementById("errors");
 
 var map,
     bounds,
@@ -56,9 +58,27 @@ function recieveData(place) {
     console.log(JSON.stringify(output));
     
     outputJSON.value = JSON.stringify(output);
-    outputTOML.value += place.coordinates.lat + "," + place.coordinates.lng + "," + place.address.replace(/[,]/g, ";") + "\n";
+    outputCSV.value += place.coordinates.lat + "," + place.coordinates.lng + "," + place.address.replace(/[,]/g, ";") + "\n";
 }
 
+function processError(place, error) {
+    'use strict';
+    console.error(place, error);
+    var errorString = '';
+    if (place.index) {
+        errorString += place.index + ". ";
+    }
+    if (place.address) {
+        errorString += place.address + " :: ";
+    }
+    if (place.coordinates) {
+        errorString += JSON.stringify(place.coordinates) + " :: ";
+    }
+    errorString += error + "\n";
+    
+    outputErrors.value += errorString;
+    
+}
 
 /*
  * checks whether coordinates are valid
@@ -129,8 +149,7 @@ function getAddress(place) {
 				window.alert('No results found');
 			}
 		} else {
-            console.error(results, status, place.coordinates);
-			window.alert('Geocoder failed due to: ' + status);
+            processError(place, status);
 		}
 	});
 }
@@ -140,7 +159,7 @@ function getCoordinates(place, id) {
 	var addressString =  place.address.replace(/[^A-Z0-9]+/ig, " "); // regex ^:not +:match-multiple i:case-insensitive g:global-match
 
 	geocoder.geocode({'address': place.address}, function (results, status) {
-		if (status === 'OK') {
+        if (status === 'OK') {
             if (results[0]) {
                 console.log(results[0].geometry.location);
                 var location = results[0].geometry.location;
@@ -149,7 +168,7 @@ function getCoordinates(place, id) {
                 recieveData(place);
             }
 		} else {
-			alert('Geocode was not successful for the following reason: ' + status);
+            processError(place, status);
 		}
 	});
 }
@@ -161,6 +180,8 @@ function readInput() {
     outputJSON.value = '';
     outputTOML.value = '';
     outputYAML.value = '';
+    outputCSV.value = '';
+    outputErrors.value = '';
     bounds = new google.maps.LatLngBounds();
     markers.forEach(function (marker) {
         marker.setMap(null);
