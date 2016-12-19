@@ -212,7 +212,7 @@
 .purecommModalContent .purecommModalBody .tableRow {
     float: center;
     color: var(--purecommBodyFG);
-    width: 90%;
+    width: 100%;
 }
 
 .purecommModalContent figure {
@@ -248,7 +248,14 @@
     width: 200px;
     float: left;
     word-wrap: break-word;
-    padding: 5px 10px 5px 0px; /* top right bottom left*/
+    padding: 5px 5px 5px 5px; /* top right bottom left*/
+}
+
+.purecommModalContent .purecommModalBody .tableRow tr{
+    border-bottom: none;
+}
+.purecommModalContent .purecommModalBody .tableRow th{
+    font-weight: 400;
 }
 
 .purecommModalContent .purecommModalBody .tableRow .p1 {

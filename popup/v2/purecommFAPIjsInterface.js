@@ -1,6 +1,6 @@
-/*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
 /*global purecommFAPIjsInterfaceLoaded*/
 /*global ActiveXObject*/
+/*global console*/
  
 /***************************************************************************************************
  * purecommFAPIjsInterface.js																		*
@@ -29,7 +29,7 @@
 // if it exists, call purecommFAPIjsInterfaceLoaded to confirm script has been loaded
 if (typeof purecommFAPIjsInterfaceLoaded !== 'undefined') {purecommFAPIjsInterfaceLoaded(); }
 
-function PurecommFAPIjsInterface(usr, pwd, hostParam) {
+function PurecommFAPIjsInterface(usr, pwd, host) {
     'use strict';
 	var auth = "";
     if (usr && pwd) {
@@ -37,13 +37,10 @@ function PurecommFAPIjsInterface(usr, pwd, hostParam) {
     } else if (usr) {
         auth = usr;
     }
-	var	host = "https://uat.purecomm.hk"; // uat is default host
-	if (hostParam.toUpperCase() === "pp".toUpperCase()) {
-		host = "https://pp.purecomm.hk";
-	} else if (hostParam.toUpperCase() === "prod".toUpperCase()) {
-		host = "https://www.purecomm.hk";
-	}
-
+    
+    if (host.indexOf('https') === -1) { // host doesn't contain https
+        host = host.replace('http', 'https');
+    }
     
  /***************************************************************************************************
  * JQuery AJAX																						*
@@ -89,22 +86,18 @@ function PurecommFAPIjsInterface(usr, pwd, hostParam) {
 	 * url类型：String默认值: 当前页地址。发送请求的地址。
 	 */
 	function ajax(settings, authorization) {
-		//console.log(settings);
-		var async = true;
-		if (settings.async === false) {
-			async = false;
-		}
-		
-		var ajaxUrl = settings.url;
-		var ajaxUrlArray = ajaxUrl.split("/");
-		var ajaxHost = ajaxUrlArray[2];
+		var ajaxUrl = settings.url,
+            ajaxUrlArray = ajaxUrl.split("/"),
+            ajaxHost = ajaxUrlArray[2],
+            xdr,
+            xmlHttp;
 		
 		//跨域访问
 	    if (getIEVersion() < 10 && window.XDomainRequest && window.location.host !== "" && window.location.host !== ajaxHost && !isEmpty(ajaxHost)) {
 
             // Use Microsoft XDR
-            var xdr = new window.XDomainRequest();
-            xdr.open(settings.type, settings.url, async);
+            xdr = new window.XDomainRequest();
+            xdr.open(settings.type, settings.url);
             xdr.send();
             xdr.onload = function () {
                 var data = xdr.responseText;
@@ -112,7 +105,7 @@ function PurecommFAPIjsInterface(usr, pwd, hostParam) {
                 settings.success(data);
             };
 	    } else {
-            var xmlHttp = false;
+            xmlHttp = false;
 		    try {
 		        //Firefox, Opera 8.0+, Safari  
 		        xmlHttp = new XMLHttpRequest();
@@ -124,12 +117,12 @@ function PurecommFAPIjsInterface(usr, pwd, hostParam) {
                     try {
                         xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
                     } catch (e3) {
-                        alert("您的浏览器不支持AJAX！");
+                        console.error('AJAX:', e3);
                     }
 		        }
 		    }
 
-		    xmlHttp.open(settings.type, settings.url, async);
+		    xmlHttp.open(settings.type, settings.url);
 			if (settings.authorization !== undefined) {
 				if (settings.authorization !== null && settings.authorization !== "") {
 					xmlHttp.setRequestHeader("Authorization", settings.authorization); // if the ajax call defines the authorization, use that
@@ -149,14 +142,16 @@ function PurecommFAPIjsInterface(usr, pwd, hostParam) {
                     try {
                         data = JSON.parse(data);
                     } catch (e) {
+                        settings.error(e);
                     }
                     settings.success(data);
-		        }
+		        } else if (xmlHttp.readyState === 4 && xmlHttp.status !== 200) {
+                    settings.error(xmlHttp.statusText + ' (' + xmlHttp.status + ')');
+                }
 		    };
             xmlHttp.send(settings.data);
 	    }
 	}
-
 
  /***************************************************************************************************
  * Section 2                                                                                        *
