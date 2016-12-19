@@ -9,7 +9,6 @@ var input = document.getElementById("input"),
     outputYAML = document.getElementById("yaml"),
     outputCSV = document.getElementById("csv"),
     outputErrors = document.getElementById("errors");
-
 var map,
     bounds,
     markers = [],
@@ -28,6 +27,41 @@ function initializeMap() {
 }
 
 //var geocoder = new google.maps.Geocoder();
+
+function toToml(places) {
+    'use strict';
+    var tomlString = '',
+        SPACE = '    ',
+        i;
+    for (i = 0; i < places.length; i += 1) {
+        var place = places[i];
+        tomlString += '[' + place.index + ']\n' + // TODO make toml a list instead of naming each place by its index
+            SPACE + 'index = ' + place.index + '\n' +
+            SPACE + 'address = "' + place.address + '"\n' +
+            SPACE + '[' + place.index + '.coordinates]\n' +
+            SPACE + SPACE + 'lat = ' + place.coordinates.lat + '\n' +
+            SPACE + SPACE + 'lng = ' + place.coordinates.lng + '\n';
+    }
+    console.log('TOML', tomlString);
+    return tomlString;
+}
+
+function toYaml(places) {
+    'use strict';
+    var yamlString = '---\n',
+        i;
+    for (i = 0; i < places.length; i += 1) {
+        var place = places[i];
+        yamlString += 
+            '- index: ' + place.index + '\n' +
+            '  address: ' + place.address + '\n' +
+            '  coordinates:\n' +
+            '    lat: ' + place.coordinates.lat + '\n' +
+            '    lng: ' + place.coordinates.lng + '\n';
+    }
+    console.log('YAML', yamlString);
+    return yamlString;
+}
 
 function recieveData(place) {
     'use strict';
@@ -58,6 +92,8 @@ function recieveData(place) {
     console.log(JSON.stringify(output));
     
     outputJSON.value = JSON.stringify(output);
+    outputTOML.value = toToml(output);
+    outputYAML.value = toYaml(output);
     outputCSV.value += place.coordinates.lat + "," + place.coordinates.lng + "," + place.address.replace(/[,]/g, ";") + "\n";
 }
 
