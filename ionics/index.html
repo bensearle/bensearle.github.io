@@ -38,25 +38,77 @@
     </head>
     <body ng-app="todo" ng-controller="TodoCtrl">
 
-    <ion-nav-view animation="cover-left-right">
-    </ion-nav-view>
+    <ion-nav-view></ion-nav-view>
 
-     <script id="home.html" type="text/ng-template">
-          <ion-view> 
-          <ion-header-bar class="bar-positive"> 
-            <h1 class="title">Facts!</h1>
-          </ion-header-bar>
-            <ion-content class="facts">
-              <p>Banging your head against a wall uses 150 calories an hour.</p>
-              <p>Dogs have four toes on their hind feet, and five on their front feet.</p>
-              <p>The ant can lift 50 times its own weight, can pull 30 times its own weight and always falls over on its right side when intoxicated.</p>
-              <p>A cockroach will live nine days without it's head, before it starves to death.</p>
-              <p>Polar bears are left handed.</p> 
-              <a class="button" ui-sref="customerOrders">back</a>
-            </ion-content>
-          </ion-view>
+    <!-- PureComm Action Dashboard -->
+    <script id="home.html" type="text/ng-template">
+        <ion-view> 
+        <ion-header-bar class="bar-stable" align-title="left">
+            <button side="left" class="button button-icon ion-clipboard" ng-click="newTask()"></button>
+            <h1 side="left" class="title">PureComm Action Dashboard</h1>
+            <a href="#/facts" side="right" class="button button-icon ion-close"></a>
+        </ion-header-bar>
+
+        <ion-content class="facts">
+        
+
+        <ion-grid>
+            <ion-row class="row responsive-sm">
+                <ion-col class="col col-50">
+                    <ion-item>
+                        <ion-row class="row responsive-sm">
+                            <ion-col class="col col-40"><p class="veryLargeText">999</p></ion-col>
+                            <ion-col class="col">
+                                <p class="largeText">Pick Ticket(s)<br />
+                                <button class="button button-dark" ion-button>View Order(s)</button>
+                                <button class="button button-dark" ion-button>Print Ticket(s)</button></p>
+                            </ion-col>
+                        </ion-row>
+                    </ion-item>
+                </ion-col>
+                <ion-col class="col col-50">This column will take 10% of space</ion-col>
+            </ion-row>
+            <ion-row class="row responsive-sm">
+                <ion-col class="col col-50">This column will take 10% of space</ion-col>
+                <ion-col class="col col-50">This column will take 10% of space</ion-col>
+            </ion-row>
+            <ion-row><a class="button" ui-sref="customerOrders">back</a></ion-row>
+        </ion-grid>
+
+        <!--
+        <div class="row responsive-sm">
+            <div class = "col col-50"><div class="row">
+                <div class="col col-33"><p class="veryLargeText">123</p></div>
+                <div class="col">
+                    <p class="largeText">Pick Ticket(s)<br />
+                    <button class="button button-dark" ion-button>View Order(s)</button>
+                    <button class="button button-dark" ion-button>Print Ticket(s)</button></p></div>
+
+                    
+
+            </div></div>
+            <div class = "col col-50">Cancelled Item(s)</div>
+
+        </div>
+        <div class="row responsive-sm">
+            <div class="col col-50"><ion-col width-33 >2</ion-col><ion-col width-33>2</ion-col>Shipment Label(s)</div>
+            <div class="col col-50">Overdue Collection(s)</div>
+
+        </div>
+
+        <div class="row responsive-sm">
+            <div class="col">col 1</div>
+            <div class="col">col 2</div>
+            <div class="col">col 3</div>
+        </div>
+-->
+
+        
+        </ion-content>
+        </ion-view>
     </script> 
 
+    <!-- Customer Orders Screen -->
     <script id="customerOrders.html" type="text/ng-template">      
         <ion-view> 
         <ion-header-bar class="bar-stable" align-title="left">
@@ -124,7 +176,7 @@
                                 <ion-item class="item-stable"
                                         ng-click="toggleGroup(group)"
                                         ng-class="{active: !isGroupShown(group)}">
-                                    <div class="row">
+                                    <div class="row responsive-sm">
                                         <div class="col col-75">
                                             <i class="icon" ng-class="isGroupShown(group) ? 'ion-minus' : 'ion-plus'"></i>&nbsp;
                                             {{group.title}}</div>
@@ -134,7 +186,7 @@
                                 <ion-item class="item-accordion"
                                         ng-repeat="item in group.items"
                                         ng-show="isGroupShown(group)">
-                                    <div class="row">
+                                    <div class="row responsive-sm">
                                         <div class="col col-75"><p>
                                             {{item.itemTitle}}<br />
                                             {{item.barcode}}<br />

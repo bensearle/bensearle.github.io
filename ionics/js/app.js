@@ -27,7 +27,7 @@ angular.module('starter', ['ionic'])
 
 angular.module('todo', ['ionic'])
 
-    .config(function($stateProvider, $urlRouterProvider) {
+    .config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
         $stateProvider
             .state('home', {
                 url: "/home",
@@ -37,8 +37,9 @@ angular.module('todo', ['ionic'])
                 url: "/customerOrders",
                 templateUrl: "customerOrders.html" 
             });
-        $urlRouterProvider.otherwise("/home");
-      })
+        $urlRouterProvider.otherwise("/home"); // default page
+        $ionicConfigProvider.views.transition('none'); // disable animation between pages
+        })
 
     .controller('TodoCtrl', function ($scope, $ionicModal) {
         // test data
