@@ -1,0 +1,123 @@
+/* Empty. Add your own CSS if you like */
+ion-header-bar span.subTitle {
+    font-size: 1rem !important;
+    text-align: right !important;
+}
+
+.alignLeft {
+    float: left !important;
+    text-align: left !important;
+    width:50% !important;
+}
+
+.alignRight {
+    float: right !important;
+    text-align: right !important;
+    width:50% !important;
+}
+
+.alignCenter {
+    text-align: center !important;
+}
+
+/* dashed line */
+hr {
+    display: block !important;
+    height: 1px !important;
+    border: 0 !important;
+    border-top: 0.1em dashed #000 !important;
+    margin: 0.1em 0 !important;
+    padding: 0 !important; 
+}
+
+.noBorder {
+    border: 0px !important;
+    margin: 0px !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+
+.flexItem {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+.mainContent{
+    padding: 0.1em 0.5em 0.5em 0em !important; /* top, right, bottom, left */
+    border: 0em !important;
+    border-style: solid !important;
+    border-color: #CCCCCC !important;
+
+    /* add flex */
+    display: -webkit-flex;
+    display: -ms-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.contentBox{
+    margin: 0.5em 0em 0em 0em !important; /* top, right, bottom, left */
+    padding: 0px !important;
+    border: 0.1em !important;
+    border-style: solid !important;
+    border-color: #CCCCCC !important;
+    overflow: auto;
+}
+
+.sideBar{
+    margin: 0.5em;
+    padding: 0em !important;
+    border: 0.1em;
+    border-style: solid !important;
+    border-color: #CCCCCC !important;
+}
+.sideBarItem{
+    padding: 0.5em !important;
+
+}
+.sideBarTitle{
+    font-size:0.7em !important;
+    font-weight: bold !important;
+}
+.sideBarBody{
+    font-size:0.7em !important;
+}
+.searchBox{
+    margin: -2px -1px -0px -1px !important; /* top, right, bottom, left */
+}
+
+.buttonBig{
+    width: 80% !important;
+    height: 80% !important;
+
+}
+
+/* collapsible lists */
+.list .item.item-accordion {
+    /*line-height: 38px;
+    padding-top: 0;
+    padding-bottom: 0;*/
+    transition: 0.09s all linear !important;
+}
+.list .item.item-accordion.ng-hide {
+    line-height: 0px;
+}
+.list .item.item-accordion.ng-hide-add,
+.list .item.item-accordion.ng-hide-remove {
+    display: block !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+

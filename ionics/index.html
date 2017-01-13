@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+        <title></title>
+
+        <link rel="manifest" href="manifest.json">
+
+        <!-- un-comment this code to enable service worker
+        <script>
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(() => console.log('service worker installed'))
+                    .catch(err => console.log('Error', err));
+            }
+        </script>-->
+
+        <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+
+        <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+        <link href="css/ionic.app.css" rel="stylesheet">
+        -->
+
+        <!-- textdata js -->
+        <script src="userData.js"></script>
+        
+        
+        <!-- ionic/angularjs js -->
+        <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+        <!-- cordova script (this will be a 404 during development) -->
+        <script src="cordova.js"></script>
+
+        <!-- your app's js -->
+        <script src="js/app.js"></script>
+    </head>
+    <body ng-app="todo" ng-controller="TodoCtrl">
+
+    <ion-nav-view animation="cover-left-right">
+    </ion-nav-view>
+
+     <script id="home.html" type="text/ng-template">
+          <ion-view> 
+          <ion-header-bar class="bar-positive"> 
+            <h1 class="title">Facts!</h1>
+          </ion-header-bar>
+            <ion-content class="facts">
+              <p>Banging your head against a wall uses 150 calories an hour.</p>
+              <p>Dogs have four toes on their hind feet, and five on their front feet.</p>
+              <p>The ant can lift 50 times its own weight, can pull 30 times its own weight and always falls over on its right side when intoxicated.</p>
+              <p>A cockroach will live nine days without it's head, before it starves to death.</p>
+              <p>Polar bears are left handed.</p> 
+              <a class="button" ui-sref="customerOrders">back</a>
+            </ion-content>
+          </ion-view>
+    </script> 
+
+    <script id="customerOrders.html" type="text/ng-template">      
+        <ion-view> 
+        <ion-header-bar class="bar-stable" align-title="left">
+            <button side="left" class="button button-icon ion-clipboard" ng-click="newTask()"></button>
+            <h1 side="left" class="title">Customer Orders
+            <span side="right" class="title subTitle">MOKO, Mongkok: Charlie</span></h1>
+            <a href="#/facts" side="right" class="button button-icon ion-gear-a"></a>
+        </ion-header-bar>
+
+        <ion-side-menus>
+            
+            <!-- Left menu -->
+            <ion-side-menu class="noBorder" side="left" has-header="true" expose-aside-when="large">
+                <ion-content class="sideBar">
+                    <!-- our list and list items -->
+                    <ion-list>
+                        <ion-item class="item item-input searchBox" id="search-input">
+                            <i class="icon ion-search placeholder-icon"></i>
+                            <input id="input-search" type="text" placeholder="Search" ng-model="search.$">
+                        </ion-item>
+                        
+                        <ion-item class="sideBarItem" ng-repeat="order in customerOrders" ng-click="viewOrder(order)"
+                                ng-class="{active: isSelectedOrder(order)}">
+                            <span class="sideBarTitle">{{order.customerName}}</span><br>
+                            <hr />
+                            <p class="sideBarBody alignLeft">{{order.orderNumber}}</p>
+                            <p class="sideBarBody alignRight">{{order.createDate}}</p>
+                        </ion-item>
+                    </ion-list>
+                </ion-content>
+            </ion-side-menu>
+
+            <!-- Center content -->
+            <ion-side-menu-content class="noBorder" has-header="true">
+                <ion-content class="mainContent" scroll="false">
+                    <!-- our list and list items -->
+                    
+                    <!-- show order details -->
+                    <div class="contentBox">
+                        <ion-item class="item-stable">
+                            <div class="row responsive-sm">
+                                <div class="col col-75">
+                                    Order Details</div>
+                                <div class="col alignCenter">Status</div>
+                            </div>
+                        </ion-item>
+                        <ion-item class="item-accordion"
+                                ng-show=true>
+                            <div class="row responsive-sm">
+                                <div class="col col-75"><p>
+                                    Customer Info: {{selectedOrder.customerName}} / {{selectedOrder.mobileNumber}}<br />
+                                    {{selectedOrder.itemsCount}} item(s), value {{selectedOrder.totalPrice}}<br />
+                                    <img src="img/C&C.png"> Click &amp; Collect<br />
+                                    <button class="button button-dark" ion-button>Print Ticket</button>
+                                    </p></div>
+                                <div class="col">{{item.tickNumber}}</div>
+                            </div>
+                        </ion-item>
+                    </div>
+
+                    <!-- show items, grouped by store -->
+                    <div class="contentBox flexItem">
+                        <ion-list class="list-order-item">
+                            <div ng-repeat="group in groups">
+                                <ion-item class="item-stable"
+                                        ng-click="toggleGroup(group)"
+                                        ng-class="{active: !isGroupShown(group)}">
+                                    <div class="row">
+                                        <div class="col col-75">
+                                            <i class="icon" ng-class="isGroupShown(group) ? 'ion-minus' : 'ion-plus'"></i>&nbsp;
+                                            {{group.title}}</div>
+                                        <div class="col alignCenter">Ticket Number</div>
+                                    </div>
+                                </ion-item>
+                                <ion-item class="item-accordion"
+                                        ng-repeat="item in group.items"
+                                        ng-show="isGroupShown(group)">
+                                    <div class="row">
+                                        <div class="col col-75"><p>
+                                            {{item.itemTitle}}<br />
+                                            {{item.barcode}}<br />
+                                            {{item.size}}<br />
+                                            Item Status: {{item.itemStatus}}<br />
+                                            </p></div>
+                                        <div class="col alignCenter"><button class="button button-dark buttonBig" ion-button>{{item.tickNumber}}</button></div>
+                                    </div>   
+                                </ion-item>
+                            </div>
+                        </ion-list>
+                    </div>
+                </ion-content>
+            </ion-side-menu-content>   
+        </ion-side-menus>
+        </ion-view>
+    </script>
+
+
+    
+        
+
+
+        
+        
+                   
+    
+    <script id="new-task.html" type="text/ng-template">
+        <div class="modal">
+            <!-- Modal header bar -->
+            <ion-header-bar class="bar-secondary">
+                <h1 class="title">New Task</h1>
+                <button class="button button-clear button-positive" ng-click="closeNewTask()">Cancel</button>
+            </ion-header-bar>
+            <!-- Modal content area -->
+            <ion-content>
+                <form ng-submit="createTask(task)">
+                    <div class="list">
+                        <label class="item item-input">
+                            <input type="text" placeholder="What do you need to do?" ng-model="task.title">
+                        </label>
+                    </div>
+                    <div class="padding">
+                        <button type="submit" class="button button-block button-positive">Create Task</button>
+                    </div>
+                </form>
+            </ion-content>
+        </div>
+    </script>   
+
+
+
+        <!--<ion-pane>
+            <ion-header-bar class="bar-stable">
+                <h1 class="title">Ionic Blank Starter</h1>
+            </ion-header-bar>
+            <ion-content>
+            </ion-content>
+        </ion-pane>-->
+    </body>
+</html>
