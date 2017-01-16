@@ -41,7 +41,27 @@ angular.module('todo', ['ionic'])
         $ionicConfigProvider.views.transition('none'); // disable animation between pages
         })
 
-    .controller('TodoCtrl', function ($scope, $ionicModal) {
+    .controller('TodoCtrl', function ($scope, $location, $ionicModal) {
+        $scope.text = {
+            dashboardTitle: 'PureComm Action Dashboard',
+            dashboardPickTickets: 'Pick Ticket(s)',
+            dashboardCancelledItems: 'Cancelled Item(s)',
+            dashboardShipmentLabels: 'Shipment Label(s)',
+            dashboardOverdueCollections: 'Overdue Collection(s)',
+            dashboardPicksToConfirm: 'Pick(s) to Confirm',
+            dashboardShipmentsToArrive: 'Shipment(s) to Arrive',
+            dashboardCourierCollections: 'Courier Collection(s)',
+
+
+            customerOrdersTitle: 'Customer Orders',
+            confirmPick: 'Confirm Pick',
+            ticketNumber: 'Ticket No.',
+
+            orders: 'Orders',
+            provisional: 'Provisional'
+        };
+
+
         // test data
         $scope.tasks = [
             { title: 'Collect coins' },
@@ -113,7 +133,36 @@ angular.module('todo', ['ionic'])
             
         };
 
-       
+        $scope.getOrangeIcon = function (order) {
+            order.status
+            switch(order.status) {
+                case 'provisional':
+                    return 'img/flag.png';
+                    break;
+                default:
+                    return 'img/emptyOrange.png';
+                    break;
+            }
+
+        };
+
+        $scope.getGreyIcon = function (order) {
+            if (order.cc){
+                return 'img/C&C.png';
+            } else {
+                return 'img/emptyGrey.png';
+            }
+        };
+
+        $scope.getOrderStatus = function (order) {
+            var isReadyToCollect = true;
+            for (var i = 0; i < order.items; i += 1){
+                isProvisional = isProvisional && order.items[i].picked;
+            }
+            if (!isReadyToCollect){
+                order.status = 'provisional';
+            }
+        };
     
         $scope.toggleGroup = function (group) {
             group.show = !group.show;
@@ -129,6 +178,10 @@ angular.module('todo', ['ionic'])
         $scope.isNonEmpty = function (array) {
             console.log("isNonEmpty",array, array.length > 0);
             return array.length > 0;
+        }
+
+        $scope.isCurrentTab = function (tabUrl) {
+            return tabUrl === $location.$$url;
         }
 
         // Create and load the Modal

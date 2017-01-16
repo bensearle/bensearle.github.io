@@ -38,29 +38,36 @@
     </head>
     <body ng-app="todo" ng-controller="TodoCtrl">
 
+    <!-- The nav bar that will be updated as we navigate -->
+    <ion-header-bar class="bar-stable header">
+        <div style="width: 100%">
+            <a href="#/home" ng-class="{active: isCurrentTab('/home')}" class="button headerText headerTab">Actions</a>
+            <a href="#/customerOrders" ng-class="{active: isCurrentTab('/customerOrders')}" class="button headerText headerTab">Orders</a>
+            <a href="" class="button button-icon ion-gear-a headerText"></a>
+            <span class="button headerText">MOKO, Mongkok: Charlie</span>
+        </div>
+    </ion-header-bar>
+    <div class="headerYellow"></div>
     <ion-nav-view></ion-nav-view>
 
     <!-- PureComm Action Dashboard -->
     <script id="home.html" type="text/ng-template">
         <ion-view> 
-        <ion-header-bar class="bar-stable" align-title="left">
+        <!--<ion-header-bar class="bar-stable" align-title="left">
             <button side="left" class="button button-icon ion-clipboard" ng-click="newTask()"></button>
-            <h1 side="left" class="title">PureComm Action Dashboard</h1>
+            <h1 side="left" class="title">{{text.dashboardTitle}}</h1>
             <a href="#/facts" side="right" class="button button-icon ion-close"></a>
-        </ion-header-bar>
+        </ion-header-bar>-->
 
-        <ion-content class="facts">
-        
-
-        <ion-grid>
+        <ion-content class="facts has-footer"><ion-grid>
         <!-- Dashboard, top blocks -->
             <ion-row class="row responsive-sm">
                 <ion-col class="col col-50">
                     <ion-item class="dashboardBlocks" ng-class="{active: true}">
                         <ion-row class="row responsive-sm">
-                            <ion-col class="col col-33"><p class="veryLargeText">999</p></ion-col>
+                            <ion-col class="col col-33"><p class="veryLargeText">3</p></ion-col>
                             <ion-col class="col">
-                                <p class="largeText">Pick Ticket(s)<br />
+                                <p class="largeText">{{text.dashboardPickTickets}}<br />
                                 <a class="button button-dark" ui-sref="customerOrders" ion-button>View Order(s)</a>
                                 <button class="button button-dark" ion-button>Print Ticket(s)</button></p>
                             </ion-col>
@@ -72,7 +79,7 @@
                         <ion-row class="row responsive-sm">
                             <ion-col class="col col-33"><p class="veryLargeText">0</p></ion-col>
                             <ion-col class="col">
-                                <p class="largeText">Cancelled Item(s)<br />
+                                <p class="largeText">{{text.dashboardCancelledItems}}<br />
                                 <!--<a class="button button-dark" ui-sref="customerOrders" ion-button>View Order(s)</a>
                                 <button class="button button-dark" ion-button>Print Ticket(s)</button>--></p>
                             </ion-col>
@@ -86,7 +93,7 @@
                         <ion-row class="row responsive-sm">
                             <ion-col class="col col-33"><p class="veryLargeText">0</p></ion-col>
                             <ion-col class="col">
-                                <p class="largeText">Shipment Label(s)<br />
+                                <p class="largeText">{{text.dashboardShipmentLabels}}<br />
                                 <!--<a class="button button-dark" ui-sref="customerOrders" ion-button>View Order(s)</a>
                                 <button class="button button-dark" ion-button>Print Ticket(s)</button>--></p>
                             </ion-col>
@@ -98,7 +105,7 @@
                         <ion-row class="row responsive-sm">
                             <ion-col class="col col-33"><p class="veryLargeText">0</p></ion-col>
                             <ion-col class="col">
-                                <p class="largeText">Overdue Collection(s)<br />
+                                <p class="largeText">{{text.dashboardOverdueCollections}}<br />
                                 <!--<a class="button button-dark" ui-sref="customerOrders" ion-button>View Order(s)</a>
                                 <button class="button button-dark" ion-button>Print Ticket(s)</button>--></p>
                             </ion-col>
@@ -110,11 +117,11 @@
             <ion-row class="row responsive-sm">
                 <ion-col class="col col-33">
                     <ion-item class="dashboardBlocks" ng-class="{active: isNonEmpty(picksToConfirm)}"">
-                        <ion-row class="row"><p class="mediumText">{{picksToConfirm.length}} Pick(s) to Confirm</p></ion-row>
+                        <ion-row class="row"><p class="mediumText">{{picksToConfirm.length}} {{text.dashboardPicksToConfirm}}</p></ion-row>
                         <ion-row class="row responsive-sm">
                             <ion-row class="row">
                                     <ion-col class="col col-33" ng-repeat="pick in picksToConfirm">
-                                        <button class="button button-dark margin-5" ion-button>{{pick.number}}</button>
+                                        <button class="button button-dark margin-5 buttonTicketNumber" ion-button>{{pick.number}}</button>
                                     </ion-col>
                             </ion-row>
                         </ion-row>
@@ -122,7 +129,7 @@
                 </ion-col>
                 <ion-col class="col col-33">
                     <ion-item class="dashboardBlocks" ng-class="{active: isNonEmpty(shipmentsToArrive)}">
-                        <ion-row class="row"><p class="mediumText">{{shipmentsToArrive.length}} Shipment(s) to Arrive</p></ion-row>
+                        <ion-row class="row"><p class="mediumText">{{shipmentsToArrive.length}} {{text.dashboardShipmentsToArrive}}</p></ion-row>
                         <ion-row class="row responsive-sm">
                             <ion-row class="row">
                                     <ion-col class="col col-33" ng-repeat="shipment in shipmentsToArrive">
@@ -134,7 +141,7 @@
                 </ion-col>
                 <ion-col class="col col-33">
                     <ion-item class="dashboardBlocks" ng-class="{active: isNonEmpty(courierCollections)}">
-                        <ion-row class="row"><p class="mediumText">{{courierCollections.length}} Courier Collections(s)</p></ion-row>
+                        <ion-row class="row"><p class="mediumText">{{courierCollections.length}} {{text.dashboardCourierCollections}}</p></ion-row>
                         <ion-row class="row responsive-sm">
                             <ion-row class="row">
                                     <ion-col class="col col-33" ng-repeat="collection in courierCollections">
@@ -146,50 +153,23 @@
                 </ion-col>
             </ion-row>
             <ion-row><a class="button" ui-sref="customerOrders">back</a></ion-row>
-        </ion-grid>
+        </ion-grid></ion-content>
 
-        <!--
-        <div class="row responsive-sm">
-            <div class = "col col-50"><div class="row">
-                <div class="col col-33"><p class="veryLargeText">123</p></div>
-                <div class="col">
-                    <p class="largeText">Pick Ticket(s)<br />
-                    <button class="button button-dark" ion-button>View Order(s)</button>
-                    <button class="button button-dark" ion-button>Print Ticket(s)</button></p></div>
-
-                    
-
-            </div></div>
-            <div class = "col col-50">Cancelled Item(s)</div>
-
-        </div>
-        <div class="row responsive-sm">
-            <div class="col col-50"><ion-col width-33 >2</ion-col><ion-col width-33>2</ion-col>Shipment Label(s)</div>
-            <div class="col col-50">Overdue Collection(s)</div>
-
-        </div>
-
-        <div class="row responsive-sm">
-            <div class="col">col 1</div>
-            <div class="col">col 2</div>
-            <div class="col">col 3</div>
-        </div>
--->
-
-        
-        </ion-content>
+        <ion-footer-bar align-title="left" class="sideBarFooter">
+            <a class="button button-dark ordersButton" ui-sref="customerOrders" ion-button>{{text.orders}}</a>
+        </ion-footer-bar>
         </ion-view>
     </script> 
 
     <!-- Customer Orders Screen -->
     <script id="customerOrders.html" type="text/ng-template">      
         <ion-view> 
-        <ion-header-bar class="bar-stable" align-title="left">
+        <!--<ion-header-bar class="bar-stable" align-title="left">
             <button side="left" class="button button-icon ion-clipboard" ng-click="newTask()"></button>
             <h1 side="left" class="title">Customer Orders
             <span side="right" class="title subTitle">MOKO, Mongkok: Charlie</span></h1>
             <a href="#/facts" side="right" class="button button-icon ion-gear-a"></a>
-        </ion-header-bar>
+        </ion-header-bar>-->
 
         <ion-side-menus>
             
@@ -205,7 +185,10 @@
                         
                         <ion-item class="sideBarItem" ng-repeat="order in customerOrders" ng-click="viewOrder(order)"
                                 ng-class="{active: isSelectedOrder(order)}">
-                            <span class="sideBarTitle">{{order.customerName}}</span><br>
+                            <span class="sideBarTitle">{{order.customerName}}</span>
+                            <img class="smallIcon" src="{{getOrangeIcon(order)}}"></img>
+                            <img class="sideBarGreyIcon" src="{{getGreyIcon(order)}}"></img>
+                            <br />
                             <hr />
                             <p class="sideBarBody alignLeft">{{order.orderNumber}}</p>
                             <p class="sideBarBody alignRight">{{order.createDate}}</p>
@@ -234,13 +217,18 @@
                         <ion-item class="item-accordion"
                                 ng-show=true>
                             <div class="row responsive-sm">
-                                <div class="col col-75"><p>
+                                <div class="col col-66"><p>
                                     Customer Info: {{selectedOrder.customerName}} / {{selectedOrder.mobileNumber}}<br />
                                     {{selectedOrder.itemsCount}} item(s), value {{selectedOrder.totalPrice}}<br />
-                                    <img src="img/C&C.png"> Click &amp; Collect<br />
+                                    <img src="img/C&C.png" /> Click &amp; Collect<br />
                                     <button class="button button-dark" ion-button>Print Ticket</button>
-                                    </p></div>
-                                <div class="col">{{item.tickNumber}}</div>
+                                    </p>
+                                </div>
+                                <div class="col">
+                                    <div class=""><img src="img/flag.png"> Provisional<br /></div>
+
+
+                                </div>
                             </div>
                         </ion-item>
                     </div>
@@ -269,7 +257,7 @@
                                             {{item.size}}<br />
                                             Item Status: {{item.itemStatus}}<br />
                                             </p></div>
-                                        <div class="col alignCenter"><button class="button button-dark buttonBig" ion-button>{{item.tickNumber}}</button></div>
+                                        <div class="col alignCenter"><button class="button button-dark buttonTicketNumber" ng-class="{active: !item.picked}" ion-button>{{item.tickNumber}}</button></div>
                                     </div>   
                                 </ion-item>
                             </div>

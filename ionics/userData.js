@@ -3,6 +3,9 @@ var userData=
   "orders": [
     {
       "collectionDate": "",
+      "isProvisional": true,
+      "status": "provisional",
+      "cc": "true",
       "totalPrice": "HK$567",
       "itemsCount": "3",
       "items": [
@@ -16,7 +19,8 @@ var userData=
             "size": "SIZE 1",
             "styleRef": "SKU10001",
             "tickNumber": "718",
-            "title": ""
+            "title": "",
+            "picked": false
         },
         {
             "itemTitle":"Trousers",
@@ -28,7 +32,8 @@ var userData=
             "size": "SIZE 1",
             "styleRef": "SKU10001",
             "tickNumber": "719",
-            "title": ""
+            "title": "",
+            "picked": true
         },
         {
             "itemTitle":"T-Shirt",
@@ -40,7 +45,8 @@ var userData=
             "size": "1",
             "styleRef": "SKU10001",
             "tickNumber": "720",
-            "title": ""
+            "title": "",
+            "picked": false
         }
       ],
       "createDate": "2016-12-06 08:55:09",
@@ -48,11 +54,6 @@ var userData=
       "customerFeedback": 1,
       "customerName": "John abc",
       "datePlace": "06/12/2016",
-      "details": [
-        {
-          
-        }
-      ],
       "displayPrice": "HK$100",
       "extendDays": 2,
       "isOverdue": 0,
