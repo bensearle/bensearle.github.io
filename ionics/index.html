@@ -53,24 +53,97 @@
         
 
         <ion-grid>
+        <!-- Dashboard, top blocks -->
             <ion-row class="row responsive-sm">
                 <ion-col class="col col-50">
-                    <ion-item>
+                    <ion-item class="dashboardBlocks" ng-class="{active: true}">
                         <ion-row class="row responsive-sm">
-                            <ion-col class="col col-40"><p class="veryLargeText">999</p></ion-col>
+                            <ion-col class="col col-33"><p class="veryLargeText">999</p></ion-col>
                             <ion-col class="col">
                                 <p class="largeText">Pick Ticket(s)<br />
-                                <button class="button button-dark" ion-button>View Order(s)</button>
+                                <a class="button button-dark" ui-sref="customerOrders" ion-button>View Order(s)</a>
                                 <button class="button button-dark" ion-button>Print Ticket(s)</button></p>
                             </ion-col>
                         </ion-row>
                     </ion-item>
                 </ion-col>
-                <ion-col class="col col-50">This column will take 10% of space</ion-col>
+                <ion-col class="col col-50">
+                    <ion-item class="dashboardBlocks">
+                        <ion-row class="row responsive-sm">
+                            <ion-col class="col col-33"><p class="veryLargeText">0</p></ion-col>
+                            <ion-col class="col">
+                                <p class="largeText">Cancelled Item(s)<br />
+                                <!--<a class="button button-dark" ui-sref="customerOrders" ion-button>View Order(s)</a>
+                                <button class="button button-dark" ion-button>Print Ticket(s)</button>--></p>
+                            </ion-col>
+                        </ion-row>
+                    </ion-item>
+                </ion-col>
             </ion-row>
             <ion-row class="row responsive-sm">
-                <ion-col class="col col-50">This column will take 10% of space</ion-col>
-                <ion-col class="col col-50">This column will take 10% of space</ion-col>
+                <ion-col class="col col-50">
+                    <ion-item class="dashboardBlocks">
+                        <ion-row class="row responsive-sm">
+                            <ion-col class="col col-33"><p class="veryLargeText">0</p></ion-col>
+                            <ion-col class="col">
+                                <p class="largeText">Shipment Label(s)<br />
+                                <!--<a class="button button-dark" ui-sref="customerOrders" ion-button>View Order(s)</a>
+                                <button class="button button-dark" ion-button>Print Ticket(s)</button>--></p>
+                            </ion-col>
+                        </ion-row>
+                    </ion-item>
+                </ion-col>
+                <ion-col class="col col-50">
+                    <ion-item class="dashboardBlocks">
+                        <ion-row class="row responsive-sm">
+                            <ion-col class="col col-33"><p class="veryLargeText">0</p></ion-col>
+                            <ion-col class="col">
+                                <p class="largeText">Overdue Collection(s)<br />
+                                <!--<a class="button button-dark" ui-sref="customerOrders" ion-button>View Order(s)</a>
+                                <button class="button button-dark" ion-button>Print Ticket(s)</button>--></p>
+                            </ion-col>
+                        </ion-row>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            <!-- Dashboard, bottom columns -->
+            <ion-row class="row responsive-sm">
+                <ion-col class="col col-33">
+                    <ion-item class="dashboardBlocks" ng-class="{active: isNonEmpty(picksToConfirm)}"">
+                        <ion-row class="row"><p class="mediumText">{{picksToConfirm.length}} Pick(s) to Confirm</p></ion-row>
+                        <ion-row class="row responsive-sm">
+                            <ion-row class="row">
+                                    <ion-col class="col col-33" ng-repeat="pick in picksToConfirm">
+                                        <button class="button button-dark margin-5" ion-button>{{pick.number}}</button>
+                                    </ion-col>
+                            </ion-row>
+                        </ion-row>
+                    </ion-item>
+                </ion-col>
+                <ion-col class="col col-33">
+                    <ion-item class="dashboardBlocks" ng-class="{active: isNonEmpty(shipmentsToArrive)}">
+                        <ion-row class="row"><p class="mediumText">{{shipmentsToArrive.length}} Shipment(s) to Arrive</p></ion-row>
+                        <ion-row class="row responsive-sm">
+                            <ion-row class="row">
+                                    <ion-col class="col col-33" ng-repeat="shipment in shipmentsToArrive">
+                                        <button class="button button-dark margin-5" ion-button>{{shipment.number}}</button>
+                                    </ion-col>
+                            </ion-row>
+                        </ion-row>
+                    </ion-item>
+                </ion-col>
+                <ion-col class="col col-33">
+                    <ion-item class="dashboardBlocks" ng-class="{active: isNonEmpty(courierCollections)}">
+                        <ion-row class="row"><p class="mediumText">{{courierCollections.length}} Courier Collections(s)</p></ion-row>
+                        <ion-row class="row responsive-sm">
+                            <ion-row class="row">
+                                    <ion-col class="col col-33" ng-repeat="collection in courierCollections">
+                                        <button class="button button-dark margin-5" ion-button>{{collection.number}}</button>
+                                    </ion-col>
+                            </ion-row>
+                        </ion-row>
+                    </ion-item>
+                </ion-col>
             </ion-row>
             <ion-row><a class="button" ui-sref="customerOrders">back</a></ion-row>
         </ion-grid>
@@ -122,7 +195,7 @@
             
             <!-- Left menu -->
             <ion-side-menu class="noBorder" side="left" has-header="true" expose-aside-when="large">
-                <ion-content class="sideBar">
+                <ion-content class="has-footer sideBar">
                     <!-- our list and list items -->
                     <ion-list>
                         <ion-item class="item item-input searchBox" id="search-input">
@@ -139,6 +212,9 @@
                         </ion-item>
                     </ion-list>
                 </ion-content>
+                <ion-footer-bar align-title="left" class="sideBarFooter">
+                    <a class="button button-dark actionButton" ui-sref="home" ion-button>Actions</a>
+                </ion-footer-bar>
             </ion-side-menu>
 
             <!-- Center content -->

@@ -50,6 +50,16 @@ angular.module('todo', ['ionic'])
             { title: 'Find the Princess' }
         ];
     
+        $scope.picksToConfirm = [
+            {number:'1234'},
+            {number:'1235'},
+            {number:'1236'},
+            {number:'1237'}
+        ];
+        $scope.shipmentsToArrive = [];
+        $scope.courierCollections = [];
+
+
         // populate customer orders
         $scope.customerOrders = userData.orders;
     
@@ -115,6 +125,11 @@ angular.module('todo', ['ionic'])
         $scope.isSelectedOrder = function (order) {
             return order.orderNumber === $scope.selectedOrder.orderNumber;
         };
+
+        $scope.isNonEmpty = function (array) {
+            console.log("isNonEmpty",array, array.length > 0);
+            return array.length > 0;
+        }
 
         // Create and load the Modal
         $ionicModal.fromTemplateUrl('new-task.html', function (modal) {
