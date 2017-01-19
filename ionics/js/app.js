@@ -25,7 +25,7 @@ angular.module('starter', ['ionic'])
 		});
 	});
 
-angular.module('todo', ['ionic'])
+angular.module('womApp', ['ionic'])
 
     .config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
         $stateProvider
@@ -35,14 +35,27 @@ angular.module('todo', ['ionic'])
             })
             .state('customerOrders', {
                 url: "/customerOrders",
-                templateUrl: "customerOrders.html" 
+                templateUrl: "customerOrders.html",
+                params: { 
+                    searchValue: "",
+                    test: null
+                }
             });
         $urlRouterProvider.otherwise("/home"); // default page
         $ionicConfigProvider.views.transition('none'); // disable animation between pages
         })
 
-    .controller('TodoCtrl', function ($scope, $location, $ionicModal) {
+    .controller('AppCtrl', function ($scope, $stateParams, $document, $location, $ionicModal) {
+        $scope.session = {
+            user: 'Charlie',
+            store: 'MOKO, Mongkok'
+        }
+
+        $scope.customerOrders = userData.orders;
+
         $scope.text = {
+            tabActions: 'Actions',
+            tabOrders: 'Orders',
             dashboardTitle: 'PureComm Action Dashboard',
             dashboardPickTickets: 'Pick Ticket(s)',
             dashboardCancelledItems: 'Cancelled Item(s)',
@@ -56,9 +69,25 @@ angular.module('todo', ['ionic'])
             customerOrdersTitle: 'Customer Orders',
             confirmPick: 'Confirm Pick',
             ticketNumber: 'Ticket No.',
+            itemDetail: 'Item Detail',
+            scanBarcode: 'Scan Barcode',
+            pickFailed: 'Pick Failed',
+
+
+            // buttons
+            //confirmPick: 'Confirm Pick', // already defined
+            print: 'Print',
+            reprint: 'Reprint',
+            back: 'Back',
+
+            damaged: 'Damaged',
+            wrongItem: 'Wrong Item',
+            notFound: 'Not Found',
+            other: 'Other',
 
             orders: 'Orders',
             provisional: 'Provisional'
+
         };
 
 
@@ -69,19 +98,29 @@ angular.module('todo', ['ionic'])
             { title: 'Get high enough to grab the flag' },
             { title: 'Find the Princess' }
         ];
-    
-        $scope.picksToConfirm = [
-            {number:'1234'},
-            {number:'1235'},
-            {number:'1236'},
-            {number:'1237'}
-        ];
+
+        getPicksToConfirm = function(){
+            /*var picks = [];
+
+            for (var i = 0; i < $scope.customerOrders; i += 1){
+                if ($scope.customerOrders[i].
+            }
+            $scope.customerOrders;*/
+
+            return [
+            {number:'718'},
+            {number:'719'},
+            {number:'725'}
+        ]
+        };
+        $scope.picksToConfirm = getPicksToConfirm();
+        
+
         $scope.shipmentsToArrive = [];
         $scope.courierCollections = [];
 
 
-        // populate customer orders
-        $scope.customerOrders = userData.orders;
+        
     
         // Open our new task modal
         $scope.viewOrder = function (order) {
@@ -104,10 +143,11 @@ angular.module('todo', ['ionic'])
             }
             myArray = [];
             for (var groupName in groups) {
+                var fromMoko = groupName === 'MOKO, Mongkok'
                 myArray.push({'name': groupName, 
                     'title': groups[groupName].length + ' Item(s) from ' + groupName, 
                     'items': groups[groupName], 
-                    'show': true});
+                    'show': fromMoko});
             }
             console.log(myArray);
             console.log(order.items);
@@ -133,21 +173,25 @@ angular.module('todo', ['ionic'])
             
         };
 
+        $scope.isNotProvisional = function (order){
+            console.log("provisional", order.status !== 'provisional');
+            return order.status !== 'provisional';
+        };
+
         $scope.getOrangeIcon = function (order) {
-            order.status
-            switch(order.status) {
-                case 'provisional':
-                    return 'img/flag.png';
-                    break;
-                default:
-                    return 'img/emptyOrange.png';
-                    break;
+            if (!order.isReady){
+                return 'img/flag.png';
+            } else if (order.isOverdue) {
+                return 'img/clock.png';
+            } else {
+                return 'img/emptyOrange.png';
+
             }
 
         };
 
         $scope.getGreyIcon = function (order) {
-            if (order.cc){
+            if (order.isClickAndCollect){
                 return 'img/C&C.png';
             } else {
                 return 'img/emptyGrey.png';
@@ -163,6 +207,41 @@ angular.module('todo', ['ionic'])
                 order.status = 'provisional';
             }
         };
+
+        //document.getElementById('input-search').value = $stateParams.searchValue;
+        $scope.initialSearchValue = function(){
+            console.log("^^^^^^^^^^",$stateParams.searchValue);
+            return $stateParams.searchValue;
+        }
+        $scope.showOrder = function (order) {
+            var searchValue = document.getElementById('input-search').value;
+            if (!searchValue) { // nothing is being searched
+                return true;
+            } else if (order.orderNumber.toUpperCase().includes(searchValue.toUpperCase())){
+                return true;
+            } else if (order.customerName.toUpperCase().includes(searchValue.toUpperCase())){
+                return true;
+            } else {
+                console.log("**", order.orderNumber, order.customerName, searchValue)
+                return false;
+            }
+
+            /*var searchValue = document.getElementById('input-search').value;
+            console.log ('&&&&,$',searchValue, $stateParams);
+            if (searchValue) {
+                return order.isProvisional;
+            } else if($stateParams.searchValue){
+                document.getElementById('input-search').value = $stateParams.searchValue;
+                $stateParams.searchValue = '';
+                return order.isProvisional;
+            } else {
+                return true;   
+            }*/
+        };
+        $scope.clearSearch = function(){
+            document.getElementById('input-search').value = '';
+        }
+
     
         $scope.toggleGroup = function (group) {
             group.show = !group.show;
@@ -184,6 +263,14 @@ angular.module('todo', ['ionic'])
             return tabUrl === $location.$$url;
         }
 
+        $scope.isOrderHidden = function (order) {
+            console.log('****', $scope)
+
+            return false;
+        }
+
+
+
         // Create and load the Modal
         $ionicModal.fromTemplateUrl('new-task.html', function (modal) {
             $scope.taskModal = modal;
@@ -202,7 +289,8 @@ angular.module('todo', ['ionic'])
         };
 
         // Open our new task modal
-        $scope.newTask = function () {
+        $scope.confirmPick = function (item) {
+            $scope.selectedItem = item;
             $scope.taskModal.show();
         };
 
@@ -210,6 +298,28 @@ angular.module('todo', ['ionic'])
         $scope.closeNewTask = function () {
             $scope.taskModal.hide();
         };
+
+        printPDF = function (){
+            var printWindow = window.open('print.htm');
+            printWindow.focus();
+            printWindow.print();
+            setTimeout(function(){ printWindow.close(); }, 100); // wait 100ms to give print dialog time to open
+        }
+
+        $scope.getItems = function(ev) {
+            // Reset items back to all of the items
+            //this.initializeItems();
+
+            // set val to the value of the ev target
+            var val = ev.target.value;
+
+            // if the value is an empty string don't filter the items
+            if (val && val.trim() != '') {
+              this.items = this.items.filter((item) => {
+                return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
+              })
+            }
+        }
 
     })
 

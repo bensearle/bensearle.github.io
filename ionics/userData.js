@@ -2,16 +2,39 @@ var userData=
 {
   "orders": [
     {
-      "collectionDate": "",
-      "isProvisional": true,
-      "status": "provisional",
-      "cc": "true",
-      "totalPrice": "HK$567",
-      "itemsCount": "3",
-      "items": [
+      "createDate": "2016-12-06 08:55:09",
+      "orderNumber": "order90230",
+      "customerName": "John A",
+      "mobileNumber": "61431002293",
+      "totalPrice": "100", //b
+      "currency": "HKD",
+     
+      "isReady": false, // b
+      "isOverdue": 0,
+      "isCompleted": false, // b
+
+      "isClickAndCollect": true, // b
+      
+      "customerFeedback": 1,
+      "datePlace": "06/12/2016",
+      "extendDays": 2,
+
+
+
+      "modifyConfirmDate": false,
+      "orderStatus": "2",
+      "originBranch": "WebReserve",
+      "payBarcode": "tx12134345",
+      "shippingRelease": "Hold",
+      "statusTitle": "Stock Reserved",
+
+      "collectionDate": "",  // if there is collectionDate, then it is click&collect?
+      "itemsCount": "3", // b
+      "items": [ // b, itemCount was called items
         {
+            "displayPrice": 100,
             "itemTitle":"Argyle Shoe",
-            "currentBranch": "Ausie",
+            "currentBranch": "MOKO, Mongkok",
             "barcode": "SKU#100",
             "itemStatus": "Pending Pick",
             "reservationId": 50510,
@@ -24,8 +47,8 @@ var userData=
         },
         {
             "itemTitle":"Trousers",
-            "currentBranch": "Ausie",
-            "barcode": "SKU#100",
+            "currentBranch": "MOKO, Mongkok",
+            "barcode": "SKU#102",
             "itemStatus": "Pending Pick",
             "reservationId": 50510,
             "shipmentNumber": "",
@@ -48,47 +71,29 @@ var userData=
             "title": "",
             "picked": false
         }
-      ],
-      "createDate": "2016-12-06 08:55:09",
-      "currency": "HKD",
-      "customerFeedback": 1,
-      "customerName": "John abc",
-      "datePlace": "06/12/2016",
-      "displayPrice": "HK$100",
-      "extendDays": 2,
-      "isOverdue": 0,
-      "mobileNumber": "61431002293",
-      "modifyConfirmDate": false,
-      "orderId": 21556,
-      "orderNumber": "print90",
-      "orderStatus": "2",
-      "originBranch": "WebReserve",
-      "payBarcode": "tx12134345",
-      "shippingRelease": "Hold",
-      "statusTitle": "Stock Reserved",
-      "type": 3,
-      "values": 100
+      ]
     },
     {
+      "isReady": true, // b
       "itemTitle":"Starry Tee",
       "collectionDate": "",
       "commentHistory": [],
       "createDate": "2016-12-07 02:11:10",
       "currency": "HKD",
-      "currentBranch": "Ausie",
+      "currentBranch": "MOKO, Mongkok",
       "customerFeedback": 1,
-      "customerName": "Brenda Test",
+      "customerName": "Brenda T",
       "datePlace": "07/12/2016",
       "details": [
         {
           "appointmentTimeArray": [],
-          "barcode": "SKU#100",
+          "barcode": "SKU#103",
           "historys": [
             {
               "failedReason": "Not Found",
               "pickDate": "07/12/2016",
               "pickStatus": 7,
-              "pickStore": "Ausie"
+              "pickStore": "MOKO, Mongkok"
             }
           ],
           "itemStatus": "Pending Pick",
@@ -103,11 +108,27 @@ var userData=
       "displayPrice": "HK$1000",
       "extendDays": 2,
       "isOverdue": 0,
-      "items": 1,
+      "totalPrice": "HK$100",
+      "itemsCount": "1",
+      "items": [
+        {
+            "itemTitle":"Blue Jacket",
+            "currentBranch": "MOKO, Mongkok",
+            "barcode": "SKU#104",
+            "itemStatus": "Pending Pick",
+            "reservationId": 50510,
+            "shipmentNumber": "",
+            "size": "ONESIZE",
+            "styleRef": "SKU10001",
+            "tickNumber": "738",
+            "title": "",
+            "picked": false
+        }
+      ],
       "mobileNumber": "61431002293",
       "modifyConfirmDate": false,
       "orderId": 21588,
-      "orderNumber": "mayday2",
+      "orderNumber": "order23498",
       "orderStatus": "1",
       "originBranch": "WebReserve",
       "payBarcode": "tx12134345",
@@ -122,20 +143,23 @@ var userData=
       "commentHistory": [],
       "createDate": "2016-12-06 01:30:52",
       "currency": "HKD",
-      "currentBranch": "Ausie",
+      "currentBranch": "MOKO, Mongkok",
       "customerFeedback": 1,
-      "customerName": "ABC Test",
+      "customerName": "Ben S",
+      "isReady": false, // b
+      "status": "provisional",
+      "isClickAndCollect": "true",
       "datePlace": "06/12/2016",
       "details": [
         {
           "appointmentTimeArray": [],
-          "barcode": "SKU#100",
+          "barcode": "SKU#105",
           "historys": [
             {
               "failedReason": "Not Found",
               "pickDate": "06/12/2016",
               "pickStatus": 7,
-              "pickStore": "Ausie"
+              "pickStore": "MOKO, Mongkok"
             }
           ],
           "itemStatus": "Pending Pick",
@@ -150,11 +174,27 @@ var userData=
       "displayPrice": "HK$100",
       "extendDays": 2,
       "isOverdue": 0,
-      "items": 1,
+      "totalPrice": "HK$100",
+      "itemsCount": "1",
+      "items": [
+        {
+            "itemTitle":"Red Shoes",
+            "currentBranch": "MOKO, Mongkok",
+            "barcode": "SKU#106",
+            "itemStatus": "Pending Pick",
+            "reservationId": 50510,
+            "shipmentNumber": "",
+            "size": "Medium",
+            "styleRef": "SKU10001",
+            "tickNumber": "725",
+            "title": "",
+            "picked": false
+        }
+      ],
       "mobileNumber": "61431002293",
       "modifyConfirmDate": false,
       "orderId": 21588,
-      "orderNumber": "mayday3",
+      "orderNumber": "order20750",
       "orderStatus": "1",
       "originBranch": "WebReserve",
       "payBarcode": "tx12134345",
@@ -164,25 +204,26 @@ var userData=
       "values": 100
     },
     {
+      "isReady": true, // b
       "itemTitle":"Floral Bag",
       "collectionDate": "",
       "commentHistory": [],
       "createDate": "2016-12-05 13:33:09",
       "currency": "HKD",
-      "currentBranch": "Ausie",
+      "currentBranch": "MOKO, Mongkok",
       "customerFeedback": 1,
-      "customerName": "Hello Test",
+      "customerName": "Queenie Q",
       "datePlace": "05/12/2016",
       "details": [
         {
           "appointmentTimeArray": [],
-          "barcode": "SKU#100",
+          "barcode": "SKU#107",
           "historys": [
             {
               "failedReason": "Not Found",
               "pickDate": "06/12/2016",
               "pickStatus": 7,
-              "pickStore": "Ausie"
+              "pickStore": "MOKO, Mongkok"
             }
           ],
           "itemStatus": "Pending Pick",
@@ -197,11 +238,27 @@ var userData=
       "displayPrice": "HK$100",
       "extendDays": 2,
       "isOverdue": 0,
-      "items": 1,
+      "totalPrice": "HK$100",
+      "itemsCount": "1",
+      "items": [
+        {
+            "itemTitle":"Floral Bag",
+            "currentBranch": "MOKO, Mongkok",
+            "barcode": "SKU#108",
+            "itemStatus": "Pending Pick",
+            "reservationId": 50510,
+            "shipmentNumber": "",
+            "size": "SIZE 1",
+            "styleRef": "SKU10001",
+            "tickNumber": "726",
+            "title": "",
+            "picked": false
+        }
+      ],
       "mobileNumber": "61431002293",
       "modifyConfirmDate": false,
       "orderId": 21588,
-      "orderNumber": "mayday4",
+      "orderNumber": "order12560",
       "orderStatus": "1",
       "originBranch": "WebReserve",
       "payBarcode": "tx12134345",
@@ -216,20 +273,20 @@ var userData=
       "commentHistory": [],
       "createDate": "2016-12-05 10:11:11",
       "currency": "HKD",
-      "currentBranch": "Ausie",
+      "currentBranch": "MOKO, Mongkok",
       "customerFeedback": 1,
-      "customerName": "Testing Test",
+      "customerName": "Charlie B",
       "datePlace": "05/12/2016",
       "details": [
         {
           "appointmentTimeArray": [],
-          "barcode": "SKU#100",
+          "barcode": "SKU#109",
           "historys": [
             {
               "failedReason": "Not Found",
               "pickDate": "05/12/2016",
               "pickStatus": 7,
-              "pickStore": "Ausie"
+              "pickStore": "MOKO, Mongkok"
             }
           ],
           "itemStatus": "Pending Pick",
@@ -244,11 +301,27 @@ var userData=
       "displayPrice": "HK$100",
       "extendDays": 2,
       "isOverdue": 0,
-      "items": 1,
+      "totalPrice": "HK$100",
+      "itemsCount": "1",
+      "items": [
+        {
+            "itemTitle":"Fitted Shirt",
+            "currentBranch": "MOKO, Mongkok",
+            "barcode": "SKU#110",
+            "itemStatus": "Pending Pick",
+            "reservationId": 50510,
+            "shipmentNumber": "",
+            "size": "Medium",
+            "styleRef": "SKU10001",
+            "tickNumber": "745",
+            "title": "",
+            "picked": false
+        }
+      ],
       "mobileNumber": "61431002293",
       "modifyConfirmDate": false,
       "orderId": 21588,
-      "orderNumber": "mayday6",
+      "orderNumber": "order31289",
       "orderStatus": "1",
       "originBranch": "WebReserve",
       "payBarcode": "tx12134345",
