@@ -68,8 +68,8 @@
                             <ion-col class="col col-33"><p class="largeText alignRight">3</p></ion-col>
                             <ion-col class="col col-66">
                                 <p class="mediumText alignLeft">{{text.dashboardPickTickets}}<br />
-                                <a class="button button-dark buttonAction" ui-sref="customerOrders({searchValue: 'Items to Pick'})" ion-button>View Order(s)</a>
-                                <button onclick="printPDF()" class="button button-dark buttonAction" ion-button>Print Ticket(s)</button></p>
+                                <a class="button button-dark" ui-sref="customerOrders({searchValue: 'Items to Pick'})" ion-button>View Order(s)</a>
+                                <button onclick="printPDF()" class="button button-dark" ion-button>Print Ticket(s)</button></p>
                             </ion-col>
                         </ion-row>
                     </ion-item>
@@ -152,16 +152,8 @@
 
     <!-- Customer Orders Screen -->
     <script id="customerOrders.html" type="text/ng-template">      
-        <ion-view> 
-        <!--<ion-header-bar class="bar-stable" align-title="left">
-            <button side="left" class="button button-icon ion-clipboard" ng-click="newTask()"></button>
-            <h1 side="left" class="title">Customer Orders
-            <span side="right" class="title subTitle">MOKO, Mongkok: Charlie</span></h1>
-            <a href="#/facts" side="right" class="button button-icon ion-gear-a"></a>
-        </ion-header-bar>-->
-
+        <ion-view>
         <ion-side-menus>
-            
             <!-- Left menu -->
             <ion-side-menu class="noBorder" side="left" has-header="true" expose-aside-when="large">
                 <ion-content class="sideBar">
@@ -178,13 +170,11 @@
                     <ion-item class="item item-input searchBox" id="search-input">
                         <i class="icon ion-search placeholder-icon"></i>
                         <input id="input-search" value="ben" type="search" placeholder="Search" ng-model="search"></input>
-                        <i class="icon ion-close placeholder-icon" ng-click="clearSearch()" 
-                                style="margin-right: 12px; "></i>
-
+                        <i class="icon ion-close placeholder-icon" ng-click="clearSearch()" style="margin-right: 12px; "></i>
                     </ion-item>
 
                     <ion-list>                        
-                        <ion-item class="sideBarItem" ng-repeat="order in customerOrders" ng-show="showOrder(order)" ng-click="viewOrder(order)"
+                        <ion-item class="sideBarItem" ng-repeat="order in customerOrders" ng-show="isOrderShown(order)" ng-click="viewOrder(order)"
                                 ng-class="{active: isSelectedOrder(order), hide: isOrderHidden(order)}">
                             <span class="sideBarTitle">{{order.customerName}}</span>
                             <img class="smallIcon alignRight" src="{{getOrangeIcon(order)}}"></img>
@@ -202,9 +192,7 @@
 
             <!-- Center content -->
             <ion-side-menu-content class="noBorder" has-header="true">
-                <ion-content class="mainContent flexContentY" ng-hide="!selectedOrder" scroll="false">
-                    <!-- our list and list items -->
-                    
+                <ion-content class="mainContent flexContentY" ng-hide="!selectedOrder" scroll="false">                    
                     <!-- show order details -->
                     <div class="contentBox flexStatic">
                         <ion-item class="item-stable">
@@ -221,7 +209,7 @@
                                     Customer Info: {{selectedOrder.customerName}} / {{selectedOrder.mobileNumber}}<br />
                                     {{selectedOrder.itemsCount}} item(s), value {{selectedOrder.totalPrice}}<br />
                                     <img src="img/C&C.png" /> Click &amp; Collect<br />
-                                    <button onclick="printPDF()" class="button button-dark buttonAction" ion-button>Print Ticket</button>
+                                    <button onclick="printPDF()" class="button button-dark" ion-button>Print Ticket</button>
                                     </p>
                                 </div>
                                 <div class="col alignCenter">
@@ -257,7 +245,7 @@
                                             {{item.size}}<br />
                                             Item Status: {{item.itemStatus}}<br />
                                             </p></div>
-                                        <div class="col alignCenter"><button class="button button-dark buttonTicket" ng-click="confirmPick(item)" ion-button>{{item.tickNumber}}</button></div>
+                                        <div class="col alignCenter"><button class="button button-dark buttonTicket" ng-click="goToConfirmPick(item)" ion-button>{{item.tickNumber}}</button></div>
                                     </div>   
                                 </ion-item>
                             </div>
@@ -275,27 +263,37 @@
     <script id="new-task.html" type="text/ng-template">
         <ion-modal-view>
             <!-- Modal header bar -->
-            <ion-header-bar class="bar-header bar-dark">
-                <h1 class="title alignCenter">{{text.confirmPick}} ({{text.ticketNumber}}: {{selectedItem.tickNumber}})</h1>
-            </ion-header-bar>
+
             
             <ion-content has-header="true">
-                <ion-tabs class="tabs-icon-top tabs-positive {{$root.hideTabs}}"> <!--add class tabs-item-hide-->
+                <ion-tabs class="tabs-icon-top tabs-positive tabs-item-hide" delegate-handle="confirmPick-tabs"> <!--add class tabs-item-hide-->
 
-                    <ion-tab title="Message" icon-on=" ion-android-chat" icon-off="ion-ios7-filing-outline">
+                    <ion-tab>
+                        <ion-header-bar class="bar-header bar-dark">
+                            <h1 class="title alignCenter">{{text.confirmPick}} ({{text.ticketNumber}}: {{selectedItem.tickNumber}})</h1>
+                        </ion-header-bar>
                         <ion-content>
                         <ion-row class="row responsive-sm">
-                            <ion-col class="col col-100">
-                            <span>{{text.itemDetail}}:<span/><button type="submit" class="button alignRight">{{text.reprint}}</button><br />
+                            <ion-col class="col col-100 modalTopRow">
+                            <span>{{text.itemDetail}}:<span/><button type="submit" class="button alignRight button-dark buttonModalTopLeft">{{text.reprint}}</button><br />
                             <span>- {{selectedItem.itemTitle}} / {{selectedItem.styleRef}} / {{selectedItem.size}}
                             </span>
                             </ion-col>
                         </ion-row>
                         <ion-row><div class="horizontalLine"></div></ion-row>
                         <ion-row class="row responsive-sm">
-                            <ion-col class="col col-49">
-                                <ion-row class="alignCenter"><ion-col class="col col-100">{{text.scanBarcode}}:</ion-col></ion-row>
-                            scan barcode
+                            <ion-col class="col col-49" style="padding: 5px 15px;">
+                                <ion-row class="alignCenter"><ion-col class="col col-100">{{text.scanBarcode}}:</ion-col>
+                                    <ion-col class="col col-100">
+                                        <ion-item class="item item-input textBox" id="search-input" style="margin-top: 5px !important ;">
+                                            <input id="input-scan" type="search" placeholder="" ng-model="search"></input>
+                                        </ion-item>
+                                    </ion-col>
+                                    <ion-col class="col col-100" style="margin-top: 50px !important;">
+                                        <button type="submit" class="button alignLeft button-dark" ng-click="closeConfirmPick()">{{text.back}}</button>
+                                        <button type="submit" class="button alignRight button-dark" ng-click="confirmPick(selectedItem)">{{text.confirmPick}}</button><br />
+                                    </ion-col>
+                                </ion-row>
                             </ion-col>
                             <ion-col class="col-2">
                                 <div class="verticalLine"></div>
@@ -303,28 +301,49 @@
                             <ion-col class="col col-49">
                                 <ion-row class="alignCenter"><ion-col class="col col-100">{{text.pickFailed}}:</ion-col></ion-row>
                                 <ion-row class="row alignCenter">
-                                    <ion-col class="col col-50"><button type="submit" class="button buttonAction">{{text.damaged}}</button></ion-col>
-                                    <ion-col class="col col-50"><button type="submit" class="button buttonAction">{{text.wrongItem}}</button></ion-col>
+                                    <ion-col class="col col-50"><button type="submit" class="button buttonPickFail" ng-click="pickFailed(selectedItem, 'Damaged')">{{text.damaged}}</button></ion-col>
+                                    <ion-col class="col col-50"><button type="submit" class="button buttonPickFail" ng-click="pickFailed(selectedItem, 'Wrong Item')">{{text.wrongItem}}</button></ion-col>
                                 </ion-row>
                                 <ion-row class="row alignCenter">
-                                    <ion-col class="col col-50"><button type="submit" class="button buttonAction">{{text.notFound}}</button></ion-col>
-                                    <ion-col class="col col-50"><button type="submit" class="button buttonAction">{{text.other}}</button></ion-col>
+                                    <ion-col class="col col-50"><button type="submit" class="button buttonPickFail" ng-click="pickFailed(selectedItem, 'Not Found')">{{text.notFound}}</button></ion-col>
+                                    <ion-col class="col col-50"><button type="submit" class="button buttonPickFail" ng-click="goToTab('confirmPick', 1)">{{text.other}}</button></ion-col>
                                 </ion-row>
                             </ion-col>
                         </ion-row>
                         </ion-content>
                     </ion-tab>
 
-                    <ion-tab title="Payment History" icon-on="ion-social-usd" icon-off="ion-ios7-clock-outline" on-select="showPayments()">
+                    <ion-tab>
+                        <ion-header-bar class="bar-header bar-dark">
+                            <h1 class="title alignCenter">{{text.pickFailed}} ({{text.ticketNumber}}: {{selectedItem.tickNumber}})</h1>
+                        </ion-header-bar>
+                        <ion-content>
+                        <ion-row class="row responsive-sm">
+                            <ion-col class="col col-100 modalTopRow">
+                            <span>{{text.itemDetail}}:<span/><br />
+                            <span>- {{selectedItem.itemTitle}} / {{selectedItem.styleRef}} / {{selectedItem.size}}
+                            </span>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row><div class="horizontalLine"></div></ion-row>
+                        <ion-row class="row responsive-sm">
+                            <ion-col class="col col-100" style="padding: 5px 15px;">
+                                <ion-row class="alignCenter"><ion-col class="col col-100" style="text-align: left !important;">{{text.other}} / {{text.comment}}:</ion-col>
+                                    <ion-col class="col col-100">
+                                        <ion-item class="item item-input" id="search-input" style="margin-top: 5px !important ;">
+                                            <textarea class="commentBox" type="search" placeholder="" ></textarea>
+                                        </ion-item>
+                                    </ion-col>
+                                    <ion-col class="col col-100" style="margin-top: 20px !important;">
+                                        <button type="submit" class="button alignLeft button-dark" ng-click="goToTab('confirmPick', 0)">{{text.back}}</button>
+                                        <button type="submit" class="button alignRight button-dark"  ng-click="pickFailed(selectedItem, 'Other')">{{text.submit}}</button><br />
+                                    </ion-col>
+                                </ion-row>
+                            </ion-col>
+                        </ion-row>
+                        </ion-content>
                     </ion-tab>
 
-                    <ion-tab title="Edit" icon-on="ion-android-settings" icon-off="ion-ios7-gear-outline">
-                    <!-- Tab 3 content -->  
-                    </ion-tab>
-
-                    <ion-tab title="Sign Out" icon-on="ion-log-out" icon-off="ion-ios7-gear-outline">
-                    <!-- Tab 3 content -->
-                    </ion-tab>
 
                 </ion-tabs>
             </ion-content>
@@ -338,7 +357,7 @@
             <!-- Modal header bar -->
             <ion-header-bar class="bar-stable">
                 <h1 class="title">{{selectedItem.tickNumber}}</h1>
-                <button class="button button-clear button-positive" ng-click="closeNewTask()">Cancel</button>
+                <button class="button button-clear button-positive" ng-click="closeConfirmPick()">Cancel</button>
             </ion-header-bar>
             <!-- Modal content area -->
             <ion-content>

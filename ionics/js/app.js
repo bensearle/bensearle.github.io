@@ -45,7 +45,7 @@ angular.module('womApp', ['ionic'])
         $ionicConfigProvider.views.transition('none'); // disable animation between pages
         })
 
-    .controller('AppCtrl', function ($scope, $stateParams, $document, $location, $ionicModal) {
+    .controller('AppCtrl', function ($scope, $stateParams, $document, $location, $ionicModal, $ionicTabsDelegate) {
         $scope.session = {
             user: 'Charlie',
             store: 'MOKO, Mongkok'
@@ -79,16 +79,20 @@ angular.module('womApp', ['ionic'])
             print: 'Print',
             reprint: 'Reprint',
             back: 'Back',
+            submit: 'Submit',
 
             damaged: 'Damaged',
             wrongItem: 'Wrong Item',
             notFound: 'Not Found',
             other: 'Other',
+            comment: 'Comment',
+
 
             orders: 'Orders',
             provisional: 'Provisional'
 
         };
+
 
 
         // test data
@@ -213,7 +217,7 @@ angular.module('womApp', ['ionic'])
             console.log("^^^^^^^^^^",$stateParams.searchValue);
             return $stateParams.searchValue;
         }
-        $scope.showOrder = function (order) {
+        $scope.isOrderShown = function (order) {
             var searchValue = document.getElementById('input-search').value;
             if (!searchValue) { // nothing is being searched
                 return true;
@@ -270,34 +274,48 @@ angular.module('womApp', ['ionic'])
         }
 
 
-
-        // Create and load the Modal
+        /*
+         * Modal Creation and Navigation
+         */
         $ionicModal.fromTemplateUrl('new-task.html', function (modal) {
-            $scope.taskModal = modal;
+            $scope.confirmPickModal = modal;
         }, {
             scope: $scope,
             animation: 'slide-in-up'
         });
-
-        // Called when the form is submitted
-        $scope.createTask = function (task) {
-            $scope.tasks.push({
-                title: task.title
-            });
-            $scope.taskModal.hide();
-            task.title = "";
-        };
-
-        // Open our new task modal
-        $scope.confirmPick = function (item) {
+        $scope.goToConfirmPick = function (item) {
             $scope.selectedItem = item;
-            $scope.taskModal.show();
+            $scope.confirmPickModal.show();
+            $ionicTabsDelegate.$getByHandle('confirmPick-tabs').select(0);
+        };
+        $scope.closeConfirmPick = function () {
+            $scope.confirmPickModal.hide();
+        };
+        $scope.goToTab = function(tab, index) {
+            switch(tab) {
+            case 'confirmPick':
+                $ionicTabsDelegate.$getByHandle('confirmPick-tabs').select(index);
+                break;
+            default:
+                break;
+            }
+        }
+
+
+        /*
+         * 
+         */
+        $scope.confirmPick = function (item) {
+            console.log("PICK CONFIRMED", item);
+            item.picked = true;
+            $scope.closeConfirmPick();
         };
 
-        // Close the new task modal
-        $scope.closeNewTask = function () {
-            $scope.taskModal.hide();
+        $scope.pickFailed = function (item, comment) {
+            console.log("PICK FAILED", comment, item);
+            $scope.closeConfirmPick();
         };
+
 
         printPDF = function (){
             var printWindow = window.open('print.htm');
