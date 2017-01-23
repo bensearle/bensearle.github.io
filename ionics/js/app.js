@@ -40,6 +40,10 @@ angular.module('womApp', ['ionic'])
                     searchValue: "",
                     test: null
                 }
+            })
+            .state('createOrder', {
+                url: "/createOrder",
+                templateUrl: "createOrder.html"
             });
         $urlRouterProvider.otherwise("/home"); // default page
         $ionicConfigProvider.views.transition('none'); // disable animation between pages
@@ -52,6 +56,7 @@ angular.module('womApp', ['ionic'])
         }
 
         $scope.customerOrders = userData.orders;
+        $scope.selectedOrder = {};
 
         $scope.text = {
             tabActions: 'Actions',
@@ -103,21 +108,37 @@ angular.module('womApp', ['ionic'])
             { title: 'Find the Princess' }
         ];
 
-        getPicksToConfirm = function(){
-            /*var picks = [];
-
-            for (var i = 0; i < $scope.customerOrders; i += 1){
-                if ($scope.customerOrders[i].
+        
+        $scope.pickTicketsCount= 0;
+        $scope.getPickTicketsCount = function(){
+            var count = 0;
+            for (var i = 0; i < $scope.customerOrders.length; i += 1) {
+                if (!$scope.customerOrders[i].isPrinted) {
+                    count += $scope.customerOrders[i].items.length;
+                }
             }
-            $scope.customerOrders;*/
+            $scope.pickTicketsCount = count;
+            return count;
+        }
 
-            return [
-            {number:'718'},
-            {number:'719'},
-            {number:'725'}
-        ]
-        };
-        $scope.picksToConfirm = getPicksToConfirm();
+        $scope.picksToConfirmLength = 0;
+        $scope.picksToConfirm = function(){
+            var allItems = [];
+            for (var i = 0; i < $scope.customerOrders.length; i += 1) {
+                if ($scope.customerOrders[i].isPrinted) {
+                    var items = $scope.customerOrders[i].items;
+                    for (var j = 0; j < items.length; j += 1) {
+                        if (items[j].currentBranch === $scope.session.store && !items[j].picked) {
+                            allItems.push(items[j])
+                        }
+                    }
+                }
+            }
+            console.log("*************",allItems);
+            $scope.picksToConfirmLength = allItems.length;
+            return allItems;
+        }
+        //$scope.picksToConfirm = $scope.getPicksToConfirm();
         
 
         $scope.shipmentsToArrive = [];
@@ -127,60 +148,50 @@ angular.module('womApp', ['ionic'])
         
     
         // Open our new task modal
-        $scope.viewOrder = function (order) {
-            $scope.selectedOrder = order;
-            console.log(order);
-            
-            /*$scope.groups = {};
-            for (var i = 0; i < order.items.length; i += 1){
-                $scope.groups[order.items[i].currentBranch] = order.items[i];
-            }*/
 
-
-            var groups = {};
+        getItemsByStore = function () {
+            if (!$scope.selectedOrder) {
+                return [];
+            }
+            order = $scope.selectedOrder;
+            var stores = [];
             for (var i = 0; i < order.items.length; i++) {
-                var groupName = order.items[i].currentBranch;
-                if (!groups[groupName]) {
-                    groups[groupName] = [];
+                var storeName = order.items[i].currentBranch;
+                if (!stores[storeName]) {
+                    stores[storeName] = [];
                 }
-                groups[groupName].push(order.items[i]);
+                stores[storeName].push(order.items[i]);
             }
-            myArray = [];
-            for (var groupName in groups) {
-                var fromMoko = groupName === 'MOKO, Mongkok'
-                myArray.push({'name': groupName, 
-                    'title': groups[groupName].length + ' Item(s) from ' + groupName, 
-                    'items': groups[groupName], 
-                    'show': fromMoko});
+
+            itemsByStore = [];
+            for (var storeName in stores) {
+                var show = storeName === $scope.session.store;
+                itemsByStore.push({'name': storeName, 
+                    'title': stores[storeName].length + ' Item(s) from ' + storeName, 
+                    'items': stores[storeName], 
+                    'show': show});
             }
-            console.log(myArray);
-            console.log(order.items);
-            
-            $scope.groups = myArray;
-            /*$scope.groups[0] = {
-                    name: {left: "Order Details", right: "Status"},
-                    items: [],
-                    show: false
-            };
-            for (var i=1; i<10; i++) {
-                $scope.groups[i] = {
-                    name: {left: "...Item(s) from...", right: "Ticket Number"},
-                    items: [],
-                    show: false
-                };
-                for (var j=0; j<3; j++) {
-                    $scope.groups[i].items.push(i + '-' + j);
-                }
-            };*/
-            
-            console.log($scope.groups);
-            
+
+            itemsByStore.sort(function(a, b) {
+                console.info("______________", a.name === $scope.session.store, a, b )
+                if (a.name === $scope.session.store) return -1;
+                if (b.name === $scope.session.store) return 1;
+                if (a.name < b.name) return -1;
+                if (a.name > b.name) return 1;
+                return 0;
+            });
+
+            return itemsByStore;
+        }
+
+        $scope.selectOrder = function (order) {
+            console.log('^^^^^^^^^', $scope.selectedOrder)
+            $scope.selectedOrder = order;
+            console.log('^^^^^^^^^', $scope.selectedOrder)
+            $scope.itemsByStore = getItemsByStore();
         };
 
-        $scope.isNotProvisional = function (order){
-            console.log("provisional", order.status !== 'provisional');
-            return order.status !== 'provisional';
-        };
+
 
         $scope.getOrangeIcon = function (order) {
             if (!order.isReady){
@@ -313,16 +324,27 @@ angular.module('womApp', ['ionic'])
 
         $scope.pickFailed = function (item, comment) {
             console.log("PICK FAILED", comment, item);
+            item.currentBranch = 'Warehouse';
+            $scope.itemsByStore = getItemsByStore();
+
             $scope.closeConfirmPick();
         };
 
+        printTicket = function() {
+            printPDF();
 
-        printPDF = function (){
+
+            for(var i = 0; i < $scope.customerOrders.length; i += 1) {
+                $scope.customerOrders[i].isPrinted = true;
+            }
+            $scope.$apply();
+        }
+        printPDF = function() {
             var printWindow = window.open('print.htm');
             printWindow.focus();
             printWindow.print();
             setTimeout(function(){ printWindow.close(); }, 100); // wait 100ms to give print dialog time to open
-        }
+        };
 
         $scope.getItems = function(ev) {
             // Reset items back to all of the items
@@ -337,8 +359,151 @@ angular.module('womApp', ['ionic'])
                 return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
               })
             }
+        };
+
+
+        /* create a new order */
+        $scope.createNewOrder = function() {
+            console.log('NEW ORDER');
+            var newOrder = {
+              "createDate": "2016-12-06 08:55:09",
+              "orderNumber": "order24359",
+              "customerName": "Mr Test",
+              "mobileNumber": "61431002293",
+              "totalPrice": "100", //b
+              "currency": "HKD",
+             
+              "isReady": false, // b
+              "isOverdue": 0,
+              "isCompleted": false, // b
+
+              "isClickAndCollect": true, // b
+              
+              "customerFeedback": 1,
+              "datePlace": "06/12/2016",
+              "extendDays": 2,
+
+
+
+              "modifyConfirmDate": false,
+              "orderStatus": "2",
+              "originBranch": "WebReserve",
+              "payBarcode": "tx12134345",
+              "shippingRelease": "Hold",
+              "statusTitle": "Stock Reserved",
+
+              "collectionDate": "",  // if there is collectionDate, then it is click&collect?
+              "itemsCount": "3", // b
+              "items": [ // b, itemCount was called items
+                {
+                    "displayPrice": 100,
+                    "itemTitle":"Big Red Shoes",
+                    "currentBranch": "MOKO, Mongkok",
+                    "barcode": "SKU#100",
+                    "itemStatus": "Pending Pick",
+                    "reservationId": 50510,
+                    "shipmentNumber": "",
+                    "size": "SIZE 1",
+                    "styleRef": "SKU10001",
+                    "tickNumber": "901",
+                    "title": "",
+                    "picked": false
+                },
+                {
+                    "itemTitle":"T-Shirt",
+                    "currentBranch": "MOKO, Mongkok",
+                    "barcode": "SKU#200",
+                    "itemStatus": "Pending Pick",
+                    "reservationId": 50510,
+                    "shipmentNumber": "",
+                    "size": "1",
+                    "styleRef": "SKU10001",
+                    "tickNumber": "902",
+                    "title": "",
+                    "picked": false
+                }
+              ]
+            };
+
+            //$scope.customerOrders.push(newOrder);
+            //$scope.selectOrder(newOrder);
+            var order = newOrder;
+            $scope.customerOrders.push(order);
+            //$scope.selectOrder(order);
+
+            orderNotification(order);
+
+
+            /*var notification = new createNotification('PureComm Store Fulfilment', 'New Customer Order\nClick Here', 'img/notification_newOrder.png')
+            notification.onclick = function() {
+                $scope.selectOrder(newOrder);
+                console.log('=================');
+                console.log($scope.selectedOrder);
+                console.log(newOrder);
+                console.log($scope.customerOrders);*/
+            //}
+        };
+
+
+        /******************************************************************************************
+                                    NOTIFICATION FUNCTIONS
+        ******************************************************************************************/
+        document.addEventListener('DOMContentLoaded', function () {
+            'use strict';
+            if (!Notification) {
+                console.error('Desktop notifications not available in your browser. Try Chromium.');
+                return;
+            }
+            if (Notification.permission !== "granted") {
+                Notification.requestPermission();
+            }
+        });
+
+        function orderNotification(order) {
+            'use strict';
+            if (Notification.permission !== "granted") {
+                Notification.requestPermission();
+            } else {
+                var notification = new Notification('PureComm Store Fulfilment', {
+                    body: 'New Customer Order\nClick Here',
+                    icon: 'img/notification_newOrder.png',
+                    requireInteraction: true,
+                    sound: 'Sosumi.aiff' // not supported
+                });
+                notification.onclick = function () {
+                    window.focus(document);
+                    $scope.selectOrder(order);
+                    //window.location.href = '#/home';
+                    window.location.href = '#/customerOrders';
+
+                    console.log('=================');
+                    console.log($scope.selectedOrder);
+                    console.log(order);
+                    console.log($scope.customerOrders);
+                    notification.close();
+                    $scope.$apply();
+                };
+                notification.onerror = function () {
+                    console.error('The notification encountered an error');
+                };
+                return notification;
+            }
+        }
+
+        function notify() {
+            'use strict';
+            var date = new Date(),
+                time = date.toLocaleTimeString();
+            createNotification('PureComm',
+                               time + ' new notification',
+                               'logo.png');
         }
 
     })
+
+
+
+        
+
 
 ;

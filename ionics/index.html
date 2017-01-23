@@ -43,8 +43,8 @@
         <div style="width: 100%">
             <a href="#/home" ng-class="{active: isCurrentTab('/home')}" class="button headerText headerTab">{{text.tabActions}}</a>
             <a href="#/customerOrders" ng-class="{active: isCurrentTab('/customerOrders')}" class="button headerText headerTab">{{text.tabOrders}}</a>
-            <a href="" class="button button-icon ion-gear-a headerText"></a>
-            <span class="button headerText">{{session.store}}: {{session.user}}</span>
+            <a href="" class="button button-icon ion-gear-a headerText headerButton" ng-click="createNewOrder()"></a>
+            <span class="button headerText headerButton">{{session.store}}: {{session.user}}</span>
         </div>
     </ion-header-bar>
     <div class="headerYellow"></div>
@@ -63,13 +63,13 @@
         <!-- Dashboard, top blocks -->
             <ion-row class="row responsive-sm flexStatic">
                 <ion-col class="col col-50">
-                    <ion-item class="dashboardBlocks" ng-class="{active: true}">
+                    <ion-item class="dashboardBlocks" ng-class="{active: pickTicketsCount}">
                         <ion-row class="row">
-                            <ion-col class="col col-33"><p class="largeText alignRight">3</p></ion-col>
+                            <ion-col class="col col-33"><p class="largeText alignRight">{{getPickTicketsCount()}}</p></ion-col>
                             <ion-col class="col col-66">
                                 <p class="mediumText alignLeft">{{text.dashboardPickTickets}}<br />
-                                <a class="button button-dark" ui-sref="customerOrders({searchValue: 'Items to Pick'})" ion-button>View Order(s)</a>
-                                <button onclick="printPDF()" class="button button-dark" ion-button>Print Ticket(s)</button></p>
+                                <a class="button button-dark" ng-show="pickTicketsCount" ui-sref="customerOrders({searchValue: 'Items to Pick'})" ion-button>View Order(s)</a>
+                                <button onclick="printTicket()" class="button button-dark"  ng-show="pickTicketsCount" ion-button>Print Ticket(s)</button></p>
                             </ion-col>
                         </ion-row>
                     </ion-item>
@@ -116,11 +116,11 @@
             <!-- Dashboard, bottom columns -->
             <ion-row class="row responsive-sm flexFill">
                 <ion-col class="col col-33">
-                    <ion-item class="dashboardBlocks" ng-class="{active: isNonEmpty(picksToConfirm)}"">
-                        <ion-row class="row"><p class="mediumText alignCenter">{{picksToConfirm.length}} {{text.dashboardPicksToConfirm}}</p></ion-row>
+                    <ion-item class="dashboardBlocks" ng-class="{active: picksToConfirmLength}">
+                        <ion-row class="row"><p class="mediumText alignCenter">{{picksToConfirmLength}} {{text.dashboardPicksToConfirm}}</p></ion-row>
                             <ion-row class="row responsive-s flexWrap">
-                                    <ion-col class="col col-50" ng-repeat="pick in picksToConfirm">
-                                        <button class="button button-dark margin-5 buttonTicket" ion-button>{{pick.number}}</button>
+                                    <ion-col class="col col-50" ng-repeat="pick in picksToConfirm() track by pick.tickNumber">
+                                        <button class="button button-dark margin-5 buttonTicket" ng-click="goToConfirmPick(pick)" ion-button>{{pick.tickNumber}}</button>
                                     </ion-col>
                             </ion-row>
                     </ion-item>
@@ -174,8 +174,8 @@
                     </ion-item>
 
                     <ion-list>                        
-                        <ion-item class="sideBarItem" ng-repeat="order in customerOrders" ng-show="isOrderShown(order)" ng-click="viewOrder(order)"
-                                ng-class="{active: isSelectedOrder(order), hide: isOrderHidden(order)}">
+                        <ion-item class="sideBarItem" ng-repeat="order in customerOrders track by order.orderNumber" ng-show="isOrderShown(order)" ng-click="selectOrder(order)"
+                                ng-class="{active: order.orderNumber === selectedOrder.orderNumber}">
                             <span class="sideBarTitle">{{order.customerName}}</span>
                             <img class="smallIcon alignRight" src="{{getOrangeIcon(order)}}"></img>
                             <img class="sideBarGreyIcon alignRight" src="{{getGreyIcon(order)}}"></img>
@@ -224,7 +224,7 @@
                     <!-- show items, grouped by store -->
                     <div class="contentBox flexFill">
                         <ion-list class="list-order-item">
-                            <div ng-repeat="group in groups">
+                            <div ng-repeat="group in itemsByStore">
                                 <ion-item class="item-stable"
                                         ng-click="toggleGroup(group)"
                                         ng-class="{active: !isGroupShown(group)}">
@@ -245,7 +245,7 @@
                                             {{item.size}}<br />
                                             Item Status: {{item.itemStatus}}<br />
                                             </p></div>
-                                        <div class="col alignCenter"><button class="button button-dark buttonTicket" ng-click="goToConfirmPick(item)" ion-button>{{item.tickNumber}}</button></div>
+                                        <div class="col alignCenter"><button class="button button-dark buttonTicket" ng-click="goToConfirmPick(item)" ng-class="{white: item.picked}" ion-button>{{item.tickNumber}}</button></div>
                                     </div>   
                                 </ion-item>
                             </div>
@@ -352,23 +352,17 @@
     </script>
 
 
-    <script id="new-task.html1" type="text/ng-template">
+    <script id="createOrder.html" type="text/ng-template">
         <div class="modal">
             <!-- Modal header bar -->
             <ion-header-bar class="bar-stable">
-                <h1 class="title">{{selectedItem.tickNumber}}</h1>
-                <button class="button button-clear button-positive" ng-click="closeConfirmPick()">Cancel</button>
+                <h1 class="title">Create a New Order</h1>
             </ion-header-bar>
             <!-- Modal content area -->
             <ion-content>
                 <form ng-submit="createTask(task)">
-                    <div class="list">
-                        <label class="item item-input">
-                            <input type="text" placeholder="What do you need to do?" ng-model="task.title">
-                        </label>
-                    </div>
                     <div class="padding">
-                        <button type="submit" class="button button-block button-positive">Create Task</button>
+                        <button type="submit" class="button button-dark" ng-click="createNewOrder()">Create Task</button>
                     </div>
                 </form>
             </ion-content>

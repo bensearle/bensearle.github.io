@@ -12,6 +12,7 @@ var userData=
       "isReady": false, // b
       "isOverdue": 0,
       "isCompleted": false, // b
+      "isPrinted": true, // b
 
       "isClickAndCollect": true, // b
       
@@ -56,7 +57,7 @@ var userData=
             "styleRef": "SKU10001",
             "tickNumber": "719",
             "title": "",
-            "picked": true
+            "picked": false
         },
         {
             "itemTitle":"T-Shirt",
@@ -122,7 +123,7 @@ var userData=
             "styleRef": "SKU10001",
             "tickNumber": "738",
             "title": "",
-            "picked": false
+            "picked": true
         }
       ],
       "mobileNumber": "61431002293",
@@ -252,7 +253,7 @@ var userData=
             "styleRef": "SKU10001",
             "tickNumber": "726",
             "title": "",
-            "picked": false
+            "picked": true
         }
       ],
       "mobileNumber": "61431002293",
