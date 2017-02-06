@@ -12,7 +12,7 @@
             "matches": [
                 "<all_urls>"
             ],
-            "js": ["jquery-3.1.1.min.js", "content.js"]
+            "js": ["lib/jquery-3.1.1.min.js", "lib/StarBarcodeEncoder.js", "lib/StarWebPrintBuilder.js", "lib/StarWebPrintExtManager.js", "lib/StarWebPrintTrader.js", "content.js"]
         }
     ],
     "browser_action": {
