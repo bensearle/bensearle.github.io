@@ -5,16 +5,23 @@
         body {
             padding: 20px;
         }
-        #pdfUrl, #localUrl {
+        #remoteUrl, #githubUrl, #localUrl {
             width: 400px;
         }
     </style>
 </head>
 <body>
 
-    <form action="javascript:print(pdfUrl.value)">
+    <form action="javascript:print(remoteUrl.value)">
         URL of PDF:
-        <input type="url" id="pdfUrl" value="http://d2yw8fz9xfyr9z.cloudfront.net/manifest/f0aa9c1dadd418be.pdf">
+        <input type="url" id="remoteUrl" value="http://d2yw8fz9xfyr9z.cloudfront.net/manifest/f0aa9c1dadd418be.pdf">
+        <input type="submit" value="Submit">
+    </form>
+    <br>
+    
+    <form action="javascript:print(githubUrl.value)">
+        URL of PDF:
+        <input type="url" id="githubUrl" value="http://bensearle.github.io/printPdf/print.pdf">
         <input type="submit" value="Submit">
     </form>
     <br>
