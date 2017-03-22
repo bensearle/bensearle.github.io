@@ -1,0 +1,46 @@
+html,
+body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.container {
+  z-index: 10000;
+  display: table;
+  width: 100%;
+  height: 25%;
+}
+#msgContainer {
+  height: 50%;
+}
+
+.text {
+  font-family: 'Indie Flower', cursive;
+  font-weight: 800;
+  text-shadow: -1px -1px 0 red, 1px -1px 0 red, -1px 1px 0 red, 1px 1px 0 red;
+  color: salmon;
+  padding: 1rem;
+  font-size: 2rem;
+}
+#to {
+  display: table-cell;
+  vertical-align: top;
+}
+#message {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+#from {
+  text-align: right;
+  display: table-cell;
+  vertical-align: bottom;
+}
+
+canvas {
+  position: absolute;
+  z-index: -1;
+  height: 100%;
+  width: 100%;
+}
